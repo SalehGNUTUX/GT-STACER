@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.0
+Name=GT-STACER
+Name[ar]=GT-STACER
+GenericName=System Optimizer
+GenericName[ar]=محسن النظام
+Comment=Linux System Optimizer and Monitor — by GNUTUX
+Comment[ar]=محسّن ومراقب نظام لينكس — من تطوير GNUTUX
+Exec=gt-stacer %F
+TryExec=gt-stacer
+Icon=gt-stacer
+Type=Application
+Terminal=false
+StartupNotify=true
+StartupWMClass=gt-stacer
+Categories=System;Monitor;Utility;
+Keywords=system;optimizer;monitor;cpu;memory;disk;gpu;processes;services;
+MimeType=
+X-GNOME-UsesNotifications=true

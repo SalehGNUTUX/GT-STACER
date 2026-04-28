@@ -1,0 +1,26 @@
+Source: gt-stacer
+Section: utils
+Priority: optional
+Maintainer: GNUTUX <gnutux.arabic@gmail.com>
+Build-Depends: debhelper-compat (= 13), cmake (>= 3.24), ninja-build,
+               qt6-base-dev (>= 6.2), qt6-charts-dev (>= 6.2), qt6-svg-dev (>= 6.2)
+Standards-Version: 4.6.2
+Homepage: https://github.com/gnutux/gt-stacer
+Rules-Requires-Root: no
+
+Package: gt-stacer
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends},
+         systemd,
+         policykit-1
+Recommends: flatpak
+Description: Linux System Optimizer and Monitor (GNUTUX)
+ GT-STACER is a modern fork of Stacer, rebuilt with Qt6 and C++17 for
+ GNU/Linux 2026 by the GNUTUX project.
+ .
+ Features: real-time system monitoring (CPU, GPU, memory, disk, network,
+ temperature, battery), process manager, systemd service manager, startup
+ applications, system cleaner, package manager (APT+Flatpak+Snap),
+ APT repository manager, and a /etc/hosts editor.
+ .
+ Licensed under the GNU General Public License v3.
