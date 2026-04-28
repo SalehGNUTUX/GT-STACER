@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProcessesPage</class>
+ <widget class="QWidget" name="ProcessesPage">
+  <layout class="QVBoxLayout">
+   <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
+   <property name="spacing"><number>12</number></property>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLabel"><property name="text"><string>Processes</string></property><property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QLabel" name="countLabel"><property name="text"><string>0 processes</string></property></widget></item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLineEdit" name="searchEdit"><property name="placeholderText"><string>Search processes...</string></property></widget></item>
+     <item><widget class="QPushButton" name="killButton"><property name="text"><string>Kill Process</string></property><property name="objectName"><string>dangerButton</string></property></widget></item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableView" name="processTable"/>
+   </item>
+  </layout>
+ </widget>
+</ui>

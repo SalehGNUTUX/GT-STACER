@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AptSourcePage</class>
+ <widget class="QWidget" name="AptSourcePage">
+  <layout class="QVBoxLayout">
+   <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
+   <item><widget class="QLabel"><property name="text"><string>APT Source Manager</string></property><property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property></widget></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="refreshButton"><property name="text"><string>Refresh</string></property></widget></item>
+     <item><widget class="QPushButton" name="toggleButton"><property name="text"><string>Enable/Disable</string></property></widget></item>
+     <item><widget class="QPushButton" name="addButton"><property name="text"><string>Add Source</string></property></widget></item>
+     <item><widget class="QPushButton" name="removeButton"><property name="text"><string>Remove</string></property><property name="objectName"><string>dangerButton</string></property></widget></item>
+    </layout>
+   </item>
+   <item><widget class="QTableView" name="sourceTable"/></item>
+  </layout>
+ </widget>
+</ui>

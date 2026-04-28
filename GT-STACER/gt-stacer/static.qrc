@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>static/icons/gt-stacer.png</file>
+        <file>static/themes/dark/style.qss</file>
+        <file>static/themes/light/style.qss</file>
+    </qresource>
+</RCC>

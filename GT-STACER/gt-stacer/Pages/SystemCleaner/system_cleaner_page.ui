@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SystemCleanerPage</class>
+ <widget class="QWidget" name="SystemCleanerPage">
+  <layout class="QVBoxLayout">
+   <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
+   <item><widget class="QLabel"><property name="text"><string>System Cleaner</string></property><property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property></widget></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLabel" name="statusLabel"><property name="text"><string>Click Scan to analyze your system</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="scanButton"><property name="text"><string>Scan</string></property></widget></item>
+     <item><widget class="QPushButton" name="cleanButton"><property name="text"><string>Clean Selected</string></property><property name="objectName"><string>primaryButton</string></property></widget></item>
+    </layout>
+   </item>
+   <item><widget class="QTableView" name="cleanerTable"/></item>
+  </layout>
+ </widget>
+</ui>

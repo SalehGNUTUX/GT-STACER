@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsPage</class>
+ <widget class="QWidget" name="SettingsPage">
+  <layout class="QVBoxLayout">
+   <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
+   <item><widget class="QLabel"><property name="text"><string>Settings</string></property><property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property></widget></item>
+   <item>
+    <widget class="QGroupBox"><property name="title"><string>Appearance</string></property>
+     <layout class="QFormLayout">
+      <item><widget class="QLabel"><property name="text"><string>Theme:</string></property></widget>
+            <widget class="QComboBox" name="themeCombo"><item><property name="text"><string>Dark</string></property></item><item><property name="text"><string>Light</string></property></item></widget></item>
+      <item><widget class="QLabel"><property name="text"><string>Language:</string></property></widget>
+            <widget class="QComboBox" name="languageCombo"/></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox"><property name="title"><string>Behavior</string></property>
+     <layout class="QVBoxLayout">
+      <item><widget class="QCheckBox" name="startMinimizedCheck"><property name="text"><string>Start minimized</string></property></widget></item>
+      <item><widget class="QCheckBox" name="showTrayCheck"><property name="text"><string>Show system tray icon</string></property></widget></item>
+      <item><widget class="QCheckBox" name="minimizeToTrayCheck"><property name="text"><string>Minimize to tray on close</string></property></widget></item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>Update interval (seconds):</string></property></widget></item>
+        <item><widget class="QSpinBox" name="updateIntervalSpin"><property name="minimum"><number>1</number></property><property name="maximum"><number>60</number></property><property name="value"><number>2</number></property></widget></item>
+        <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox"><property name="title"><string>About GT-STACER</string></property>
+     <layout class="QVBoxLayout">
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel" name="versionLabel"><property name="text"><string>GT-STACER v26.04  —  GNUTUX</string></property></widget></item>
+        <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>🌐 Website:</string></property></widget></item>
+        <item><widget class="QLabel" name="websiteLink"><property name="text"><string>&lt;a href="https://salehgnutux.github.io/GT-STACER"&gt;salehgnutux.github.io/GT-STACER&lt;/a&gt;</string></property><property name="openExternalLinks"><bool>true</bool></property></widget></item>
+        <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>📦 Repository:</string></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>&lt;a href="https://github.com/SalehGNUTUX/GT-STACER"&gt;github.com/SalehGNUTUX/GT-STACER&lt;/a&gt;</string></property><property name="openExternalLinks"><bool>true</bool></property></widget></item>
+        <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>🙏 Inspired by:</string></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>&lt;a href="https://github.com/oguzhaninan/Stacer"&gt;Stacer by Oguzhan INAN&lt;/a&gt;  — Thank you for the inspiration!</string></property><property name="openExternalLinks"><bool>true</bool></property></widget></item>
+        <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>📄 License:</string></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>&lt;a href="https://www.gnu.org/licenses/gpl-3.0.html"&gt;GNU General Public License v3&lt;/a&gt;</string></property><property name="openExternalLinks"><bool>true</bool></property></widget></item>
+        <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="applyButton"><property name="text"><string>Apply Settings</string></property><property name="objectName"><string>primaryButton</string></property></widget></item>
+    </layout>
+   </item>
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+  </layout>
+ </widget>
+</ui>

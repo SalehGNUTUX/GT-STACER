@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UninstallerPage</class>
+ <widget class="QWidget" name="UninstallerPage">
+  <layout class="QVBoxLayout">
+   <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
+   <item><widget class="QLabel"><property name="text"><string>Uninstaller</string></property><property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property></widget></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLineEdit" name="searchEdit"><property name="placeholderText"><string>Search packages...</string></property></widget></item>
+     <item><widget class="QComboBox" name="managerCombo"/></item>
+     <item><widget class="QLabel" name="statusLabel"><property name="text"><string></string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="loadButton"><property name="text"><string>Load Packages</string></property></widget></item>
+     <item><widget class="QPushButton" name="removeButton"><property name="text"><string>Uninstall</string></property><property name="objectName"><string>dangerButton</string></property></widget></item>
+    </layout>
+   </item>
+   <item><widget class="QTableView" name="packageTable"/></item>
+  </layout>
+ </widget>
+</ui>

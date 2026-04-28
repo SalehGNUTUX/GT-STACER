@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DashboardPage</class>
+ <widget class="QWidget" name="DashboardPage">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>880</width><height>680</height></rect></property>
+  <property name="windowTitle"><string>Dashboard</string></property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
+   <property name="spacing"><number>16</number></property>
+
+   <!-- Page Title -->
+   <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="text"><string>Dashboard</string></property>
+     <property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+
+   <!-- System Info Row -->
+   <item>
+    <widget class="QFrame" name="sysInfoFrame">
+     <property name="objectName"><string>infoCard</string></property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+      <item row="0" column="0"><widget class="QLabel" name="l1"><property name="text"><string>Hostname:</string></property></widget></item>
+      <item row="0" column="1"><widget class="QLabel" name="hostnameLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="0" column="2"><widget class="QLabel" name="l2"><property name="text"><string>OS:</string></property></widget></item>
+      <item row="0" column="3"><widget class="QLabel" name="osLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="1" column="0"><widget class="QLabel" name="l3"><property name="text"><string>Kernel:</string></property></widget></item>
+      <item row="1" column="1"><widget class="QLabel" name="kernelLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="1" column="2"><widget class="QLabel" name="l4"><property name="text"><string>Architecture:</string></property></widget></item>
+      <item row="1" column="3"><widget class="QLabel" name="archLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="2" column="0"><widget class="QLabel" name="l5"><property name="text"><string>Desktop:</string></property></widget></item>
+      <item row="2" column="1"><widget class="QLabel" name="desktopLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="2" column="2"><widget class="QLabel" name="l6"><property name="text"><string>Display:</string></property></widget></item>
+      <item row="2" column="3"><widget class="QLabel" name="displayLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="3" column="0"><widget class="QLabel" name="l7"><property name="text"><string>CPU:</string></property></widget></item>
+      <item row="3" column="1" colspan="2"><widget class="QLabel" name="cpuModelLabel"><property name="text"><string>-</string></property></widget></item>
+      <item row="3" column="3"><widget class="QLabel" name="ramLabel"><property name="text"><string>-</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- Metrics Row -->
+   <item>
+    <layout class="QHBoxLayout" name="metricsLayout">
+     <property name="spacing"><number>16</number></property>
+
+     <!-- CPU Card -->
+     <item>
+      <widget class="QFrame" name="cpuCard">
+       <property name="objectName"><string>metricCard</string></property>
+       <layout class="QVBoxLayout">
+        <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+        <item><widget class="QLabel"><property name="text"><string>CPU Usage</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
+        <item><widget class="QProgressBar" name="cpuProgressBar"><property name="maximum"><number>100</number></property></widget></item>
+        <item>
+         <layout class="QHBoxLayout">
+          <item><widget class="QLabel" name="cpuUsageLabel"><property name="text"><string>0%</string></property></widget></item>
+          <item><widget class="QLabel" name="cpuFreqLabel"><property name="text"><string>-</string></property></widget></item>
+          <item><widget class="QLabel" name="cpuCoresLabel"><property name="text"><string>-</string></property></widget></item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+     <!-- RAM Card -->
+     <item>
+      <widget class="QFrame" name="ramCard">
+       <property name="objectName"><string>metricCard</string></property>
+       <layout class="QVBoxLayout">
+        <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+        <item><widget class="QLabel"><property name="text"><string>Memory (RAM)</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
+        <item><widget class="QProgressBar" name="ramProgressBar"><property name="maximum"><number>100</number></property></widget></item>
+        <item>
+         <layout class="QHBoxLayout">
+          <item><widget class="QLabel" name="ramUsageLabel"><property name="text"><string>0 B</string></property></widget></item>
+          <item><widget class="QLabel"><property name="text"><string>/</string></property></widget></item>
+          <item><widget class="QLabel" name="ramTotalLabel"><property name="text"><string>0 B</string></property></widget></item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+     <!-- Disk Card -->
+     <item>
+      <widget class="QFrame" name="diskCard">
+       <property name="objectName"><string>metricCard</string></property>
+       <layout class="QVBoxLayout">
+        <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+        <item><widget class="QLabel"><property name="text"><string>Disk (/)</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
+        <item><widget class="QProgressBar" name="diskProgressBar"><property name="maximum"><number>100</number></property></widget></item>
+        <item>
+         <layout class="QHBoxLayout">
+          <item><widget class="QLabel" name="diskUsageLabel"><property name="text"><string>0 B</string></property></widget></item>
+          <item><widget class="QLabel"><property name="text"><string>/</string></property></widget></item>
+          <item><widget class="QLabel" name="diskTotalLabel"><property name="text"><string>0 B</string></property></widget></item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+
+   <!-- Second row: Swap, Network, Battery -->
+   <item>
+    <layout class="QHBoxLayout" name="metricsLayout2">
+     <property name="spacing"><number>16</number></property>
+
+     <!-- Swap Card -->
+     <item>
+      <widget class="QFrame" name="swapCard">
+       <property name="objectName"><string>metricCard</string></property>
+       <layout class="QVBoxLayout">
+        <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+        <item><widget class="QLabel"><property name="text"><string>Swap</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
+        <item><widget class="QProgressBar" name="swapProgressBar"><property name="maximum"><number>100</number></property></widget></item>
+        <item>
+         <layout class="QHBoxLayout">
+          <item><widget class="QLabel" name="swapUsageLabel"><property name="text"><string>0 B</string></property></widget></item>
+          <item><widget class="QLabel"><property name="text"><string>/</string></property></widget></item>
+          <item><widget class="QLabel" name="swapTotalLabel"><property name="text"><string>0 B</string></property></widget></item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+     <!-- Network Card -->
+     <item>
+      <widget class="QFrame" name="networkCard">
+       <property name="objectName"><string>metricCard</string></property>
+       <layout class="QVBoxLayout">
+        <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+        <item><widget class="QLabel"><property name="text"><string>Network</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
+        <item><widget class="QLabel" name="networkNameLabel"><property name="text"><string>-</string></property></widget></item>
+        <item><widget class="QLabel" name="networkIpLabel"><property name="text"><string>-</string></property></widget></item>
+       </layout>
+      </widget>
+     </item>
+
+     <!-- Battery Card -->
+     <item>
+      <widget class="QFrame" name="batteryCard">
+       <property name="objectName"><string>metricCard</string></property>
+       <layout class="QVBoxLayout">
+        <property name="leftMargin"><number>16</number></property><property name="topMargin"><number>12</number></property><property name="rightMargin"><number>16</number></property><property name="bottomMargin"><number>12</number></property>
+        <item><widget class="QLabel"><property name="text"><string>Battery</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
+        <item><widget class="QProgressBar" name="batteryProgressBar"><property name="maximum"><number>100</number></property></widget></item>
+        <item>
+         <layout class="QHBoxLayout">
+          <item><widget class="QLabel" name="batteryPercentLabel"><property name="text"><string>-</string></property></widget></item>
+          <item><widget class="QLabel" name="batteryStatusLabel"><property name="text"><string>-</string></property></widget></item>
+          <item><widget class="QLabel" name="batteryTimeLabel"><property name="text"><string></string></property></widget></item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+    </layout>
+   </item>
+
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+  </layout>
+ </widget>
+</ui>

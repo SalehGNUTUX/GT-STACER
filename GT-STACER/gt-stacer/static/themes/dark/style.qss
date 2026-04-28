@@ -1,0 +1,360 @@
+/* GT-STACER Dark Theme - GNUTUX 2026 */
+/* Color Palette (Catppuccin Mocha inspired): */
+/* Base:     #1e1e2e  Mantle: #181825  Crust: #11111b */
+/* Surface:  #313244  Overlay:#45475a  Subtext:#6c7086 */
+/* Text:     #cdd6f4  Blue:   #89b4fa  Green: #a6e3a1 */
+/* Red:      #f38ba8  Yellow: #f9e2af  Peach: #fab387 */
+
+* {
+    font-family: "Ubuntu", "Noto Sans", sans-serif;
+    font-size: 13px;
+    color: #cdd6f4;
+    outline: none;
+}
+
+QMainWindow, QWidget {
+    background-color: #1e1e2e;
+}
+
+/* ---- Sidebar ---- */
+#sidebar {
+    background-color: #181825;
+    border-right: 1px solid #313244;
+}
+
+#logoArea {
+    background-color: #181825;
+    border-bottom: 1px solid #313244;
+    padding: 8px 16px;
+}
+
+#logoText {
+    font-size: 18px;
+    font-weight: bold;
+    color: #89b4fa;
+    letter-spacing: 1px;
+}
+
+#navButton {
+    background-color: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    text-align: left;
+    padding: 0 16px;
+    color: #6c7086;
+    font-size: 13px;
+}
+
+#navButton:hover {
+    background-color: #313244;
+    color: #cdd6f4;
+    border-left: 3px solid #45475a;
+}
+
+#navButton:checked {
+    background-color: #313244;
+    color: #89b4fa;
+    border-left: 3px solid #89b4fa;
+    font-weight: bold;
+}
+
+#versionLabel {
+    color: #45475a;
+    font-size: 11px;
+    padding: 4px;
+}
+
+/* ---- Page Stack ---- */
+#pageStack {
+    background-color: #1e1e2e;
+}
+
+/* ---- Cards / Frames ---- */
+#infoCard, #metricCard {
+    background-color: #181825;
+    border: 1px solid #313244;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+#metricCard QLabel {
+    color: #a6adc8;
+}
+
+/* ---- Progress Bars ---- */
+QProgressBar {
+    background-color: #313244;
+    border: none;
+    border-radius: 4px;
+    height: 8px;
+    text-align: center;
+    color: transparent;
+}
+
+QProgressBar::chunk {
+    background-color: #89b4fa;
+    border-radius: 4px;
+}
+
+QProgressBar[value="0"]::chunk { background-color: #a6e3a1; }
+
+/* ---- Buttons ---- */
+QPushButton {
+    background-color: #313244;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 6px 16px;
+    color: #cdd6f4;
+    min-height: 28px;
+}
+
+QPushButton:hover {
+    background-color: #45475a;
+    border-color: #585b70;
+}
+
+QPushButton:pressed {
+    background-color: #585b70;
+}
+
+#primaryButton {
+    background-color: #89b4fa;
+    border: none;
+    color: #1e1e2e;
+    font-weight: bold;
+}
+
+#primaryButton:hover {
+    background-color: #74c7ec;
+}
+
+#dangerButton {
+    background-color: #f38ba8;
+    border: none;
+    color: #1e1e2e;
+    font-weight: bold;
+}
+
+#dangerButton:hover {
+    background-color: #eba0ac;
+}
+
+/* ---- Line Edits ---- */
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #313244;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #cdd6f4;
+    selection-background-color: #585b70;
+}
+
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
+    border-color: #89b4fa;
+}
+
+/* ---- ComboBox ---- */
+QComboBox {
+    background-color: #313244;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #cdd6f4;
+    min-width: 80px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    padding-right: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #313244;
+    border: 1px solid #45475a;
+    border-radius: 4px;
+    selection-background-color: #45475a;
+    color: #cdd6f4;
+}
+
+/* ---- Spin Box ---- */
+QSpinBox {
+    background-color: #313244;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: #cdd6f4;
+}
+
+/* ---- Table Views ---- */
+QTableView, QListView, QTreeView {
+    background-color: #181825;
+    border: 1px solid #313244;
+    border-radius: 6px;
+    gridline-color: #313244;
+    selection-background-color: #313244;
+    selection-color: #cdd6f4;
+    alternate-background-color: #1e1e2e;
+}
+
+QHeaderView::section {
+    background-color: #313244;
+    border: none;
+    border-bottom: 1px solid #45475a;
+    border-right: 1px solid #45475a;
+    padding: 6px 8px;
+    color: #89b4fa;
+    font-weight: bold;
+}
+
+QTableView::item:hover {
+    background-color: #2a2a3e;
+}
+
+/* ---- Scroll Bars ---- */
+QScrollBar:vertical {
+    background-color: transparent;
+    width: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #45475a;
+    border-radius: 4px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #585b70;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    height: 0;
+    background: transparent;
+}
+
+QScrollBar:horizontal {
+    background-color: transparent;
+    height: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #45475a;
+    border-radius: 4px;
+    min-width: 20px;
+}
+
+/* ---- Group Box ---- */
+QGroupBox {
+    background-color: #181825;
+    border: 1px solid #313244;
+    border-radius: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    font-weight: bold;
+    color: #89b4fa;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 4px;
+}
+
+/* ---- Check Boxes ---- */
+QCheckBox {
+    color: #cdd6f4;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #45475a;
+    border-radius: 4px;
+    background-color: #313244;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #89b4fa;
+    border-color: #89b4fa;
+}
+
+/* ---- Tool Tips ---- */
+QToolTip {
+    background-color: #313244;
+    color: #cdd6f4;
+    border: 1px solid #45475a;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* ---- Message Box ---- */
+QMessageBox {
+    background-color: #181825;
+}
+
+/* ---- Chart background ---- */
+QChartView {
+    background-color: transparent;
+    border: none;
+}
+
+/* ──────────────────────────────────────────
+   Sidebar
+────────────────────────────────────────── */
+#sidebar {
+    background-color: #11111b;
+    border-right: 1px solid #1e1e2e;
+}
+#sidebarHeader {
+    background-color: #11111b;
+    border-bottom: 1px solid #1e1e2e;
+}
+#sidebarAppName {
+    font-size: 16px; font-weight: bold; color: #89b4fa; letter-spacing: 1px;
+}
+#sidebarVersion  { font-size: 10px; color: #45475a; }
+#sidebarToggle   {
+    background: transparent; border: 1px solid #313244;
+    border-radius: 4px; color: #6c7086; font-size: 10px; padding: 0;
+}
+#sidebarToggle:hover { background: #313244; color: #cdd6f4; }
+#sidebarFooter   { font-size: 10px; color: #45475a; padding: 4px; }
+
+/* ──────────────────────────────────────────
+   Dashboard cards
+────────────────────────────────────────── */
+#dashCard, #sysInfoCard, #gaugesCard, #netCard, #gpuCard, #batCard {
+    background-color: #181825;
+    border: 1px solid #313244;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+#infoKey   { color: #6c7086; font-size: 11px; font-weight: 600; }
+#infoValue { color: #cdd6f4; font-size: 13px; }
+#cardTitle { font-size: 14px; font-weight: bold; }
+#pageTitle { font-size: 22px; font-weight: bold; color: #cdd6f4; }
+
+/* ──────────────────────────────────────────
+   Welcome dialog
+────────────────────────────────────────── */
+#welcomeDialog  { background-color: #181825; }
+#welcomePage    { background-color: #181825; }
+#welcomeBar     { background-color: #11111b; border-top: 1px solid #313244; }
+#welcomeSkip    { background: transparent; border: none; color: #6c7086; }
+#welcomeSkip:hover { color: #cdd6f4; }
+#welcomeNav     { background: #313244; border: 1px solid #45475a; border-radius: 6px;
+                  padding: 6px 16px; color: #cdd6f4; }
+#welcomeNext    { background: #89b4fa; border: none; border-radius: 6px;
+                  padding: 6px 20px; color: #1e1e2e; font-weight: bold; }
+#welcomeNext:hover { background: #74c7ec; }
+
+/* ──────────────────────────────────────────
+   Loading overlay
+────────────────────────────────────────── */
+#loadingOverlay { background: rgba(17,17,27,180); border-radius: 8px; }
