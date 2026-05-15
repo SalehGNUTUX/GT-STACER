@@ -1,7 +1,11 @@
 #include "cpu_info.h"
 #include "../Utils/file_util.h"
 #include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QAtomicInteger>
 
+// ─── Parsing ────────────────────────────────────────────────────────────
 static CpuStat parseStat(const QString &line)
 {
     auto parts = line.split(' ', Qt::SkipEmptyParts);
@@ -42,27 +46,6 @@ double CpuInfo::calcUsage(const CpuStat &a, const CpuStat &b)
     return 100.0 * (1.0 - static_cast<double>(dIdle) / dTotal);
 }
 
-CpuUsage CpuInfo::usage()
-{
-    CpuUsage result;
-    result.cores = coreCount();
-    result.model = model();
-    result.freqMHz = frequencyMHz();
-
-    auto s1 = readStat();
-    QThread::msleep(200);
-    auto s2 = readStat();
-    result.total = calcUsage(s1, s2);
-
-    for (int i = 0; i < result.cores; ++i) {
-        auto c1 = readStat(i);
-        QThread::msleep(0);
-        auto c2 = readStat(i);
-        result.perCore << calcUsage(c1, c2);
-    }
-    return result;
-}
-
 QString CpuInfo::model()
 {
     auto lines = FileUtil::readFile("/proc/cpuinfo").split('\n');
@@ -89,8 +72,104 @@ double CpuInfo::frequencyMHz()
             if (parts.size() >= 2) return parts[1].trimmed().toDouble();
         }
     }
-    // Try /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
     QString freqStr = FileUtil::readFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
     if (!freqStr.isEmpty()) return freqStr.toLongLong() / 1000.0;
     return 0.0;
+}
+
+// ─── Background sampler ─────────────────────────────────────────────────
+// One worker thread polls /proc/stat once per second, computes deltas, and
+// caches the latest CpuUsage under a mutex. CpuInfo::usage() now returns the
+// cached value instantly — the UI thread no longer blocks for 200 ms per call.
+namespace {
+
+class CpuSamplerThread : public QThread {
+public:
+    CpuSamplerThread()
+    {
+        setObjectName("gt-stacer-cpu");
+        // Prime the cache synchronously so the very first caller doesn't see
+        // cores=0 / empty model while the thread is still spinning up.
+        m_cores       = CpuInfo::coreCount();
+        m_cachedModel = CpuInfo::model();
+        m_prevAgg     = CpuInfo::readStat();
+        m_prevCore.resize(m_cores);
+        for (int i = 0; i < m_cores; ++i) m_prevCore[i] = CpuInfo::readStat(i);
+
+        {
+            QMutexLocker lk(&m_mtx);
+            m_current.cores   = m_cores;
+            m_current.model   = m_cachedModel;
+            m_current.freqMHz = CpuInfo::frequencyMHz();
+            // total/perCore stay 0 for the very first read — they get filled in
+            // after the worker takes its second sample (≈ 200 ms later).
+        }
+
+        m_running.storeRelease(1);
+        start();
+    }
+    ~CpuSamplerThread() override
+    {
+        m_running.storeRelease(0);
+        wait(2000);
+    }
+
+    CpuUsage current()
+    {
+        QMutexLocker lk(&m_mtx);
+        return m_current;
+    }
+
+protected:
+    void run() override
+    {
+        msleep(200); // Let stat counters tick before computing the first delta.
+
+        while (m_running.loadAcquire()) {
+            CpuUsage u;
+            u.cores   = m_cores;
+            u.model   = m_cachedModel;
+            u.freqMHz = CpuInfo::frequencyMHz();
+
+            auto agg = CpuInfo::readStat();
+            u.total  = CpuInfo::calcUsage(m_prevAgg, agg);
+            m_prevAgg = agg;
+
+            for (int i = 0; i < m_cores; ++i) {
+                auto cur = CpuInfo::readStat(i);
+                u.perCore << CpuInfo::calcUsage(m_prevCore[i], cur);
+                m_prevCore[i] = cur;
+            }
+
+            {
+                QMutexLocker lk(&m_mtx);
+                m_current = u;
+            }
+
+            // Sample once per second; check shutdown flag every 100 ms.
+            for (int i = 0; i < 10 && m_running.loadAcquire(); ++i) msleep(100);
+        }
+    }
+
+private:
+    QMutex m_mtx;
+    CpuUsage m_current;
+    QAtomicInteger<int> m_running{0};
+    int m_cores = 0;
+    QString m_cachedModel;
+    CpuStat m_prevAgg{};
+    QVector<CpuStat> m_prevCore;
+};
+
+CpuSamplerThread &sampler()
+{
+    static CpuSamplerThread s;
+    return s;
+}
+
+} // namespace
+
+CpuUsage CpuInfo::usage()
+{
+    return sampler().current();
 }

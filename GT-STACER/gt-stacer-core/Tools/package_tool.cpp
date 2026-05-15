@@ -417,38 +417,51 @@ QVector<PackageInfo> PackageTool::allPackages()
 }
 
 // ─── Removal ─────────────────────────────────────────────────────────────
+// Each entry builds an argv list (program + args) and is passed to QProcess
+// without going through a shell, so package names with metacharacters cannot
+// be turned into command injection. We additionally validate the name.
 bool PackageTool::remove(const QString &name, PkgMgr mgr)
 {
-    QString cmd;
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+
+    QString prog;
+    QStringList args;
+    bool needsRoot = true;
+
     switch (mgr) {
-    case PkgMgr::APT:       cmd = "pkexec apt-get remove -y " + name; break;
+    case PkgMgr::APT:       prog = "apt-get";       args = {"remove", "-y", name}; break;
     case PkgMgr::DNF:
-    case PkgMgr::DNF5:      cmd = "pkexec dnf remove -y " + name; break;
-    case PkgMgr::YUM:       cmd = "pkexec yum remove -y " + name; break;
-    case PkgMgr::TDNF:      cmd = "pkexec tdnf remove -y " + name; break;
+    case PkgMgr::DNF5:      prog = "dnf";           args = {"remove", "-y", name}; break;
+    case PkgMgr::YUM:       prog = "yum";           args = {"remove", "-y", name}; break;
+    case PkgMgr::TDNF:      prog = "tdnf";          args = {"remove", "-y", name}; break;
     case PkgMgr::Pacman:
     case PkgMgr::Yay:
-    case PkgMgr::Paru:      cmd = "pkexec pacman -R --noconfirm " + name; break;
-    case PkgMgr::Zypper:    cmd = "pkexec zypper remove -y " + name; break;
-    case PkgMgr::XBPS:      cmd = "pkexec xbps-remove -R " + name; break;
-    case PkgMgr::APK:       cmd = "pkexec apk del " + name; break;
-    case PkgMgr::Portage:   cmd = "pkexec emerge --deselect " + name; break;
-    case PkgMgr::Nix:       cmd = "nix-env -e " + name; break;
-    case PkgMgr::RpmOstree: cmd = "pkexec rpm-ostree override remove " + name; break;
-    case PkgMgr::Eopkg:     cmd = "pkexec eopkg remove " + name; break;
-    case PkgMgr::Equo:      cmd = "pkexec equo remove " + name; break;
-    case PkgMgr::Swupd:     cmd = "pkexec swupd bundle-remove " + name; break;
-    case PkgMgr::Guix:      cmd = "guix remove " + name; break;
-    case PkgMgr::Flatpak:   cmd = "flatpak uninstall -y " + name; break;
-    case PkgMgr::Snap:      cmd = "pkexec snap remove " + name; break;
-    case PkgMgr::Brew:      cmd = "brew uninstall " + name; break;
-    case PkgMgr::Conda:     cmd = "conda remove -y " + name; break;
-    case PkgMgr::Pip3:      cmd = "pip3 uninstall -y " + name; break;
-    case PkgMgr::Cargo:     cmd = "cargo uninstall " + name; break;
-    case PkgMgr::Npm:       cmd = "npm uninstall -g " + name; break;
+    case PkgMgr::Paru:      prog = "pacman";        args = {"-R", "--noconfirm", name}; break;
+    case PkgMgr::Zypper:    prog = "zypper";        args = {"remove", "-y", name}; break;
+    case PkgMgr::XBPS:      prog = "xbps-remove";   args = {"-R", name}; break;
+    case PkgMgr::APK:       prog = "apk";           args = {"del", name}; break;
+    case PkgMgr::Portage:   prog = "emerge";        args = {"--deselect", name}; break;
+    case PkgMgr::Nix:       prog = "nix-env";       args = {"-e", name}; needsRoot = false; break;
+    case PkgMgr::RpmOstree: prog = "rpm-ostree";    args = {"override", "remove", name}; break;
+    case PkgMgr::Eopkg:     prog = "eopkg";         args = {"remove", name}; break;
+    case PkgMgr::Equo:      prog = "equo";          args = {"remove", name}; break;
+    case PkgMgr::Swupd:     prog = "swupd";         args = {"bundle-remove", name}; break;
+    case PkgMgr::Guix:      prog = "guix";          args = {"remove", name}; needsRoot = false; break;
+    case PkgMgr::Flatpak:   prog = "flatpak";       args = {"uninstall", "-y", name}; needsRoot = false; break;
+    case PkgMgr::Snap:      prog = "snap";          args = {"remove", name}; break;
+    case PkgMgr::Brew:      prog = "brew";          args = {"uninstall", name}; needsRoot = false; break;
+    case PkgMgr::Conda:     prog = "conda";         args = {"remove", "-y", name}; needsRoot = false; break;
+    case PkgMgr::Pip3:      prog = "pip3";          args = {"uninstall", "-y", name}; needsRoot = false; break;
+    case PkgMgr::Cargo:     prog = "cargo";         args = {"uninstall", name}; needsRoot = false; break;
+    case PkgMgr::Npm:       prog = "npm";           args = {"uninstall", "-g", name}; needsRoot = false; break;
     default:                return false;
     }
-    return CommandUtil::execStatus(cmd) == 0;
+
+    if (needsRoot) {
+        args.prepend(prog);
+        prog = "pkexec";
+    }
+    return CommandUtil::execProgram(prog, args, 120000) == 0;
 }
 
 // ─── Cache cleaning ───────────────────────────────────────────────────────

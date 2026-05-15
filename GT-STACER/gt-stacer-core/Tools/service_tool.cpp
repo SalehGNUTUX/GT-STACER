@@ -116,8 +116,11 @@ QVector<ServiceInfo> ServiceTool::systemdServices()
 
 bool ServiceTool::systemdAction(const QString &name, const QString &action)
 {
-    return CommandUtil::execStatus(
-        "pkexec systemctl " + action + " " + name + ".service") == 0;
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    static const QStringList allowed = {"start", "stop", "restart", "enable", "disable", "reload"};
+    if (!allowed.contains(action)) return false;
+    return CommandUtil::execProgram("pkexec",
+        {"systemctl", action, name + ".service"}, 60000) == 0;
 }
 
 // ── OpenRC ───────────────────────────────────────────────────────────────
@@ -143,14 +146,15 @@ QVector<ServiceInfo> ServiceTool::openrcServices()
 
 bool ServiceTool::openrcAction(const QString &name, const QString &action)
 {
-    QString cmd;
-    if      (action == "start")   cmd = "pkexec rc-service " + name + " start";
-    else if (action == "stop")    cmd = "pkexec rc-service " + name + " stop";
-    else if (action == "restart") cmd = "pkexec rc-service " + name + " restart";
-    else if (action == "enable")  cmd = "pkexec rc-update add " + name + " default";
-    else if (action == "disable") cmd = "pkexec rc-update del " + name + " default";
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    QStringList args;
+    if      (action == "start")   args = {"rc-service",  name, "start"};
+    else if (action == "stop")    args = {"rc-service",  name, "stop"};
+    else if (action == "restart") args = {"rc-service",  name, "restart"};
+    else if (action == "enable")  args = {"rc-update",   "add", name, "default"};
+    else if (action == "disable") args = {"rc-update",   "del", name, "default"};
     else                          return false;
-    return CommandUtil::execStatus(cmd) == 0;
+    return CommandUtil::execProgram("pkexec", args, 60000) == 0;
 }
 
 // ── runit ─────────────────────────────────────────────────────────────────
@@ -180,16 +184,17 @@ QVector<ServiceInfo> ServiceTool::runitServices()
 
 bool ServiceTool::runitAction(const QString &name, const QString &action)
 {
-    if      (action == "start")   return CommandUtil::execStatus("pkexec sv start " + name) == 0;
-    else if (action == "stop")    return CommandUtil::execStatus("pkexec sv stop "  + name) == 0;
-    else if (action == "restart") return CommandUtil::execStatus("pkexec sv restart " + name) == 0;
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    if      (action == "start")   return CommandUtil::execProgram("pkexec", {"sv", "start",   name}, 60000) == 0;
+    else if (action == "stop")    return CommandUtil::execProgram("pkexec", {"sv", "stop",    name}, 60000) == 0;
+    else if (action == "restart") return CommandUtil::execProgram("pkexec", {"sv", "restart", name}, 60000) == 0;
     else if (action == "enable") {
-        // Create symlink in /var/service
-        return CommandUtil::execStatus(
-            "pkexec ln -sf /etc/sv/" + name + " /var/service/" + name) == 0;
+        return CommandUtil::execProgram("pkexec",
+            {"ln", "-sf", "/etc/sv/" + name, "/var/service/" + name}, 60000) == 0;
     }
     else if (action == "disable") {
-        return CommandUtil::execStatus("pkexec rm -f /var/service/" + name) == 0;
+        return CommandUtil::execProgram("pkexec",
+            {"rm", "-f", "/var/service/" + name}, 60000) == 0;
     }
     return false;
 }
@@ -213,7 +218,10 @@ QVector<ServiceInfo> ServiceTool::sysVServices()
 
 bool ServiceTool::sysVAction(const QString &name, const QString &action)
 {
-    return CommandUtil::execStatus("pkexec service " + name + " " + action) == 0;
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    static const QStringList allowed = {"start", "stop", "restart", "status", "reload"};
+    if (!allowed.contains(action)) return false;
+    return CommandUtil::execProgram("pkexec", {"service", name, action}, 60000) == 0;
 }
 
 // ─── Public API (dispatches) ─────────────────────────────────────────────

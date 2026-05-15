@@ -17,7 +17,8 @@ BUILD_DIR="$ROOT_DIR/build"
 RELEASE_DIR="$ROOT_DIR/release"
 APP_NAME="gt-stacer"
 APP_DISPLAY="GT-STACER"
-VERSION="26.04"
+VERSION="26.05"
+CHANNEL="beta"
 ARCH="$(uname -m)"
 BUILD_TOOL="Unix Makefiles"
 BUILD_CMD="make"
@@ -86,7 +87,7 @@ install_deps() {
         # --- Qt6 (المتطلبات الأساسية للمشروع) ---
         local QT6_PKGS=(
             qt6-base-dev
-            qt6-charts-dev
+            qt6-tools-dev
             qt6-svg-dev
             qt6-tools-dev
         )
@@ -103,7 +104,7 @@ install_deps() {
             if ! $SUDO apt-get install -y "${QT6_PKGS[@]}" 2>/dev/null; then
                 echo "⚠️  تعذّر التثبيت التلقائي لـ Qt6 (ربما بسبب صلاحيات sudo)"
                 echo "   ثبّت يدوياً:"
-                echo "   sudo apt-get install qt6-base-dev qt6-charts-dev qt6-svg-dev qt6-tools-dev"
+                echo "   sudo apt-get install qt6-base-dev qt6-svg-dev qt6-tools-dev qt6-l10n-tools"
             fi
             for pkg in "${QT6_OPT[@]}"; do
                 $SUDO apt-get install -y "$pkg" 2>/dev/null || true
@@ -129,7 +130,7 @@ install_deps() {
             gcc-c++ cmake make ninja-build \
             mesa-libGL-devel \
             qt6-qtbase-devel \
-            qt6-qtcharts-devel \
+            qt6-qttools-devel \
             qt6-qtsvg-devel \
             qt6-qttools-devel \
             rpm-build patchelf wget curl \
@@ -139,7 +140,7 @@ install_deps() {
     arch)
         $SUDO pacman -Sy --noconfirm \
             base-devel cmake ninja make \
-            qt6-base qt6-charts qt6-svg qt6-tools \
+            qt6-base qt6-svg qt6-tools \
             fakeroot patchelf fuse2 wget curl 2>/dev/null || true
         ;;
 
@@ -147,7 +148,7 @@ install_deps() {
         $SUDO zypper install -yn \
             gcc-c++ cmake make ninja \
             libqt6-qtbase-devel \
-            libqt6-qtcharts-devel \
+            libqt6-qttools-devel \
             libqt6-qtsvg-devel \
             rpm-build patchelf wget curl fuse 2>/dev/null || true
         ;;
@@ -253,8 +254,8 @@ check_requirements() {
 
     if [ -z "$QT6_QMAKE" ]; then
         echo "   ❌ Qt6 غير مثبّت أو qmake6 غير موجود"
-        echo "      Debian/Ubuntu: sudo apt install qt6-base-dev qt6-charts-dev qt6-svg-dev"
-        echo "      Fedora:        sudo dnf install qt6-qtbase-devel qt6-qtcharts-devel qt6-qtsvg-devel"
+        echo "      Debian/Ubuntu: sudo apt install qt6-base-dev qt6-svg-dev qt6-tools-dev"
+        echo "      Fedora:        sudo dnf install qt6-qtbase-devel qt6-qtsvg-devel qt6-qttools-devel"
         errors=$((errors + 1))
     else
         local qt_ver
@@ -274,8 +275,8 @@ check_requirements() {
         done
         if [ ${#missing_mods[@]} -gt 0 ]; then
             echo "   ⚠️  وحدات Qt6 مفقودة: ${missing_mods[*]}"
-            echo "      Debian/Ubuntu: sudo apt install qt6-charts-dev qt6-svg-dev"
-            echo "      Fedora:        sudo dnf install qt6-qtcharts-devel qt6-qtsvg-devel"
+            echo "      Debian/Ubuntu: sudo apt install qt6-svg-dev qt6-tools-dev"
+            echo "      Fedora:        sudo dnf install qt6-qtsvg-devel qt6-qttools-devel"
             echo "      سيفشل cmake — نفّذ install-deps أولاً"
             errors=$((errors + 1))
         fi
@@ -406,8 +407,12 @@ build_appimage() {
     # بناء AppImage
     local output="$RELEASE_DIR/${APP_DISPLAY}-${VERSION}-${ARCH}.AppImage"
 
+    # Force the Wayland platform plugin in too — without it the AppImage
+    # cannot start on a Wayland session (which is now the default on GNOME 45+
+    # and KDE Plasma 6). linuxdeploy-plugin-qt picks it up via this env var.
     APPIMAGE_EXTRACT_AND_RUN=1 \
     QMAKE="$QT6_QMAKE" \
+    EXTRA_PLATFORM_PLUGINS="libqwayland-generic.so;libqwayland-egl.so" \
     "$LINUXDEPLOY" \
         --appdir "$appdir" \
         --plugin qt \
@@ -450,7 +455,7 @@ build_deb() {
 
     # تحديد الاعتماديات حسب التوزيعة
     # Qt6 — نستخدم OR للتوافق مع Debian 12 (libqt6core6) و Debian 13+ (libqt6core6t64)
-    local qt_deps="libqt6core6t64 (>= 6.2) | libqt6core6 (>= 6.2), libqt6gui6t64 (>= 6.2) | libqt6gui6 (>= 6.2), libqt6widgets6t64 (>= 6.2) | libqt6widgets6 (>= 6.2), libqt6charts6 (>= 6.2), libqt6svg6 (>= 6.2)"
+    local qt_deps="libqt6core6t64 (>= 6.2) | libqt6core6 (>= 6.2), libqt6gui6t64 (>= 6.2) | libqt6gui6 (>= 6.2), libqt6widgets6t64 (>= 6.2) | libqt6widgets6 (>= 6.2), libqt6svg6 (>= 6.2)"
 
     cat > "$pkgdir/DEBIAN/control" <<EOF
 Package: ${APP_NAME}
@@ -576,8 +581,8 @@ Source0:        ${APP_NAME}-${VERSION}.tar.gz
 BuildRequires:  cmake >= 3.24
 BuildRequires:  gcc-c++
 BuildRequires:  qt6-qtbase-devel >= 6.2
-BuildRequires:  qt6-qtcharts-devel
 BuildRequires:  qt6-qtsvg-devel
+BuildRequires:  qt6-qttools-devel
 
 Requires:       qt6-qtbase >= 6.2
 Requires:       polkit

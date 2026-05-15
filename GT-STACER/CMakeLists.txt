@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(GT-STACER
-    VERSION 26.4.0
+    VERSION 26.5.0
     DESCRIPTION "GT-STACER - Linux System Optimizer and Monitoring"
     HOMEPAGE_URL "https://github.com/SalehGNUTUX/GT-STACER"
     LANGUAGES CXX
@@ -21,8 +21,14 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_compile_options(-O2)
+        # -Os: optimize for binary size. For a Qt UI app this often runs as
+        # fast as -O2 (CPU is rarely the bottleneck) while producing a smaller
+        # binary and improving icache locality.
+        add_compile_options(-Os -ffunction-sections -fdata-sections)
+        add_link_options(-Wl,--gc-sections -Wl,--as-needed)
         set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+        # Strip in install step (preserves debuggable build artifacts).
+        set(CMAKE_INSTALL_DO_STRIP ON)
     endif()
 endif()
 
@@ -35,7 +41,6 @@ find_package(Qt6 6.2 COMPONENTS
     Core
     Gui
     Widgets
-    Charts
     Svg
     Concurrent
     Network
@@ -49,7 +54,8 @@ include(GNUInstallDirs)
 # Version info as compile definitions
 add_compile_definitions(
     APP_NAME="GT-STACER"
-    APP_VERSION="26.04"
+    APP_VERSION="26.05"
+    APP_CHANNEL="beta"
     APP_ORGANIZATION="GNUTUX"
     APP_DOMAIN="gnutux.org"
     APP_REPO="https://github.com/SalehGNUTUX/GT-STACER"

@@ -10,7 +10,8 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$ROOT_DIR/build-deb"
 PKG_DIR="$BUILD_DIR/pkg"
 APP_NAME="gt-stacer"
-VERSION="26.04"
+VERSION="26.05"
+CHANNEL="beta"
 ARCH="$(dpkg --print-architecture 2>/dev/null || echo 'amd64')"
 
 echo "======================================"
@@ -53,7 +54,7 @@ Version: ${VERSION}
 Architecture: ${ARCH}
 Maintainer: GNUTUX <gnutux.arabic@gmail.com>
 Installed-Size: ${INSTALLED_SIZE}
-Depends: libqt6core6t64 (>= 6.2) | libqt6core6 (>= 6.2), libqt6gui6t64 (>= 6.2) | libqt6gui6 (>= 6.2), libqt6widgets6t64 (>= 6.2) | libqt6widgets6 (>= 6.2), libqt6charts6 (>= 6.2), libqt6svg6 (>= 6.2)
+Depends: libqt6core6t64 (>= 6.2) | libqt6core6 (>= 6.2), libqt6gui6t64 (>= 6.2) | libqt6gui6 (>= 6.2), libqt6widgets6t64 (>= 6.2) | libqt6widgets6 (>= 6.2), libqt6svg6 (>= 6.2)
 Recommends: flatpak, polkitd | policykit-1 | polkit
 Section: utils
 Priority: optional

@@ -24,7 +24,8 @@ public:
     static int      coreCount();
     static double   frequencyMHz();
 
-private:
+    // Exposed so the in-process CPU sampler thread can reuse the parsing
+    // helpers without duplication. Not part of the stable public API.
     static CpuStat  readStat(int cpuIndex = -1);
     static double   calcUsage(const CpuStat &a, const CpuStat &b);
 };

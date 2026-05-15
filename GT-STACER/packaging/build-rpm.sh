@@ -9,8 +9,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$ROOT_DIR/build-rpm"
 APP_NAME="gt-stacer"
-VERSION="26.04"
-RELEASE="1"
+VERSION="26.05"
+RELEASE="1.beta"
 ARCH="$(uname -m)"
 
 echo "======================================"
@@ -63,11 +63,9 @@ BuildRequires:  cmake >= 3.24
 BuildRequires:  ninja-build
 BuildRequires:  gcc-c++
 BuildRequires:  qt6-qtbase-devel >= 6.2
-BuildRequires:  qt6-qtcharts-devel >= 6.2
 BuildRequires:  qt6-qtsvg-devel >= 6.2
 
 Requires:       qt6-qtbase >= 6.2
-Requires:       qt6-qtcharts >= 6.2
 Requires:       qt6-qtsvg >= 6.2
 Requires:       systemd
 Requires:       polkit

@@ -11,7 +11,8 @@ BUILD_DIR="$ROOT_DIR/build-appimage"
 APPDIR="$BUILD_DIR/AppDir"
 APP_NAME="GT-STACER"
 APP_ID="org.gnutux.gt-stacer"
-VERSION="26.04"
+VERSION="26.05"
+CHANNEL="beta"
 ARCH="${1:-x86_64}"
 
 echo "======================================"
@@ -65,7 +66,7 @@ cat > "$APPDIR/usr/share/metainfo/${APP_ID}.appdata.xml" <<EOF
   <developer_name>GNUTUX</developer_name>
   <url type="homepage">https://github.com/SalehGNUTUX/GT-STACER</url>
   <releases>
-    <release version="${VERSION}" date="2026-04-26"/>
+    <release version="${VERSION}" date="2026-05-14"/>
   </releases>
 </component>
 EOF
@@ -73,6 +74,10 @@ EOF
 echo "[4/4] Creating AppImage..."
 OUTPUT_FILE="$ROOT_DIR/GT-STACER-${VERSION}-${ARCH}.AppImage"
 
+# Force linuxdeploy-plugin-qt to bundle the Wayland platform plugin alongside
+# the default XCB one. Without this the AppImage refuses to start on a Wayland
+# session ("Could not find Qt platform plugin 'wayland'").
+EXTRA_PLATFORM_PLUGINS="libqwayland-generic.so;libqwayland-egl.so" \
 APPIMAGE_EXTRACT_AND_RUN=1 \
 QMAKE="$(command -v qmake6 || command -v qmake)" \
 linuxdeploy \

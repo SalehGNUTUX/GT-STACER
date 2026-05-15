@@ -7,16 +7,26 @@
 ### Linux System Optimizer and Monitor
 **محسّن ومراقب نظام لينكس**
 
-[![Version](https://img.shields.io/badge/version-26.04-blue?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
+[![Version](https://img.shields.io/badge/version-26.05--beta-orange?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green?style=flat-square)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-6.2+-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.qt.io)
 [![C++](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)](https://isocpp.org)
 [![Platform](https://img.shields.io/badge/platform-GNU%2FLinux-FCC624?style=flat-square&logo=linux&logoColor=black)](https://kernel.org)
 [![Developer](https://img.shields.io/badge/developer-GNUTUX-9b59b6?style=flat-square)](https://salehgnutux.github.io/GT-STACER)
 
-[🌐 الموقع الرسمي](https://salehgnutux.github.io/GT-STACER) · [English](#english) · [العربية](#arabic)
+[🌐 Website](https://salehgnutux.github.io/GT-STACER) · [📜 Changelog](CHANGELOG.md) · [🛠 Contributing](CONTRIBUTING.md) · [🔒 Security](SECURITY.md) · [English](#english) · [العربية](#arabic)
 
 </div>
+
+> ## 🎉 ما الجديد في 26.05 beta
+>
+> - 🔒 **تحصين أمني** — إصلاح ثغرة Command Injection في محرر `/etc/hosts`، وتعقيم كل مدخلات `pkexec`
+> - ⚡ **أداء أعلى** — استبدال QtCharts بـ LineChart مخصص (~70% توفير ذاكرة)، CpuSampler في خيط منفصل، قراءة العمليات من `/proc` مباشرة
+> - 🧹 **منظف نظام جديد** — بطاقات أيقونية، فحص وتنظيف انتقائي، حوار تأكيد، حوار تفاصيل لكل تطبيق
+> - 🚀 **بدء التشغيل ثوري** — أيقونات حقيقية، toggle مباشر، إضافة من تطبيقات النظام
+> - 🔔 **تنبيهات** — عتبات حرارة CPU/GPU، قرص، بطارية، ذاكرة
+> - 🎨 **تتبع ثيم النظام** + **اختصارات لوحة المفاتيح** (Ctrl+1..0, F1, Ctrl+R, Ctrl+Q)
+> - 🌍 **18 ملف ترجمة** — العربية 100% · انظر [التفاصيل الكاملة في CHANGELOG.md](CHANGELOG.md)
 
 ---
 
@@ -35,7 +45,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 ### ✨ ما الجديد في GT-STACER مقارنةً بالأصل
 
-| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.04 (2026) |
+| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.05 (2026) |
 |---|---|---|
 | إطار العمل | Qt5 (EOL) | **Qt6 ≥ 6.2** |
 | معيار C++ | C++11 | **C++17** |
@@ -54,7 +64,11 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | Wayland | جزئي | ✅ كامل |
 | العربية | ✅ | ✅ ar_MA · RTL · أرقام غربية 🇲🇦 |
 | سلوك الإغلاق | إنهاء | ✅ قابل للضبط (تصغير للشريط / إنهاء) |
-| الثيم | QSS بسيط | **Catppuccin** dark/light |
+| الثيم | QSS بسيط | **Catppuccin** dark/light + Auto (يتبع النظام) |
+| منظف النظام | جدول مسطح | **بطاقات أيقونية + checkbox لكل فئة + حوار تفاصيل لكل تطبيق** |
+| تنبيهات | ✗ | **libnotify** لعتبات الحرارة/الذاكرة/القرص/البطارية |
+| اختصارات لوحة المفاتيح | ✗ | **Ctrl+1..0** للتنقل · F1 · Ctrl+R · Ctrl+Q |
+| أيقونة Wayland | ✗ | **app_id صحيح** + ملف .desktop |
 
 ---
 
@@ -131,13 +145,13 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### ⚡ AppImage — لا تثبيت مطلوب
 ```bash
-chmod +x GT-STACER-26.04-x86_64.AppImage
-./GT-STACER-26.04-x86_64.AppImage
+chmod +x GT-STACER-26.05-x86_64.AppImage
+./GT-STACER-26.05-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.04_amd64.deb
+sudo dpkg -i GT-STACER_26.05_amd64.deb
 sudo apt-get install -f          # إصلاح الاعتماديات إن وُجد نقص
 ```
 
@@ -145,7 +159,7 @@ sudo apt-get install -f          # إصلاح الاعتماديات إن وُج
 
 #### Fedora / RHEL / AlmaLinux / Rocky
 ```bash
-sudo dnf install gt-stacer-26.04-1.x86_64.rpm
+sudo dnf install gt-stacer-26.05-1.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -262,16 +276,39 @@ GT-STACER/
 
 ### المساهمة
 
-- **الترجمات** — افتح `translations/gt-stacer_XX.ts` وأكمله، ثم أرسل Pull Request
-- **دعم توزيعات جديدة** — أضف كشف المدير في `gt-stacer-core/Tools/package_tool.cpp`
-- **تقارير الأخطاء** — افتح Issue مع اسم التوزيعة ونسخة Qt
+التفاصيل الكاملة في **[CONTRIBUTING.md](CONTRIBUTING.md)** — وأقصر طرق للمساهمة:
 
-#### إضافة ترجمة
+- **الترجمات** — افتح `translations/gt-stacer_XX.ts` بـ Qt Linguist وأكمله، ثم أرسل PR (العربية مرجعية 100%، باقي اللغات بحاجة للمساعدة)
+- **دعم توزيعات جديدة** — أضف كشف المدير في `gt-stacer-core/Tools/package_tool.cpp`
+- **تقارير الأخطاء** — افتح Issue مع اسم التوزيعة ونسخة Qt + سجل `~/.config/GNUTUX/gt-stacer/gt-stacer.log`
+- **ثغرة أمنية** — لا تفتح Issue عام، اقرأ **[SECURITY.md](SECURITY.md)** أولاً
+- **قواعد سلوك المجتمع** — **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)**
+
+#### إضافة/تحديث ترجمة
 ```bash
-# تحديث .ts بالنصوص الجديدة
-/usr/lib/qt6/bin/lupdate gt-stacer/ -ts translations/gt-stacer_XX.ts
-# اختبار البناء
+# 1. حدّث .ts من النصوص الجديدة في الكود (لا يلمس الترجمات الموجودة)
+/usr/lib/qt6/bin/lupdate -no-obsolete gt-stacer/ gt-stacer-core/ \
+    -ts translations/gt-stacer_XX.ts
+
+# 2. عدّل الإدخالات unfinished في Qt Linguist
+/usr/lib/qt6/bin/linguist translations/gt-stacer_XX.ts
+
+# 3. اختبار البناء (سيُولّد .qm تلقائياً)
 ./scripts/build-all.sh build
+```
+
+#### الاختبارات
+```bash
+cmake -B build -G Ninja && ninja -C build
+# اختبارات الأمن (27 حالة)
+g++ -std=c++17 -fPIC -I/usr/include/x86_64-linux-gnu/qt6 \
+    -I/usr/include/x86_64-linux-gnu/qt6/QtCore tests/security_test.cpp \
+    -o /tmp/security_test -L build/gt-stacer-core -l gt-stacer-core \
+    -lQt6Core -lQt6Network -lQt6Concurrent -lpthread
+/tmp/security_test
+# اختبارات Core (21 حالة)
+g++ -std=c++17 ... tests/core_test.cpp -o /tmp/core_test ...
+/tmp/core_test
 ```
 
 ---
@@ -303,21 +340,36 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 > 🙏 **Attribution:** Inspired by [Stacer](https://github.com/oguzhaninan/Stacer) — thank you Oguzhan INAN.  
 > 🌐 [salehgnutux.github.io/GT-STACER](https://salehgnutux.github.io/GT-STACER)
 
+### 🎉 What's new in 26.05 beta
+
+- 🔒 **Security hardening** — fixed command-injection in `/etc/hosts` editor, sanitized every `pkexec` caller
+- ⚡ **Performance pass** — QtCharts replaced by a custom `LineChart` (~70 % less RAM), background `CpuSampler` thread, `/proc`-based process reader
+- 🧹 **System Cleaner overhaul** — icon cards, per-category checkboxes, confirmation dialog, per-app cache details
+- 🚀 **Startup Apps redesign** — real icons, inline toggle, "Add from system apps" dialog
+- 🔔 **Threshold alerts** via libnotify (CPU/GPU temp, disk, battery, memory)
+- 🎨 **Auto-follow system theme** + **keyboard shortcuts** (Ctrl+1..0, F1, Ctrl+R, Ctrl+Q)
+- 🌍 **18 translation files** — Arabic 100 % · see [CHANGELOG.md](CHANGELOG.md) for the full list
+
 ### Key Features
 
 - **Animated circular gauges** for CPU, RAM, Disk, Swap — sub-text below the gauge, never inside
+- **CPU temperature** under the CPU gauge · **per-core load bars** on the Resources page
+- **Disk I/O** read/write speed on the Dashboard
 - **Real-time network speed** (RX/TX computed from byte-delta between samples)
 - **GPU monitoring** — Intel/AMD/NVIDIA auto-detected
 - **Temperature sensors** — hwmon + thermal zones
 - **Battery** — charge gauge + estimated time remaining
 - **28+ package managers** auto-detected (APT, DNF, Pacman, Zypper, Flatpak, Snap, XBPS, APK, Portage, Nix, …)
 - **Service manager** — systemd · OpenRC · runit · s6 · SysV
-- **System Cleaner** — async scan with spinner, color-coded sizes
+- **System Cleaner** — icon-card UI, per-category selection, drill-down for app caches, root-aware cleaning via `pkexec`
+- **Startup Apps** — icons + toggle + add-from-system dialog
 - **APT Source Manager** — double-click to edit, full-URL tooltips
+- **Helpers** — `/etc/hosts` editor, DNS cache flush, vm.swappiness, `/proc/cmdline` viewer
 - **Collapsible sidebar** — SVG icons, logo stays visible when collapsed
-- **System tray** — CPU%/RAM% tooltip updated every 3 s
-- **19 languages** — Arabic (complete, RTL, 🇲🇦), others ready for contributors
-- **Configurable close** — minimize to tray (default) or quit
+- **System tray** — CPU%/RAM% tooltip · quit-confirm dialog (with remember-my-choice)
+- **About dialog** (F1) with version, license, links
+- **19 languages** — Arabic complete (RTL, 🇲🇦), 17 others partial (community-driven)
+- **Auto theme** that follows GNOME/KDE color-scheme
 
 ### Quick Start
 
@@ -329,11 +381,21 @@ cd GT-STACER
 
 ### Dependencies
 
+QtCharts is **no longer required** as of 26.05 — we ship our own `LineChart` widget.
+
 | | Debian/Ubuntu | Fedora | Arch |
 |---|---|---|---|
-| Build | `build-essential cmake` | `gcc-c++ cmake` | `base-devel cmake` |
-| Qt6 | `qt6-base-dev qt6-charts-dev qt6-svg-dev qt6-tools-dev` | `qt6-qtbase-devel qt6-qtcharts-devel qt6-qtsvg-devel` | `qt6-base qt6-charts qt6-svg qt6-tools` |
+| Build | `build-essential cmake ninja-build` | `gcc-c++ cmake ninja-build` | `base-devel cmake ninja` |
+| Qt6 | `qt6-base-dev qt6-svg-dev qt6-tools-dev` | `qt6-qtbase-devel qt6-qtsvg-devel` | `qt6-base qt6-svg qt6-tools` |
 | Translations | `qt6-l10n-tools` | `qt6-linguist` | `qt6-tools` |
+| Runtime (optional) | `libnotify-bin polkitd` | `libnotify polkit` | `libnotify polkit` |
+
+### Documentation
+
+- [CHANGELOG.md](CHANGELOG.md) — every release, every change
+- [CONTRIBUTING.md](CONTRIBUTING.md) — build, test, translate, submit a PR
+- [SECURITY.md](SECURITY.md) — how to report vulnerabilities
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community rules
 
 Minimum: **CMake 3.24 · C++17 · Qt 6.2**
 
