@@ -5,13 +5,13 @@
 #include "../../../gt-stacer-core/Utils/format_util.h"
 #include "../../../gt-stacer-core/Tools/service_tool.h"
 #include "../../../gt-stacer-core/Info/system_info.h"
+#include "../../../gt-stacer-core/Info/temperature_info.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFrame>
 #include <QScrollArea>
-#include <QGraphicsDropShadowEffect>
 
 static QFrame *makeSep()
 {
@@ -20,14 +20,6 @@ static QFrame *makeSep()
     f->setStyleSheet("background:#313244; border:none;");
     f->setFixedWidth(1);
     return f;
-}
-
-static QGraphicsDropShadowEffect *cardShadow()
-{
-    auto *s = new QGraphicsDropShadowEffect;
-    s->setBlurRadius(14); s->setOffset(0, 2);
-    s->setColor(QColor(0,0,0,55));
-    return s;
 }
 
 DashboardPage::DashboardPage(QWidget *parent) : QWidget(parent)
@@ -72,7 +64,7 @@ void DashboardPage::buildUi()
     // ─── System Info Card ───────────────────────────────────────────
     auto *infoCard = new QFrame;
     infoCard->setObjectName("dashCard");
-    infoCard->setGraphicsEffect(cardShadow());
+    // Card edges/shadow come from QSS (#dashCard) — avoid QGraphicsDropShadowEffect (expensive).
     auto *ig = new QGridLayout(infoCard);
     ig->setContentsMargins(20,16,20,16);
     ig->setHorizontalSpacing(28); ig->setVerticalSpacing(8);
@@ -105,7 +97,6 @@ void DashboardPage::buildUi()
     // ─── Gauges Card ────────────────────────────────────────────────
     auto *gauCard = new QFrame;
     gauCard->setObjectName("dashCard");
-    gauCard->setGraphicsEffect(cardShadow());
     auto *gl = new QHBoxLayout(gauCard);
     gl->setContentsMargins(16,20,16,20);
     gl->setSpacing(4);
@@ -137,7 +128,6 @@ void DashboardPage::buildUi()
     // Network
     auto *netCard = new QFrame;
     netCard->setObjectName("dashCard");
-    netCard->setGraphicsEffect(cardShadow());
     auto *nl = new QVBoxLayout(netCard);
     nl->setContentsMargins(18,14,18,14); nl->setSpacing(8);
     auto *nt = new QLabel(tr("Network"));
@@ -158,13 +148,14 @@ void DashboardPage::buildUi()
     addNetRow(tr("IPv4:"),      &m_netIp);
     addNetRow(tr("↓ Download:"),&m_netRx);
     addNetRow(tr("↑ Upload:"),  &m_netTx);
+    addNetRow(tr("⊟ Disk read:"),  &m_diskRead);
+    addNetRow(tr("⊟ Disk write:"), &m_diskWrite);
     nl->addStretch();
     botRow->addWidget(netCard,1);
 
     // GPU
     m_gpuCard = new QFrame;
     m_gpuCard->setObjectName("dashCard");
-    m_gpuCard->setGraphicsEffect(cardShadow());
     auto *gpuL = new QVBoxLayout(m_gpuCard);
     gpuL->setContentsMargins(18,14,18,14); gpuL->setSpacing(8);
     auto *gt2 = new QLabel(tr("GPU"));
@@ -191,7 +182,6 @@ void DashboardPage::buildUi()
     // Battery
     m_batCard = new QFrame;
     m_batCard->setObjectName("dashCard");
-    m_batCard->setGraphicsEffect(cardShadow());
     auto *batL = new QVBoxLayout(m_batCard);
     batL->setContentsMargins(18,14,18,14); batL->setSpacing(8);
     auto *bt = new QLabel(tr("Battery"));
@@ -241,6 +231,12 @@ void DashboardPage::refreshSystemInfo()
 void DashboardPage::tickUptime()
 {
     ++m_uptimeBase;
+    // Re-sync from the kernel every 60s so we don't drift across suspend/resume.
+    if (++m_uptimeTickCount >= 60) {
+        m_uptimeTickCount = 0;
+        qint64 fresh = SystemInfo::uptime();
+        if (fresh > 0) m_uptimeBase = fresh;
+    }
     qint64 s = m_uptimeBase;
     int d = s/86400; s%=86400;
     int h = s/3600;  s%=3600;
@@ -262,6 +258,9 @@ void DashboardPage::refreshCpu()
 {
     auto cpu = InfoManager::instance()->cpuUsage();
     m_cpuGauge->setValueAnimated(cpu.total);
+    // Show CPU temperature under the gauge when sensors are available.
+    if (auto t = TemperatureInfo::cpuTemperature(); t.has_value())
+        m_cpuGauge->setSubText(FormatUtil::formatTemperature(*t));
     if (m_cpuFreq) m_cpuFreq->setText(FormatUtil::formatFrequency(cpu.freqMHz));
 }
 
@@ -294,16 +293,27 @@ void DashboardPage::refreshDisk()
 void DashboardPage::refreshNetwork()
 {
     auto ifaces = InfoManager::instance()->networks();
+    bool linkUp = false;
     for (const auto &i : ifaces) {
         if (!i.isUp || i.ipv4.isEmpty()) continue;
         m_netIface->setText(i.name);
         m_netIp->setText(i.ipv4);
         m_netRx->setText(FormatUtil::formatSpeed(i.rxSpeed));
         m_netTx->setText(FormatUtil::formatSpeed(i.txSpeed));
-        return;
+        linkUp = true;
+        break;
     }
-    m_netIface->setText(tr("No connection"));
-    m_netIp->clear(); m_netRx->clear(); m_netTx->clear();
+    if (!linkUp) {
+        m_netIface->setText(tr("No connection"));
+        m_netIp->clear(); m_netRx->clear(); m_netTx->clear();
+    }
+
+    // Disk I/O is shown alongside network speeds — sum across physical disks.
+    auto io = InfoManager::instance()->diskIo();
+    qint64 rd = 0, wr = 0;
+    for (const auto &d : io) { rd += d.readSpeed; wr += d.writeSpeed; }
+    if (m_diskRead)  m_diskRead->setText(FormatUtil::formatSpeed(rd));
+    if (m_diskWrite) m_diskWrite->setText(FormatUtil::formatSpeed(wr));
 }
 
 void DashboardPage::refreshGpu()

@@ -18,6 +18,7 @@ public:
     CpuUsage            cpuUsage()      { return CpuInfo::usage(); }
     MemoryData          memory()        { return MemoryInfo::memory(); }
     QVector<DiskPartition> partitions() { return DiskInfo::partitions(); }
+    QVector<DiskIoStats>   diskIo()     { return DiskInfo::ioStats(); }
     QVector<NetworkInterface> networks(){ return NetworkInfo::interfaces(); }
     QVector<ProcessData> processes()    { return ProcessInfo::processes(); }
     SystemData          systemInfo()    { return SystemInfo::info(); }

@@ -14,7 +14,9 @@
        <item><widget class="QLabel" name="cpuModelLabel"><property name="text"><string>-</string></property></widget></item>
        <item><widget class="QLabel" name="cpuFreqLabel"><property name="text"><string>-</string></property></widget></item>
        <item><widget class="QLabel" name="cpuUsageLabel"><property name="text"><string>0%</string></property></widget></item>
-       <item><widget class="QChartView" name="cpuChartView"><property name="minimumSize"><size><width>200</width><height>120</height></size></property></widget></item>
+       <item><widget class="LineChart" name="cpuChartView"><property name="minimumSize"><size><width>200</width><height>120</height></size></property></widget></item>
+       <item><widget class="QLabel"><property name="text"><string>Per-core load</string></property><property name="styleSheet"><string>color:#6c7086;font-size:11px;font-weight:600;</string></property></widget></item>
+       <item><widget class="PerCoreBars" name="perCoreBars"><property name="minimumSize"><size><width>200</width><height>80</height></size></property></widget></item>
       </layout>
      </item>
      <!-- Memory Column -->
@@ -24,14 +26,14 @@
        <item><widget class="QLabel" name="ramUsageLabel"><property name="text"><string>-</string></property></widget></item>
        <item><widget class="QLabel"><property name="text"><string>Swap:</string></property></widget></item>
        <item><widget class="QLabel" name="swapUsageLabel"><property name="text"><string>-</string></property></widget></item>
-       <item><widget class="QChartView" name="memChartView"><property name="minimumSize"><size><width>200</width><height>120</height></size></property></widget></item>
+       <item><widget class="LineChart" name="memChartView"><property name="minimumSize"><size><width>200</width><height>120</height></size></property></widget></item>
       </layout>
      </item>
      <!-- Network Column -->
      <item>
       <layout class="QVBoxLayout">
        <item><widget class="QLabel"><property name="text"><string>Network</string></property><property name="styleSheet"><string>font-weight: bold;</string></property></widget></item>
-       <item><widget class="QChartView" name="netChartView"><property name="minimumSize"><size><width>200</width><height>120</height></size></property></widget></item>
+       <item><widget class="LineChart" name="netChartView"><property name="minimumSize"><size><width>200</width><height>120</height></size></property></widget></item>
       </layout>
      </item>
     </layout>
@@ -63,9 +65,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QChartView</class>
-   <extends>QGraphicsView</extends>
-   <header>QtCharts/QChartView</header>
+   <class>LineChart</class>
+   <extends>QWidget</extends>
+   <header>Widgets/line_chart.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PerCoreBars</class>
+   <extends>QWidget</extends>
+   <header>Widgets/per_core_bars.h</header>
   </customwidget>
  </customwidgets>
 </ui>

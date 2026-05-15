@@ -34,3 +34,19 @@ void    SettingManager::setShowTrayIcon(bool v)    { cfg().setValue("showTrayIco
 
 bool    SettingManager::minimizeToTray()   const { return cfg().value("minimizeToTray", true).toBool(); }
 void    SettingManager::setMinimizeToTray(bool v)  { cfg().setValue("minimizeToTray", v); }
+
+// ── Alerts ──────────────────────────────────────────────────────────────
+bool SettingManager::alertsEnabled()         const { return cfg().value("alerts/enabled", true).toBool(); }
+void SettingManager::setAlertsEnabled(bool v)      { cfg().setValue("alerts/enabled", v); }
+
+int  SettingManager::cpuTempThresholdC()     const { return cfg().value("alerts/cpuTempC", 85).toInt(); }
+void SettingManager::setCpuTempThresholdC(int v)   { cfg().setValue("alerts/cpuTempC", v); }
+
+int  SettingManager::memThresholdPercent()   const { return cfg().value("alerts/memPercent", 90).toInt(); }
+void SettingManager::setMemThresholdPercent(int v) { cfg().setValue("alerts/memPercent", v); }
+
+int  SettingManager::diskThresholdPercent()  const { return cfg().value("alerts/diskPercent", 90).toInt(); }
+void SettingManager::setDiskThresholdPercent(int v){ cfg().setValue("alerts/diskPercent", v); }
+
+int  SettingManager::batteryThresholdPercent() const { return cfg().value("alerts/batteryPercent", 15).toInt(); }
+void SettingManager::setBatteryThresholdPercent(int v){ cfg().setValue("alerts/batteryPercent", v); }

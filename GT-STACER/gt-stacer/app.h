@@ -2,6 +2,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QTimer>
+#include <QVector>
 
 class Sidebar;
 class DashboardPage;
@@ -32,23 +33,16 @@ private:
     void setupUi();
     void setupPages();
     void setupSidebar();
-    void setupConnections();
-    void applyThemeToStyle();
+    void setupSettingsConnections();
+    QWidget *materializePage(int index);
 
     QWidget        *m_centralWidget = nullptr;
     Sidebar        *m_sidebar       = nullptr;
     QStackedWidget *m_pageStack     = nullptr;
 
-    DashboardPage    *m_dashboard    = nullptr;
-    ResourcesPage    *m_resources    = nullptr;
-    ProcessesPage    *m_processes    = nullptr;
-    ServicesPage     *m_services     = nullptr;
-    StartupAppsPage  *m_startupApps  = nullptr;
-    SystemCleanerPage *m_cleaner     = nullptr;
-    UninstallerPage  *m_uninstaller  = nullptr;
-    AptSourcePage    *m_aptSource    = nullptr;
-    SettingsPage     *m_settings     = nullptr;
-    HelpersPage      *m_helpers      = nullptr;
+    // Pages are lazy-constructed on first navigation to that index.
+    QVector<QWidget*> m_pages;       // size == NumPages, nullptr until built
+    QVector<QWidget*> m_placeholders;// stack widgets shown until materialized
 
     int m_currentPage = 0;
 };

@@ -54,7 +54,9 @@ void SettingsPage::loadSettings()
     auto *s = SettingManager::instance();
 
     // Theme
-    ui->themeCombo->setCurrentIndex(s->theme() == "dark" ? 0 : 1);
+    if      (s->theme() == "dark")  ui->themeCombo->setCurrentIndex(0);
+    else if (s->theme() == "light") ui->themeCombo->setCurrentIndex(1);
+    else                            ui->themeCombo->setCurrentIndex(2); // auto
 
     // Language
     QString currentLang = s->language();
@@ -75,8 +77,13 @@ void SettingsPage::applySettings()
 {
     auto *s = SettingManager::instance();
 
-    // Theme
-    QString theme = ui->themeCombo->currentIndex() == 0 ? "dark" : "light";
+    // Theme — index 0=dark, 1=light, 2=auto.
+    QString theme;
+    switch (ui->themeCombo->currentIndex()) {
+    case 1:  theme = "light"; break;
+    case 2:  theme = "auto";  break;
+    default: theme = "dark";  break;
+    }
     s->setTheme(theme);
 
     // Language

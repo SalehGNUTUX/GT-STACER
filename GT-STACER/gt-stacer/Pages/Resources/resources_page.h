@@ -1,11 +1,9 @@
 #pragma once
 #include <QWidget>
 #include <QTimer>
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-#include <QVector>
 
 namespace Ui { class ResourcesPage; }
+class LineChart;
 
 class ResourcesPage : public QWidget {
     Q_OBJECT
@@ -21,17 +19,18 @@ private slots:
 
 private:
     void setupCharts();
-    void updateCpuChart(double usage);
-    void updateMemChart(double usage);
     void updateGpuSection();
     void updateTempSection();
 
-    Ui::ResourcesPage    *ui;
-    QTimer               *m_timer;
-    QLineSeries          *m_cpuSeries;
-    QLineSeries          *m_memSeries;
-    QLineSeries          *m_netRxSeries;
-    QLineSeries          *m_netTxSeries;
-    qint64               m_tick = 0;
-    static constexpr int MAX_POINTS = 60;
+    Ui::ResourcesPage *ui;
+    QTimer            *m_timer = nullptr;
+
+    // Series indices on our custom LineChart widgets.
+    int m_cpuSeries  = -1;
+    int m_memSeries  = -1;
+    int m_netRxSeries = -1;
+    int m_netTxSeries = -1;
+
+    qint64 m_tick = 0;
+    static constexpr int MAX_POINTS = 30;
 };

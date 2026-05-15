@@ -55,6 +55,8 @@ private:
     QLabel *m_netIp     = nullptr;
     QLabel *m_netRx     = nullptr;
     QLabel *m_netTx     = nullptr;
+    QLabel *m_diskRead  = nullptr;
+    QLabel *m_diskWrite = nullptr;
 
     // GPU (optional)
     QFrame *m_gpuCard   = nullptr;
@@ -71,4 +73,5 @@ private:
     QTimer *m_refreshTimer = nullptr;
     QTimer *m_uptimeTimer  = nullptr;
     qint64  m_uptimeBase   = 0;
+    int     m_uptimeTickCount = 0;
 };

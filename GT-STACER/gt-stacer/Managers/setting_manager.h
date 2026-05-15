@@ -7,7 +7,7 @@ class SettingManager : public QObject {
 public:
     static SettingManager *instance();
 
-    // Theme
+    // Theme — can be "dark", "light", or "auto" (follow system).
     QString theme() const;
     void    setTheme(const QString &theme);
 
@@ -29,6 +29,22 @@ public:
 
     bool minimizeToTray() const;
     void setMinimizeToTray(bool val);
+
+    // ── Alerts ──────────────────────────────────────────────────────────
+    bool alertsEnabled() const;
+    void setAlertsEnabled(bool val);
+
+    int  cpuTempThresholdC() const;     // °C; 0 = disabled
+    void setCpuTempThresholdC(int v);
+
+    int  memThresholdPercent() const;   // %; 0 = disabled
+    void setMemThresholdPercent(int v);
+
+    int  diskThresholdPercent() const;
+    void setDiskThresholdPercent(int v);
+
+    int  batteryThresholdPercent() const;
+    void setBatteryThresholdPercent(int v);
 
 private:
     explicit SettingManager(QObject *parent = nullptr);

@@ -154,7 +154,7 @@ Sidebar::Sidebar(QWidget *parent) : QWidget(parent)
     nameCol->setSpacing(1);
     m_appName = new QLabel("GT-STACER");
     m_appName->setObjectName("sidebarAppName");
-    m_version = new QLabel("v26.04");
+    m_version = new QLabel(QStringLiteral("v") + APP_VERSION);
     m_version->setObjectName("sidebarVersion");
     nameCol->addWidget(m_appName);
     nameCol->addWidget(m_version);

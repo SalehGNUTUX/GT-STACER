@@ -5,11 +5,21 @@ set(APP_SOURCES
     Managers/setting_manager.cpp
     Managers/tool_manager.cpp
     Managers/info_manager.cpp
+    Managers/alert_manager.cpp
     Widgets/circular_gauge.cpp
+    Widgets/cleaner_card.cpp
+    Widgets/empty_state.cpp
+    Widgets/line_chart.cpp
     Widgets/loading_overlay.cpp
+    Widgets/per_core_bars.cpp
     Widgets/sidebar.cpp
+    Widgets/skeleton_rows.cpp
     Dialogs/welcome_dialog.cpp
     Dialogs/edit_source_dialog.cpp
+    Dialogs/about_dialog.cpp
+    Dialogs/quit_confirm_dialog.cpp
+    Dialogs/app_cache_dialog.cpp
+    Dialogs/startup_add_dialog.cpp
     Pages/Dashboard/dashboard_page.cpp
     Pages/Resources/resources_page.cpp
     Pages/Processes/processes_page.cpp
@@ -28,12 +38,23 @@ set(APP_HEADERS
     Managers/setting_manager.h
     Managers/tool_manager.h
     Managers/info_manager.h
+    Managers/alert_manager.h
     Widgets/circular_gauge.h
+    Widgets/cleaner_card.h
+    Widgets/cleaner_icons.h
+    Widgets/empty_state.h
+    Widgets/line_chart.h
     Widgets/loading_overlay.h
+    Widgets/per_core_bars.h
     Widgets/sidebar.h
     Widgets/sidebar_icons.h
+    Widgets/skeleton_rows.h
     Dialogs/welcome_dialog.h
     Dialogs/edit_source_dialog.h
+    Dialogs/about_dialog.h
+    Dialogs/quit_confirm_dialog.h
+    Dialogs/app_cache_dialog.h
+    Dialogs/startup_add_dialog.h
     Pages/Dashboard/dashboard_page.h
     Pages/Resources/resources_page.h
     Pages/Processes/processes_page.h
@@ -50,8 +71,6 @@ set(APP_UI_FILES
     Pages/Resources/resources_page.ui
     Pages/Processes/processes_page.ui
     Pages/Services/services_page.ui
-    Pages/StartupApps/startup_apps_page.ui
-    Pages/SystemCleaner/system_cleaner_page.ui
     Pages/Uninstaller/uninstaller_page.ui
     Pages/AptSourceManager/apt_source_page.ui
     Pages/Settings/settings_page.ui
@@ -151,7 +170,6 @@ target_link_libraries(gt-stacer PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
-    Qt6::Charts
     Qt6::Svg
     Qt6::Concurrent
     Qt6::Network

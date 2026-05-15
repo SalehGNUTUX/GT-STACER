@@ -5,6 +5,7 @@
   <layout class="QVBoxLayout">
    <property name="leftMargin"><number>24</number></property><property name="topMargin"><number>24</number></property><property name="rightMargin"><number>24</number></property><property name="bottomMargin"><number>24</number></property>
    <item><widget class="QLabel"><property name="text"><string>Helpers</string></property><property name="styleSheet"><string>font-size: 22px; font-weight: bold;</string></property></widget></item>
+
    <item>
     <widget class="QGroupBox"><property name="title"><string>/etc/hosts Editor</string></property>
      <layout class="QVBoxLayout">
@@ -19,6 +20,45 @@
      </layout>
     </widget>
    </item>
+
+   <item>
+    <widget class="QGroupBox"><property name="title"><string>Quick Actions</string></property>
+     <layout class="QGridLayout">
+      <item row="0" column="0"><widget class="QLabel"><property name="text"><string>DNS resolver cache:</string></property></widget></item>
+      <item row="0" column="1"><widget class="QPushButton" name="dnsFlushButton"><property name="text"><string>Flush now</string></property></widget></item>
+      <item row="0" column="2"><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+
+      <item row="1" column="0"><widget class="QLabel"><property name="text"><string>vm.swappiness:</string></property></widget></item>
+      <item row="1" column="1">
+       <layout class="QHBoxLayout">
+        <item><widget class="QSpinBox" name="swappinessSpin"><property name="minimum"><number>0</number></property><property name="maximum"><number>200</number></property></widget></item>
+        <item><widget class="QPushButton" name="swappinessApplyButton"><property name="text"><string>Apply</string></property></widget></item>
+       </layout>
+      </item>
+      <item row="1" column="2"><widget class="QLabel" name="swappinessHelpLabel"><property name="text"><string>Higher = swap earlier · Default 60</string></property><property name="styleSheet"><string>color:#6c7086;font-size:11px;</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QGroupBox"><property name="title"><string>Kernel boot parameters (/proc/cmdline)</string></property>
+     <layout class="QVBoxLayout">
+      <item><widget class="QLabel" name="bootCmdLabel"><property name="wordWrap"><bool>true</bool></property><property name="textInteractionFlags"><enum>Qt::TextSelectableByMouse</enum></property><property name="styleSheet"><string>font-family:Monospace;color:#a6adc8;background:#181825;padding:8px;border-radius:6px;</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QGroupBox"><property name="title"><string>System locale</string></property>
+     <layout class="QHBoxLayout">
+      <item><widget class="QLabel"><property name="text"><string>LANG:</string></property></widget></item>
+      <item><widget class="QLabel" name="localeLabel"><property name="text"><string>—</string></property><property name="styleSheet"><string>font-family:Monospace;color:#cdd6f4;</string></property></widget></item>
+      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     </layout>
+    </widget>
+   </item>
+
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
   </layout>
  </widget>
 </ui>

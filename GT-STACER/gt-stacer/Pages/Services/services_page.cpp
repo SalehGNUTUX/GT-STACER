@@ -2,6 +2,7 @@
 #include "ui_services_page.h"
 #include "../../Managers/tool_manager.h"
 #include "../../../gt-stacer-core/Tools/service_tool.h"
+#include <QHash>
 #include <QHeaderView>
 #include <QMessageBox>
 
@@ -38,19 +39,52 @@ ServicesPage::~ServicesPage() { delete ui; }
 void ServicesPage::refresh()
 {
     auto svcs = ServiceTool::services();
-    m_model->setRowCount(0);
+
+    // In-place merge so the user's selection survives reloads.
+    QHash<QString, int> rowByName;
+    rowByName.reserve(m_model->rowCount());
+    for (int r = 0; r < m_model->rowCount(); ++r)
+        rowByName.insert(m_model->item(r, 0)->text(), r);
+
+    QSet<QString> seen;
+    seen.reserve(svcs.size());
+
+    auto stateColor = [](ServiceState st) -> QColor {
+        switch (st) {
+        case ServiceState::Active: return QColor("#a6e3a1");
+        case ServiceState::Failed: return QColor("#f38ba8");
+        default:                   return QColor("#cdd6f4");
+        }
+    };
+
     for (const auto &s : svcs) {
-        QList<QStandardItem*> row;
-        row << new QStandardItem(s.name)
-            << new QStandardItem(s.stateString())
-            << new QStandardItem(s.enabled ? tr("Yes") : tr("No"))
-            << new QStandardItem(s.description);
-        if (s.state == ServiceState::Active)
-            row[1]->setForeground(QColor("#a6e3a1"));
-        else if (s.state == ServiceState::Failed)
-            row[1]->setForeground(QColor("#f38ba8"));
-        m_model->appendRow(row);
+        seen.insert(s.name);
+        const QString stateTxt = s.stateString();
+        const QString enaTxt   = s.enabled ? tr("Yes") : tr("No");
+        const QColor  fg       = stateColor(s.state);
+
+        auto it = rowByName.find(s.name);
+        if (it == rowByName.end()) {
+            QList<QStandardItem*> row;
+            row << new QStandardItem(s.name)
+                << new QStandardItem(stateTxt)
+                << new QStandardItem(enaTxt)
+                << new QStandardItem(s.description);
+            row[1]->setForeground(fg);
+            m_model->appendRow(row);
+        } else {
+            int r = it.value();
+            if (m_model->item(r, 1)->text() != stateTxt) {
+                m_model->item(r, 1)->setText(stateTxt);
+                m_model->item(r, 1)->setForeground(fg);
+            }
+            if (m_model->item(r, 2)->text() != enaTxt)        m_model->item(r, 2)->setText(enaTxt);
+            if (m_model->item(r, 3)->text() != s.description) m_model->item(r, 3)->setText(s.description);
+        }
     }
+
+    for (int r = m_model->rowCount() - 1; r >= 0; --r)
+        if (!seen.contains(m_model->item(r, 0)->text())) m_model->removeRow(r);
 }
 
 QString ServicesPage::selectedService()

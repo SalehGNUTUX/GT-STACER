@@ -1,8 +1,9 @@
 #pragma once
 #include <QWidget>
-#include <QStandardItemModel>
 
-namespace Ui { class StartupAppsPage; }
+class QVBoxLayout;
+class QLineEdit;
+class QLabel;
 
 class StartupAppsPage : public QWidget {
     Q_OBJECT
@@ -15,10 +16,15 @@ protected:
 
 private slots:
     void refresh();
-    void toggleSelected();
-    void removeSelected();
+    void onSearchChanged(const QString &text);
+    void openAddDialog();
 
 private:
-    Ui::StartupAppsPage  *ui;
-    QStandardItemModel   *m_model;
+    void clearRows();
+    void appendRow(const class StartupEntry &entry);
+
+    QLineEdit   *m_search   = nullptr;
+    QVBoxLayout *m_rowsBox  = nullptr;
+    QLabel      *m_emptyHint = nullptr;
+    QLabel      *m_countLabel = nullptr;
 };

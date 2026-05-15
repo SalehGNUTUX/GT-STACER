@@ -2,9 +2,9 @@
 #include "ui_resources_page.h"
 #include "../../Managers/info_manager.h"
 #include "../../Managers/setting_manager.h"
+#include "../../Widgets/line_chart.h"
+#include "../../Widgets/per_core_bars.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
-#include <QtCharts/QChart>
-#include <QtCharts/QValueAxis>
 
 ResourcesPage::ResourcesPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::ResourcesPage)
@@ -22,47 +22,24 @@ ResourcesPage::~ResourcesPage() { delete ui; }
 
 void ResourcesPage::setupCharts()
 {
-    auto makeChart = [this](const QString &title, const QColor &color) {
-        auto *series = new QLineSeries;
-        series->setColor(color);
-        for (int i = 0; i < MAX_POINTS; ++i) series->append(i, 0);
+    // CPU and Memory: 0..100 percent, no legend, simple single series.
+    ui->cpuChartView->setMaxPoints(MAX_POINTS);
+    ui->cpuChartView->setYRange(0, 100);
+    ui->cpuChartView->setYLabelSuffix("%");
+    m_cpuSeries = ui->cpuChartView->addSeries(tr("CPU"), QColor("#89b4fa"));
 
-        auto *chart = new QChart;
-        chart->addSeries(series);
-        chart->setTitle(title);
-        chart->setBackgroundBrush(Qt::transparent);
-        chart->legend()->hide();
-        chart->setMargins(QMargins(0,0,0,0));
+    ui->memChartView->setMaxPoints(MAX_POINTS);
+    ui->memChartView->setYRange(0, 100);
+    ui->memChartView->setYLabelSuffix("%");
+    m_memSeries = ui->memChartView->addSeries(tr("Memory"), QColor("#a6e3a1"));
 
-        auto *axisX = new QValueAxis; axisX->setRange(0, MAX_POINTS); axisX->setVisible(false);
-        auto *axisY = new QValueAxis; axisY->setRange(0, 100);
-        chart->addAxis(axisX, Qt::AlignBottom);
-        chart->addAxis(axisY, Qt::AlignLeft);
-        series->attachAxis(axisX);
-        series->attachAxis(axisY);
-
-        return series;
-    };
-
-    m_cpuSeries   = makeChart(tr("CPU"),      QColor("#89b4fa"));
-    m_memSeries   = makeChart(tr("Memory"),   QColor("#a6e3a1"));
-    m_netRxSeries = makeChart(tr("Net RX"),   QColor("#89dceb"));
-    m_netTxSeries = makeChart(tr("Net TX"),   QColor("#f38ba8"));
-
-    ui->cpuChartView->setChart(m_cpuSeries->chart());
-    ui->memChartView->setChart(m_memSeries->chart());
-    ui->netChartView->setChart(m_netRxSeries->chart());
-    ui->cpuChartView->setRenderHint(QPainter::Antialiasing);
-    ui->memChartView->setRenderHint(QPainter::Antialiasing);
-    ui->netChartView->setRenderHint(QPainter::Antialiasing);
-}
-
-static void appendPoint(QLineSeries *series, double val, int maxPoints)
-{
-    auto pts = series->points();
-    for (int i = 0; i < pts.size() - 1; ++i)
-        series->replace(i, i, pts[i + 1].y());
-    series->replace(maxPoints - 1, maxPoints - 1, val);
+    // Network: two series sharing one chart, auto-scaling Y axis in KB/s.
+    ui->netChartView->setMaxPoints(MAX_POINTS);
+    ui->netChartView->setAutoScaleY(32.0);
+    ui->netChartView->setYLabelSuffix("KB/s");
+    ui->netChartView->setShowLegend(true);
+    m_netRxSeries = ui->netChartView->addSeries(tr("Download"), QColor("#89dceb"));
+    m_netTxSeries = ui->netChartView->addSeries(tr("Upload"),   QColor("#f38ba8"));
 }
 
 void ResourcesPage::refresh()
@@ -71,21 +48,31 @@ void ResourcesPage::refresh()
 
     // CPU
     auto cpu = InfoManager::instance()->cpuUsage();
-    appendPoint(m_cpuSeries, cpu.total, MAX_POINTS);
+    ui->cpuChartView->appendPoint(m_cpuSeries, cpu.total);
     ui->cpuUsageLabel->setText(FormatUtil::formatPercent(cpu.total));
     ui->cpuModelLabel->setText(cpu.model);
     ui->cpuFreqLabel->setText(FormatUtil::formatFrequency(cpu.freqMHz));
+    ui->perCoreBars->setValues(cpu.perCore);
 
     // Memory
     auto mem = InfoManager::instance()->memory();
-    appendPoint(m_memSeries, mem.ramPercent(), MAX_POINTS);
+    ui->memChartView->appendPoint(m_memSeries, mem.ramPercent());
     ui->ramUsageLabel->setText(FormatUtil::formatBytes(mem.usedRam) + " / " + FormatUtil::formatBytes(mem.totalRam));
     ui->swapUsageLabel->setText(FormatUtil::formatBytes(mem.usedSwap) + " / " + FormatUtil::formatBytes(mem.totalSwap));
 
-    // GPU
-    updateGpuSection();
+    // Network — values in KB/s on a shared auto-scaled axis.
+    auto ifaces = InfoManager::instance()->networks();
+    double rxKB = 0, txKB = 0;
+    for (const auto &i : ifaces) {
+        if (!i.isUp || i.ipv4.isEmpty()) continue;
+        rxKB = i.rxSpeed / 1024.0;
+        txKB = i.txSpeed / 1024.0;
+        break;
+    }
+    ui->netChartView->appendPoint(m_netRxSeries, rxKB);
+    ui->netChartView->appendPoint(m_netTxSeries, txKB);
 
-    // Temperature
+    updateGpuSection();
     updateTempSection();
 }
 
@@ -113,7 +100,6 @@ void ResourcesPage::updateTempSection()
     if (sensors.isEmpty()) { ui->tempGroupBox->hide(); return; }
 
     ui->tempGroupBox->show();
-    // Show the first few sensors
     QString text;
     int count = 0;
     for (const auto &s : sensors) {

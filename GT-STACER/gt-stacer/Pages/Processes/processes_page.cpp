@@ -5,8 +5,8 @@
 #include "../../../gt-stacer-core/Utils/format_util.h"
 #include "../../../gt-stacer-core/Info/process_info.h"
 #include <QMessageBox>
+#include <QHash>
 #include <QHeaderView>
-#include <QRegularExpression>
 
 ProcessesPage::ProcessesPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::ProcessesPage)
@@ -41,16 +41,52 @@ ProcessesPage::~ProcessesPage() { delete ui; }
 void ProcessesPage::refresh()
 {
     auto procs = InfoManager::instance()->processes();
-    m_model->setRowCount(0);
+
+    // Map current model rows by PID for in-place update — preserves selection,
+    // scrollbar position, and sort state across refreshes.
+    QHash<int, int> rowByPid;
+    rowByPid.reserve(m_model->rowCount());
+    for (int r = 0; r < m_model->rowCount(); ++r)
+        rowByPid.insert(m_model->item(r, 0)->text().toInt(), r);
+
+    QSet<int> seenPids;
+    seenPids.reserve(procs.size());
+
     for (const auto &p : procs) {
-        QList<QStandardItem*> row;
-        row << new QStandardItem(QString::number(p.pid))
-            << new QStandardItem(p.name)
-            << new QStandardItem(p.user)
-            << new QStandardItem(FormatUtil::formatPercent(p.cpuPercent))
-            << new QStandardItem(FormatUtil::formatBytes(p.memoryKB * 1024));
-        m_model->appendRow(row);
+        seenPids.insert(p.pid);
+        const QString cpuTxt = FormatUtil::formatPercent(p.cpuPercent);
+        const QString memTxt = FormatUtil::formatBytes(p.memoryKB * 1024);
+
+        auto it = rowByPid.find(p.pid);
+        if (it == rowByPid.end()) {
+            QList<QStandardItem*> row;
+            row << new QStandardItem(QString::number(p.pid))
+                << new QStandardItem(p.name)
+                << new QStandardItem(p.user)
+                << new QStandardItem(cpuTxt)
+                << new QStandardItem(memTxt);
+            // Numeric sort hints
+            row[0]->setData(p.pid,           Qt::UserRole);
+            row[3]->setData(p.cpuPercent,    Qt::UserRole);
+            row[4]->setData(p.memoryKB,      Qt::UserRole);
+            m_model->appendRow(row);
+        } else {
+            int r = it.value();
+            if (m_model->item(r, 1)->text() != p.name) m_model->item(r, 1)->setText(p.name);
+            if (m_model->item(r, 2)->text() != p.user) m_model->item(r, 2)->setText(p.user);
+            if (m_model->item(r, 3)->text() != cpuTxt) m_model->item(r, 3)->setText(cpuTxt);
+            if (m_model->item(r, 4)->text() != memTxt) m_model->item(r, 4)->setText(memTxt);
+            m_model->item(r, 3)->setData(p.cpuPercent, Qt::UserRole);
+            m_model->item(r, 4)->setData(p.memoryKB,    Qt::UserRole);
+        }
     }
+
+    // Remove rows for processes that ended (iterate backwards to keep indices valid).
+    for (int r = m_model->rowCount() - 1; r >= 0; --r) {
+        int pid = m_model->item(r, 0)->text().toInt();
+        if (!seenPids.contains(pid)) m_model->removeRow(r);
+    }
+
     ui->countLabel->setText(tr("%1 processes").arg(procs.size()));
 }
 

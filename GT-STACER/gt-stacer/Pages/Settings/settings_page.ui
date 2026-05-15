@@ -9,7 +9,7 @@
     <widget class="QGroupBox"><property name="title"><string>Appearance</string></property>
      <layout class="QFormLayout">
       <item><widget class="QLabel"><property name="text"><string>Theme:</string></property></widget>
-            <widget class="QComboBox" name="themeCombo"><item><property name="text"><string>Dark</string></property></item><item><property name="text"><string>Light</string></property></item></widget></item>
+            <widget class="QComboBox" name="themeCombo"><item><property name="text"><string>Dark</string></property></item><item><property name="text"><string>Light</string></property></item><item><property name="text"><string>Auto (follow system)</string></property></item></widget></item>
       <item><widget class="QLabel"><property name="text"><string>Language:</string></property></widget>
             <widget class="QComboBox" name="languageCombo"/></item>
      </layout>

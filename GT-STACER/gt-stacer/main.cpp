@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QGuiApplication>
 #include <QIcon>
 #include <QFile>
 #include <QDir>
@@ -6,6 +7,7 @@
 #include <QTextStream>
 #include <QStandardPaths>
 #include "app.h"
+#include "Managers/alert_manager.h"
 #include "Dialogs/welcome_dialog.h"
 
 static void messageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
@@ -53,6 +55,10 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(APP_VERSION);
     app.setOrganizationName("GNUTUX");
     app.setOrganizationDomain("gnutux.org");
+    // Wayland (and modern GNOME/KDE) match window→desktop-entry via this name,
+    // which selects both the taskbar icon and the displayed application label.
+    // Without it the compositor falls back to the generic Wayland glyph ("W").
+    QGuiApplication::setDesktopFileName("gt-stacer");
     // استخدام أيقونة النظام أولاً (للتكامل مع بيئة سطح المكتب في شريط المهام)
     QIcon appIcon = QIcon::fromTheme("gt-stacer",
                         QIcon(":/static/icons/gt-stacer.png"));
@@ -61,6 +67,7 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(messageHandler);
 
     App window;
+    AlertManager::instance(); // starts polling once SettingManager is ready
 
     bool startHidden = (argc >= 2 && QString(argv[1]) == "--hide");
     if (!startHidden) {
