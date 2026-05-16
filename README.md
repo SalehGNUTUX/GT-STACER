@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/SalehGNUTUX/GT-STACER/blob/main/GT-STACER.png" width="140" alt="GT-STACER Logo"/>
+<img src="gt-stacer/static/icons/gt-stacer.png" width="140" alt="GT-STACER Logo"/>
 
 # GT-STACER
 
@@ -391,7 +391,46 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **19 languages** — Arabic complete (RTL, 🇲🇦), 17 others partial (community-driven)
 - **Auto theme** that follows GNOME/KDE color-scheme
 
-### Quick Start
+### Install
+
+Pick the format that fits your distro. All 26.06 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
+
+#### ⚡ AppImage — no install, run anywhere
+```bash
+chmod +x GT-STACER-26.06-x86_64.AppImage
+./GT-STACER-26.06-x86_64.AppImage
+```
+
+#### Debian / Ubuntu / Linux Mint / Pop!_OS / Kali / Trixie+
+```bash
+sudo dpkg -i GT-STACER_26.06_amd64.deb
+sudo apt-get install -f          # fix any missing deps
+```
+
+> **Debian 13 (Trixie) note:** the package uses `Recommends` for polkit to keep `polkitd` compatible. Privileged actions (service control, cleaner, uninstaller, hosts editor) need one of `polkitd | policykit-1 | polkit` installed.
+
+#### Fedora / RHEL / AlmaLinux / Rocky / openSUSE
+```bash
+sudo dnf install ./gt-stacer-26.06-2.x86_64.rpm
+# or
+sudo rpm -i ./gt-stacer-26.06-2.x86_64.rpm
+```
+
+#### Arch Linux / Manjaro
+```bash
+# AUR — coming soon
+yay -S gt-stacer
+```
+
+#### Flatpak (sandboxed)
+```bash
+flatpak install --user GT-STACER-26.06-x86_64.flatpak
+flatpak run org.gnutux.gt-stacer
+```
+
+> The app-id is `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`. Every privileged op (cleaner, service manager, uninstaller, `/etc/hosts` editor, sysctl) runs **on the host** through `flatpak-spawn --host pkexec ...` — the polkit dialog is identical to the DEB/RPM case. Sandbox detection is automatic via `$FLATPAK_ID` or `/.flatpak-info`.
+
+### Quick Start (build from source)
 
 ```bash
 git clone https://github.com/SalehGNUTUX/GT-STACER.git
