@@ -1,0 +1,33 @@
+{
+  "name": "GT-STACER — GNU/Linux System Optimizer & Monitor",
+  "short_name": "GT-STACER",
+  "description": "A modern fork of Stacer rebuilt with Qt6 and C++17 for GNU/Linux 2026. AppImage, DEB, RPM, and Flatpak.",
+  "start_url": "/GT-STACER/",
+  "scope": "/GT-STACER/",
+  "display": "standalone",
+  "background_color": "#0d0f18",
+  "theme_color": "#0d0f18",
+  "lang": "en",
+  "categories": ["productivity", "utilities", "system"],
+  "icons": [
+    {
+      "src": "images/GT-STACER.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/favicon.ico",
+      "sizes": "32x32 48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/screenshoots/EN/Dashboard.png",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "GT-STACER Dashboard"
+    }
+  ]
+}
