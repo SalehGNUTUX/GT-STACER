@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="gt-stacer/static/icons/gt-stacer.png" width="140" alt="GT-STACER Logo"/>
+<img src="GT-STACER.png" width="140" alt="GT-STACER Logo"/>
 
 # GT-STACER
 
