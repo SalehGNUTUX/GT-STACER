@@ -2,6 +2,7 @@ set(APP_SOURCES
     main.cpp
     app.cpp
     Managers/app_manager.cpp
+    Managers/theme.cpp
     Managers/setting_manager.cpp
     Managers/tool_manager.cpp
     Managers/info_manager.cpp
@@ -19,6 +20,8 @@ set(APP_SOURCES
     Dialogs/about_dialog.cpp
     Dialogs/quit_confirm_dialog.cpp
     Dialogs/app_cache_dialog.cpp
+    Dialogs/pkg_cache_dialog.cpp
+    Dialogs/universal_apps_dialog.cpp
     Dialogs/startup_add_dialog.cpp
     Pages/Dashboard/dashboard_page.cpp
     Pages/Resources/resources_page.cpp
@@ -30,6 +33,7 @@ set(APP_SOURCES
     Pages/AptSourceManager/apt_source_page.cpp
     Pages/Settings/settings_page.cpp
     Pages/Helpers/helpers_page.cpp
+    Pages/Relief/relief_page.cpp
 )
 
 set(APP_HEADERS
@@ -54,6 +58,8 @@ set(APP_HEADERS
     Dialogs/about_dialog.h
     Dialogs/quit_confirm_dialog.h
     Dialogs/app_cache_dialog.h
+    Dialogs/pkg_cache_dialog.h
+    Dialogs/universal_apps_dialog.h
     Dialogs/startup_add_dialog.h
     Pages/Dashboard/dashboard_page.h
     Pages/Resources/resources_page.h
@@ -65,6 +71,7 @@ set(APP_HEADERS
     Pages/AptSourceManager/apt_source_page.h
     Pages/Settings/settings_page.h
     Pages/Helpers/helpers_page.h
+    Pages/Relief/relief_page.h
 )
 
 set(APP_UI_FILES

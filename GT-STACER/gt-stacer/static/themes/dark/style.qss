@@ -358,3 +358,35 @@ QChartView {
    Loading overlay
 ────────────────────────────────────────── */
 #loadingOverlay { background: rgba(17,17,27,180); border-radius: 8px; }
+
+/* ──────────────────────────────────────────
+   Shared component text (was inline in C++)
+────────────────────────────────────────── */
+#introText  { color: #6c7086; font-size: 12px; }
+#emptyHint  { color: #6c7086; padding: 24px; }
+#countLabel { color: #6c7086; }
+#statusLabel{ color: #a6adc8; }
+#cardSep    { background-color: #313244; border: none; }
+#sidebarSep { background-color: #1e1e2e; border: none; }
+#netTitle   { font-size: 14px; font-weight: bold; color: #89dceb; }
+#gpuTitle   { font-size: 14px; font-weight: bold; color: #cba6f7; }
+#batTitle   { font-size: 14px; font-weight: bold; color: #a6e3a1; }
+#bannerText { color: #f9e2af; font-weight: bold; }
+
+/* ── Startup application rows ── */
+QFrame#startupRow        { background: #181825; border: 1px solid #313244; border-radius: 10px; }
+QFrame#startupRow:hover  { background: #1f2238; border-color: #45475a; }
+#startupName  { color: #cdd6f4; font-weight: 600; }
+#startupExec  { color: #6c7086; font-family: Monospace; font-size: 11px; }
+#startupDelay { color: #f9e2af; font-size: 11px; }
+#startupToggle             { border: none; border-radius: 6px; padding: 6px 14px; font-weight: bold; }
+#startupToggle[on="true"]  { background: #a6e3a1; color: #11111b; }
+#startupToggle[on="false"] { background: #45475a; color: #cdd6f4; }
+#startupEdit, #startupRemove { background: transparent; border: 1px solid #45475a; border-radius: 6px; padding: 4px 10px; }
+#startupEdit          { color: #89b4fa; }
+#startupEdit:hover    { background: #1b2437; }
+#startupRemove        { color: #f38ba8; }
+#startupRemove:hover  { background: #311b22; }
+
+/* ── Table row selection (hover already defined above) ── */
+QTableView::item:selected { background: #45475a; color: #cdd6f4; }

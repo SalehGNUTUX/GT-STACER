@@ -1,4 +1,5 @@
 #include "cleaner_card.h"
+#include "../Managers/theme.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QMouseEvent>
@@ -77,24 +78,26 @@ void CleanerCard::paintEvent(QPaintEvent *)
     const QRectF r = rect().adjusted(2, 2, -2, -2);
     const double radius = 12.0;
 
-    // Card background
-    QColor bg = QColor(24, 24, 37);
-    if (m_checked) bg = QColor(0x31, 0x32, 0x44);
-    else if (m_hovered) bg = QColor(0x1f, 0x22, 0x38);
+    // Card background — hover sits halfway between the card and the raised surface.
+    QColor bg = Theme::mantle();
+    if (m_checked) bg = Theme::surface();
+    else if (m_hovered) {
+        const QColor a = Theme::mantle(), b = Theme::surface();
+        bg = QColor((a.red()+b.red())/2, (a.green()+b.green())/2, (a.blue()+b.blue())/2);
+    }
 
     QPainterPath path;
     path.addRoundedRect(r, radius, radius);
     p.fillPath(path, bg);
 
     // Border (thicker + accent when checked)
-    QPen border(QColor(0x31, 0x32, 0x44), 1);
-    if (m_checked) border = QPen(QColor(0x89, 0xb4, 0xfa), 2);
+    QPen border(Theme::overlay(), 1);
+    if (m_checked) border = QPen(Theme::blue(), 2);
     p.setPen(border);
     p.drawPath(path);
 
     // Icon — accent color when checked, muted otherwise
-    const QColor iconColor = m_checked ? QColor(0xcb, 0xa6, 0xf7) : QColor(0xa6, 0xad, 0xc8);
-    if (m_iconCache.isNull()) m_iconCache = renderIcon(48, QColor(0xa6, 0xad, 0xc8));
+    const QColor iconColor = m_checked ? Theme::mauve() : Theme::subtext();
     QPixmap iconPm = renderIcon(48, iconColor);
     int iconX = (width() - 48) / 2;
     p.drawPixmap(iconX, 18, iconPm);
@@ -104,7 +107,7 @@ void CleanerCard::paintEvent(QPaintEvent *)
     labelFont.setPixelSize(13);
     labelFont.setWeight(m_checked ? QFont::DemiBold : QFont::Normal);
     p.setFont(labelFont);
-    p.setPen(m_checked ? QColor(0xcd, 0xd6, 0xf4) : QColor(0xa6, 0xad, 0xc8));
+    p.setPen(m_checked ? Theme::text() : Theme::subtext());
     QRectF labelRect(0, 76, width(), 22);
     p.drawText(labelRect, Qt::AlignCenter, m_label);
 
@@ -113,7 +116,7 @@ void CleanerCard::paintEvent(QPaintEvent *)
         QFont sizeFont = font();
         sizeFont.setPixelSize(11);
         p.setFont(sizeFont);
-        p.setPen(QColor(0x89, 0xb4, 0xfa));
+        p.setPen(Theme::blue());
         QRectF sizeRect(0, 98, width(), 18);
         p.drawText(sizeRect, Qt::AlignCenter, m_sizeText);
     }
@@ -122,14 +125,14 @@ void CleanerCard::paintEvent(QPaintEvent *)
     if (m_hasDetails) {
         const double br = 9.0;
         const QPointF c(width() - br - 8, br + 8);
-        p.setBrush(QColor(0x89, 0xb4, 0xfa));
+        p.setBrush(Theme::blue());
         p.setPen(Qt::NoPen);
         p.drawEllipse(c, br, br);
         QFont infoFont = font();
         infoFont.setPixelSize(11);
         infoFont.setBold(true);
         p.setFont(infoFont);
-        p.setPen(QColor(0x11, 0x11, 0x1b));
+        p.setPen(Theme::isDark() ? QColor(0x11, 0x11, 0x1b) : QColor(0xef, 0xf1, 0xf5));
         p.drawText(QRectF(c.x() - br, c.y() - br, br * 2, br * 2),
                    Qt::AlignCenter, QStringLiteral("ⓘ"));
     }
@@ -137,11 +140,11 @@ void CleanerCard::paintEvent(QPaintEvent *)
     // Checkmark circle at the bottom
     const double cmRadius = 12;
     const QPointF cmCenter(width() / 2.0, height() - 22);
-    p.setBrush(m_checked ? QColor(0x89, 0xb4, 0xfa) : QColor(0x31, 0x32, 0x44));
-    p.setPen(QPen(m_checked ? QColor(0x89, 0xb4, 0xfa) : QColor(0x45, 0x47, 0x5a), 1.5));
+    p.setBrush(m_checked ? Theme::blue() : Theme::surface());
+    p.setPen(QPen(m_checked ? Theme::blue() : Theme::overlay(), 1.5));
     p.drawEllipse(cmCenter, cmRadius, cmRadius);
     if (m_checked) {
-        p.setPen(QPen(QColor(24, 24, 37), 2));
+        p.setPen(QPen(Theme::isDark() ? QColor(24, 24, 37) : QColor(0xef, 0xf1, 0xf5), 2));
         QPainterPath tick;
         tick.moveTo(cmCenter.x() - 5, cmCenter.y());
         tick.lineTo(cmCenter.x() - 1, cmCenter.y() + 4);

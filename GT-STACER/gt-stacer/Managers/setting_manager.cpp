@@ -45,7 +45,7 @@ void SettingManager::setCpuTempThresholdC(int v)   { cfg().setValue("alerts/cpuT
 int  SettingManager::memThresholdPercent()   const { return cfg().value("alerts/memPercent", 90).toInt(); }
 void SettingManager::setMemThresholdPercent(int v) { cfg().setValue("alerts/memPercent", v); }
 
-int  SettingManager::diskThresholdPercent()  const { return cfg().value("alerts/diskPercent", 90).toInt(); }
+int  SettingManager::diskThresholdPercent()  const { return cfg().value("alerts/diskPercent", 95).toInt(); }
 void SettingManager::setDiskThresholdPercent(int v){ cfg().setValue("alerts/diskPercent", v); }
 
 int  SettingManager::batteryThresholdPercent() const { return cfg().value("alerts/batteryPercent", 15).toInt(); }

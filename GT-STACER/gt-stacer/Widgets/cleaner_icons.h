@@ -65,6 +65,26 @@ inline QString thumbnails() {
         "<polyline points='21 15 16 10 5 21'/></svg>");
 }
 
+inline QString flatpak() {
+    // Cube with diamond corners — universal package symbol.
+    return QStringLiteral(
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' "
+        "stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'>"
+        "<polygon points='12 2 22 8 22 16 12 22 2 16 2 8 12 2'/>"
+        "<line x1='12' y1='2' x2='12' y2='22'/>"
+        "<line x1='2' y1='8' x2='22' y2='16'/>"
+        "<line x1='22' y1='8' x2='2' y2='16'/></svg>");
+}
+
+inline QString snap() {
+    return QStringLiteral(
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' "
+        "stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'>"
+        "<circle cx='12' cy='12' r='9'/>"
+        "<path d='M9 10c0-1.5 1.3-2.5 3-2.5s3 1 3 2.5-1.3 2.5-3 2.5'/>"
+        "<line x1='12' y1='14' x2='12' y2='17'/></svg>");
+}
+
 inline QString oldKernels() {
     return QStringLiteral(
         "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' "

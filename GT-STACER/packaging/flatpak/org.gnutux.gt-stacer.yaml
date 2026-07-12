@@ -1,0 +1,92 @@
+app-id: org.gnutux.gt-stacer
+runtime: org.kde.Platform
+runtime-version: '6.9'
+sdk: org.kde.Sdk
+command: gt-stacer
+
+# Privileges. GT-STACER is a system optimiser/monitor that needs broad read
+# access to inspect /proc, /sys, log files, package caches, and so on. The
+# write side (cleaner, service control, sysctl, package install/remove) goes
+# through `flatpak-spawn --host pkexec ...` which is why we additionally
+# allow talking to org.freedesktop.Flatpak.
+finish-args:
+  # Display & input — both X11 (with fallback) and Wayland.
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+
+  # Network — needed for the future Helpers/network tools section.
+  - --share=network
+
+  # Read-only access to the host so /proc, /sys, /var/log, /etc/hosts can be
+  # inspected. Writes go through host-spawn (see below) so the read-only flag
+  # here doesn't actually limit functionality.
+  - --filesystem=host:ro
+
+  # The user's home — Trash, ~/.cache, ~/.config/autostart all live here.
+  - --filesystem=home
+
+  # System bus — we need polkit (for pkexec authentication prompts) and
+  # systemd1 (for service status / unit info). Spawning the actual privileged
+  # processes uses flatpak-spawn --host below.
+  - --system-talk-name=org.freedesktop.PolicyKit1
+  - --system-talk-name=org.freedesktop.systemd1
+  - --system-talk-name=org.freedesktop.UPower
+
+  # Session bus — desktop integration.
+  - --talk-name=org.freedesktop.Flatpak               # for flatpak-spawn --host
+  - --talk-name=org.freedesktop.Notifications         # desktop alerts
+  - --talk-name=org.freedesktop.secrets               # (future, no-op today)
+  - --talk-name=org.kde.StatusNotifierWatcher         # tray icon on KDE
+  # Tray-item names like `org.kde.StatusNotifierItem-PID-SLOT` get registered
+  # by the watcher on demand; we don't need to own them explicitly. Older
+  # versions of this manifest used `--own-name=org.kde.StatusNotifierItem-*`
+  # but flatpak 1.16+ rejects the `-*` glob form as an invalid bus name.
+
+  # Host environment — let the app know which desktop it's running on
+  # (Wayland vs X11, GNOME vs KDE) for theme-following.
+  - --env=QT_QPA_PLATFORMTHEME=
+
+modules:
+  # ── The application itself ──────────────────────────────────────────
+  - name: gt-stacer
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INSTALL_PREFIX=/app
+    builddir: true
+    sources:
+      # Built from the project root. `flatpak-builder` is invoked from the
+      # repo root so the relative `.` here picks up the source tree.
+      - type: dir
+        path: ../..
+
+  # ── Rename desktop entry to match the app-id, post-install ──────────
+  # Flathub requires the desktop file basename to equal the app-id. We ship
+  # `gt-stacer.desktop`; rename + patch its Icon= and Exec= here.
+  - name: rename
+    buildsystem: simple
+    build-commands:
+      - mv /app/share/applications/gt-stacer.desktop
+           /app/share/applications/org.gnutux.gt-stacer.desktop
+      - sed -i 's|^Icon=gt-stacer$|Icon=org.gnutux.gt-stacer|' /app/share/applications/org.gnutux.gt-stacer.desktop
+      - sed -i 's|^StartupWMClass=gt-stacer$|StartupWMClass=org.gnutux.gt-stacer|' /app/share/applications/org.gnutux.gt-stacer.desktop
+      # Rename hicolor icons to match the app-id too.
+      - for s in 16 32 48 64 128 256 512; do
+          if [ -f "/app/share/icons/hicolor/${s}x${s}/apps/gt-stacer.png" ]; then
+            mv "/app/share/icons/hicolor/${s}x${s}/apps/gt-stacer.png"
+               "/app/share/icons/hicolor/${s}x${s}/apps/org.gnutux.gt-stacer.png";
+          fi;
+        done
+
+  # ── AppStream metainfo (required by Flathub, recommended elsewhere) ─
+  - name: metainfo
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 org.gnutux.gt-stacer.metainfo.xml
+          /app/share/metainfo/org.gnutux.gt-stacer.metainfo.xml
+    sources:
+      - type: file
+        path: org.gnutux.gt-stacer.metainfo.xml

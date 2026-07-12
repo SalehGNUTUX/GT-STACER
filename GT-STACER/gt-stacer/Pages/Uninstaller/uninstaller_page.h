@@ -7,6 +7,7 @@ namespace Ui { class UninstallerPage; }
 class EmptyState;
 class SkeletonRows;
 class QStackedWidget;
+class LoadingOverlay;
 
 class UninstallerPage : public QWidget {
     Q_OBJECT
@@ -39,4 +40,8 @@ private:
     SkeletonRows   *m_skeleton  = nullptr;
     EmptyState     *m_noMatches = nullptr;
     QWidget        *m_tableHost = nullptr;
+    LoadingOverlay *m_overlay   = nullptr;
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 };

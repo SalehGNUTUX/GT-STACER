@@ -44,6 +44,11 @@ void LoadingOverlay::start(const QString &message)
     m_timer->start();
 }
 
+void LoadingOverlay::setMessage(const QString &message)
+{
+    m_label->setText(message);
+}
+
 void LoadingOverlay::stop()
 {
     m_timer->stop();

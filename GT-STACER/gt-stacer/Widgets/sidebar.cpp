@@ -1,4 +1,5 @@
 #include "sidebar.h"
+#include "../Managers/theme.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QVBoxLayout>
@@ -17,8 +18,7 @@ SidebarButton::SidebarButton(const SidebarItem &item, int index, QWidget *parent
     setCursor(Qt::PointingHandCursor);
     setToolTip(item.tooltip.isEmpty() ? item.label : item.tooltip);
     setMouseTracking(true);
-    // Pre-render icon at 22px
-    m_icon = renderIcon(22, QColor(0x6c, 0x70, 0x86));
+    // Icon is (re)rendered per paint from the active theme — see paintEvent.
 }
 
 QSize SidebarButton::sizeHint() const { return {220, 48}; }
@@ -42,9 +42,6 @@ QPixmap SidebarButton::renderIcon(int size, const QColor &color) const
 void SidebarButton::setActive(bool active)
 {
     m_active = active;
-    // Re-render icon with new color
-    QColor iconColor = active ? QColor(0x89, 0xb4, 0xfa) : QColor(0x6c, 0x70, 0x86);
-    m_icon = renderIcon(22, iconColor);
     update();
 }
 
@@ -76,28 +73,39 @@ void SidebarButton::paintEvent(QPaintEvent *)
 
     const int W = width(), H = height();
 
-    // Background
+    // Background — neutral surface-based tints (matches the original dark look;
+    // becomes light greys under the Latte palette). Blends between the window
+    // base and the raised surface so it reads on both themes.
+    const QColor accent = Theme::blue();
+    auto mix = [](const QColor &a, const QColor &b, double t) {
+        return QColor(int(a.red()  + (b.red()  - a.red())  * t),
+                      int(a.green()+ (b.green()- a.green())* t),
+                      int(a.blue() + (b.blue() - a.blue()) * t));
+    };
+    const QColor base = Theme::base(), surface = Theme::surface();
     QColor bg = Qt::transparent;
-    if (m_active)  bg = QColor(0x31, 0x32, 0x44);
-    else if (m_pressed) bg = QColor(0x2a, 0x2a, 0x3e);
-    else if (m_hovered) bg = QColor(0x28, 0x28, 0x38);
+    if (m_active)       bg = surface;                 // dark: #313244 (unchanged)
+    else if (m_pressed) bg = mix(base, surface, 0.60);
+    else if (m_hovered) bg = mix(base, surface, 0.45);
     p.fillRect(rect(), bg);
 
     // Active left accent bar
     if (m_active) {
-        p.fillRect(0, 0, 3, H, QColor(0x89, 0xb4, 0xfa));
+        p.fillRect(0, 0, 3, H, accent);
     }
 
     // Hover left accent bar
     if (m_hovered && !m_active) {
-        p.fillRect(0, 0, 3, H, QColor(0x45, 0x47, 0x5a));
+        p.fillRect(0, 0, 3, H, Theme::overlay());
     }
 
-    // Icon (centered when collapsed, left-aligned when expanded)
+    // Icon (centered when collapsed, left-aligned when expanded), tinted by state.
+    const QColor iconColor = m_active ? accent : Theme::faint();
+    QPixmap icon = renderIcon(22, iconColor);
     int iconX = m_collapsed ? (W - 22) / 2 : 20;
     int iconY = (H - 22) / 2;
-    if (!m_icon.isNull())
-        p.drawPixmap(iconX, iconY, m_icon);
+    if (!icon.isNull())
+        p.drawPixmap(iconX, iconY, icon);
 
     // Label (only in expanded mode)
     if (!m_collapsed) {
@@ -106,9 +114,9 @@ void SidebarButton::paintEvent(QPaintEvent *)
         if (m_active) f.setWeight(QFont::DemiBold);
         p.setFont(f);
 
-        QColor textColor = m_active ? QColor(0x89, 0xb4, 0xfa)
-                         : m_hovered ? QColor(0xcd, 0xd6, 0xf4)
-                         : QColor(0xa6, 0xad, 0xc8);
+        QColor textColor = m_active ? accent
+                         : m_hovered ? Theme::text()
+                         : Theme::subtext();
         p.setPen(textColor);
 
         QRect textRect(52, 0, W - 56, H);
@@ -206,8 +214,7 @@ Sidebar::Sidebar(QWidget *parent) : QWidget(parent)
     root->addWidget(headerWidget);
 
     // ── Separator ───────────────────────────────────────────────────
-    auto *sep = new QWidget; sep->setFixedHeight(1);
-    sep->setStyleSheet("background-color: #313244;");
+    auto *sep = new QWidget; sep->setObjectName("sidebarSep"); sep->setFixedHeight(1);
     root->addWidget(sep);
 
     root->addSpacing(8);
@@ -219,8 +226,7 @@ Sidebar::Sidebar(QWidget *parent) : QWidget(parent)
     root->addStretch();
 
     // ── Version / attribution ───────────────────────────────────────
-    auto *footerSep = new QWidget; footerSep->setFixedHeight(1);
-    footerSep->setStyleSheet("background-color: #313244;");
+    auto *footerSep = new QWidget; footerSep->setObjectName("sidebarSep"); footerSep->setFixedHeight(1);
     root->addWidget(footerSep);
 
     // Footer: النص الكامل في الوضع الموسّع، نقطة صغيرة في المطوي

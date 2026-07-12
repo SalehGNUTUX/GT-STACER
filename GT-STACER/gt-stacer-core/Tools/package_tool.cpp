@@ -2,7 +2,10 @@
 #include "../Utils/command_util.h"
 #include "../Utils/file_util.h"
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QRegularExpression>
+#include <QSet>
 
 // ─── Static members ───────────────────────────────────────────────────────
 QVector<PkgMgr> PackageTool::s_available;
@@ -46,6 +49,7 @@ QString PackageTool::managerName(PkgMgr mgr)
     case PkgMgr::Pip3:      return "pip3";
     case PkgMgr::Cargo:     return "Cargo";
     case PkgMgr::Npm:       return "npm";
+    case PkgMgr::Manual:    return "External";
     default:                return "Unknown";
     }
 }
@@ -413,6 +417,9 @@ QVector<PackageInfo> PackageTool::allPackages()
         }
         result += packages(mgr);
     }
+    // Always append externally/manually installed apps — these belong to no
+    // manager in s_available but are exactly what users can't otherwise remove.
+    result += manualPackages();
     return result;
 }
 
@@ -422,6 +429,10 @@ QVector<PackageInfo> PackageTool::allPackages()
 // be turned into command injection. We additionally validate the name.
 bool PackageTool::remove(const QString &name, PkgMgr mgr)
 {
+    // Manual apps are matched against a fresh filesystem scan (not shelled out
+    // by name), so display names with spaces/uppercase are fine here.
+    if (mgr == PkgMgr::Manual) return removeManual(name);
+
     if (!CommandUtil::isSafeIdentifier(name)) return false;
 
     QString prog;
@@ -465,18 +476,133 @@ bool PackageTool::remove(const QString &name, PkgMgr mgr)
 }
 
 // ─── Cache cleaning ───────────────────────────────────────────────────────
+// Every branch uses execProgram (no shell), and falls through to false only
+// when the manager genuinely doesn't expose a cache-clean operation
+// (Flatpak/Snap manage their own LRU, language managers have no cache).
 bool PackageTool::cleanCache(PkgMgr mgr)
 {
     if (mgr == PkgMgr::Unknown) mgr = primaryManager();
+    auto pk = [](const QStringList &args) {
+        return CommandUtil::execProgram("pkexec", args, 300000) == 0;
+    };
+    auto user = [](const QString &prog, const QStringList &args) {
+        return CommandUtil::execProgram(prog, args, 300000) == 0;
+    };
     switch (mgr) {
-    case PkgMgr::APT:    return CommandUtil::execStatus("pkexec apt-get clean") == 0;
+    case PkgMgr::APT:       return pk({"apt-get", "clean"});
     case PkgMgr::DNF:
-    case PkgMgr::DNF5:   return CommandUtil::execStatus("pkexec dnf clean all") == 0;
-    case PkgMgr::YUM:    return CommandUtil::execStatus("pkexec yum clean all") == 0;
-    case PkgMgr::Pacman: return CommandUtil::execStatus("pkexec pacman -Sc --noconfirm") == 0;
-    case PkgMgr::Zypper: return CommandUtil::execStatus("pkexec zypper clean") == 0;
-    case PkgMgr::APK:    return CommandUtil::execStatus("pkexec apk cache clean") == 0;
-    default:             return false;
+    case PkgMgr::DNF5:      return pk({"dnf", "clean", "all"});
+    case PkgMgr::YUM:       return pk({"yum", "clean", "all"});
+    case PkgMgr::TDNF:      return pk({"tdnf", "clean", "all"});
+    case PkgMgr::Pacman:
+    case PkgMgr::Yay:
+    case PkgMgr::Paru:      return pk({"pacman", "-Sc", "--noconfirm"});
+    case PkgMgr::Zypper:    return pk({"zypper", "clean", "--all"});
+    case PkgMgr::APK:       return pk({"apk", "cache", "clean"});
+    case PkgMgr::XBPS:      return pk({"xbps-remove", "-O"});  // -O = clean cache
+    case PkgMgr::Portage:   return pk({"eclean-dist", "--deep"});
+    case PkgMgr::Eopkg:     return pk({"eopkg", "delete-cache"});
+    case PkgMgr::Equo:      return pk({"equo", "cleanup"});
+    case PkgMgr::Swupd:     return pk({"swupd", "clean", "--all"});
+    case PkgMgr::Nix:       return user("nix-collect-garbage", {});
+    case PkgMgr::Flatpak:   return user("flatpak", {"uninstall", "--unused", "-y"});
+    case PkgMgr::Snap:      return pk({"snap", "remove-disabled"});
+    case PkgMgr::Brew:      return user("brew", {"cleanup"});
+    default:                return false;
+    }
+}
+
+// ─── Helpers for size strings reported by flatpak/snap ─────────────────
+static qint64 parseHumanSize(const QString &s)
+{
+    // Inputs we accept: "3.4 MB", "12.0M", "1,2 GB", "?" (returns 0).
+    QString t = s.trimmed();
+    if (t.isEmpty() || t == "?" || t == "-") return 0;
+    t.replace(',', '.');
+    static const QRegularExpression rx(R"(([0-9]+(?:\.[0-9]+)?)\s*([KMGTP]i?B?|B)?)",
+                                        QRegularExpression::CaseInsensitiveOption);
+    auto m = rx.match(t);
+    if (!m.hasMatch()) return 0;
+    double value = m.captured(1).toDouble();
+    QString unit = m.captured(2).toUpper();
+    qint64 mult  = 1;
+    if      (unit.startsWith('K')) mult = 1024;
+    else if (unit.startsWith('M')) mult = 1024LL * 1024;
+    else if (unit.startsWith('G')) mult = 1024LL * 1024 * 1024;
+    else if (unit.startsWith('T')) mult = 1024LL * 1024 * 1024 * 1024;
+    return static_cast<qint64>(value * mult);
+}
+
+QVector<PackageTool::UniversalApp> PackageTool::flatpakApps()
+{
+    QVector<UniversalApp> out;
+    if (!has(PkgMgr::Flatpak)) return out;
+    // Tab-separated for unambiguous parsing — Flatpak app IDs never contain tabs.
+    auto lines = CommandUtil::execLines(
+        "flatpak list --app --columns=name,application,version,size 2>/dev/null");
+    for (const auto &raw : lines) {
+        auto parts = raw.split('\t');
+        if (parts.size() < 2) continue;
+        UniversalApp a;
+        a.manager   = PkgMgr::Flatpak;
+        a.name      = parts.value(0).trimmed();
+        a.appId     = parts.value(1).trimmed();
+        a.version   = parts.size() > 2 ? parts.value(2).trimmed() : QString();
+        a.sizeBytes = parseHumanSize(parts.value(3));
+        if (a.name.isEmpty()) a.name = a.appId;
+        out.append(a);
+    }
+    return out;
+}
+
+QVector<PackageTool::UniversalApp> PackageTool::snapApps()
+{
+    QVector<UniversalApp> out;
+    if (!has(PkgMgr::Snap)) return out;
+    // `snap list` doesn't report sizes inline; we fall back to /var/lib/snapd/snaps
+    // sizes when available. Fields: Name Version Rev Tracking Publisher Notes.
+    auto lines = CommandUtil::execLines("snap list 2>/dev/null");
+    bool header = true;
+    for (const auto &line : lines) {
+        if (header) { header = false; continue; }
+        auto parts = line.simplified().split(' ');
+        if (parts.size() < 2) continue;
+        UniversalApp a;
+        a.manager = PkgMgr::Snap;
+        a.name    = parts[0];
+        a.appId   = parts[0];
+        a.version = parts.value(1);
+        // Best-effort size from the on-disk snap blob.
+        QFileInfo fi(QString("/var/lib/snapd/snaps/%1_%2.snap")
+                       .arg(parts[0], parts.value(2))); // (name)_(rev).snap
+        if (fi.exists()) a.sizeBytes = fi.size();
+        out.append(a);
+    }
+    return out;
+}
+
+QString PackageTool::cacheDir(PkgMgr mgr)
+{
+    // For managers with a known on-disk cache directory, return its path so
+    // the System Cleaner can scan & enumerate the files. Empty string ⇒ no
+    // user-visible cache (Flatpak/Snap manage their own; language managers
+    // cache under $HOME and don't need root).
+    switch (mgr) {
+    case PkgMgr::APT:       return "/var/cache/apt/archives";
+    case PkgMgr::DNF:
+    case PkgMgr::DNF5:      return "/var/cache/dnf";
+    case PkgMgr::YUM:       return "/var/cache/yum";
+    case PkgMgr::Zypper:    return "/var/cache/zypp/packages";
+    case PkgMgr::Pacman:
+    case PkgMgr::Yay:
+    case PkgMgr::Paru:      return "/var/cache/pacman/pkg";
+    case PkgMgr::XBPS:      return "/var/cache/xbps";
+    case PkgMgr::APK:       return "/var/cache/apk";
+    case PkgMgr::Portage:   return "/var/cache/distfiles";
+    case PkgMgr::Eopkg:     return "/var/cache/eopkg/packages";
+    case PkgMgr::Equo:      return "/var/lib/entropy/client/packages";
+    case PkgMgr::Swupd:     return "/var/lib/swupd/cache";
+    default:                return {};
     }
 }
 
@@ -540,4 +666,277 @@ QVector<PackageInfo> PackageTool::search(const QString &query, PkgMgr mgr)
         break;
     }
     return result;
+}
+
+// ─── Manually / externally installed apps ─────────────────────────────────
+// Apps dropped in by install scripts (e.g. Megacubo's `wget | bash`), tarballs
+// under /opt, or AppImages — none of which any package manager tracks. We find
+// them through their .desktop launchers and remove the launcher, the payload,
+// and per-user leftovers, guarding hard against ever deleting a shared root.
+namespace {
+
+QStringList manualDesktopDirs()
+{
+    const QString home = QDir::homePath();
+    return {
+        "/usr/share/applications",
+        "/usr/local/share/applications",
+        home + "/.local/share/applications",
+    };
+}
+
+// First absolute-path token of a .desktop Exec= line, minus field codes,
+// env-var assignments, quotes and interpreter/env prefixes.
+QString execBinary(const QString &exec)
+{
+    const QStringList tokens = exec.trimmed().split(' ', Qt::SkipEmptyParts);
+    for (QString t : tokens) {
+        if (t.startsWith('"') || t.startsWith('\'')) t = t.mid(1);
+        if (t.endsWith('"')   || t.endsWith('\''))   t.chop(1);
+        if (t.isEmpty() || t.startsWith('%'))                 continue; // field code
+        if (t.contains('=') && !t.startsWith('/'))            continue; // VAR=val
+        if (t == "env" || t == "sh" || t == "bash" || t == "/usr/bin/env") continue;
+        if (t.startsWith('/')) return t;
+    }
+    return {};
+}
+
+// True when this executable is an externally/manually installed app rather than
+// something a system package manager owns (/usr/bin, /snap, flatpak exports …).
+bool isManualExec(const QString &path)
+{
+    const QString home = QDir::homePath();
+    if (path.endsWith(".AppImage", Qt::CaseInsensitive)) return true;
+    if (path.startsWith("/opt/"))       return true;
+    if (path.startsWith("/usr/local/")) return true;
+    if (path.startsWith(home + "/") && !path.startsWith(home + "/.local/share/flatpak"))
+        return true;
+    return false;
+}
+
+// The filesystem payload to delete + a base name to match per-user leftovers.
+void payloadFor(const QString &exec, QString &payload, QString &base)
+{
+    const QRegularExpression optRe("^(/opt/[^/]+)");
+    const auto m = optRe.match(exec);
+    if (m.hasMatch()) { payload = m.captured(1); base = QFileInfo(payload).fileName(); return; }
+    // AppImage or standalone binary — remove just that file.
+    payload = exec;
+    base    = QFileInfo(exec).completeBaseName();
+}
+
+// Never delete a shared/system root: the payload must be a deep, app-specific
+// path, never a top-level or shared bin/lib/share directory.
+bool isSafeRemovalPath(const QString &p)
+{
+    if (p.isEmpty()) return false;
+    const QString home = QDir::homePath();
+    static const QSet<QString> forbidden = {
+        "/", "/opt", "/usr", "/usr/local", "/usr/local/bin", "/usr/local/share",
+        "/usr/local/lib", "/usr/bin", "/bin", "/sbin", "/usr/sbin", "/usr/share",
+        "/etc", "/var", "/home", home, home + "/.local", home + "/.local/bin",
+        home + "/.local/share", home + "/.local/state", home + "/.config",
+        home + "/.cache", home + "/.local/share/applications",
+    };
+    const QString c = QDir::cleanPath(p);
+    if (forbidden.contains(c)) return false;
+    if (c.count('/') < 2)      return false; // too shallow to be app-specific
+    return true;
+}
+
+qint64 duBytes(const QString &path)
+{
+    if (path.isEmpty()) return 0;
+    const QString out = CommandUtil::execProgramOutput("du", {"-sb", path}, 8000);
+    return out.section('\t', 0, 0).trimmed().toLongLong();
+}
+
+// Of the given files, return the subset a real package manager owns — i.e. NOT
+// manual installs, and never ours to delete (their files may be shared, e.g. a
+// browser backing several PWA launchers). Batched into a single query so it is
+// fast and deterministic. Only system paths can be owned; ~/ ones never are.
+QSet<QString> packageOwned(const QStringList &sysPaths)
+{
+    QSet<QString> owned;
+    if (sysPaths.isEmpty()) return owned;
+    static const QString tool =
+        CommandUtil::commandExists("dpkg")   ? QStringLiteral("dpkg")   :
+        CommandUtil::commandExists("rpm")    ? QStringLiteral("rpm")    :
+        CommandUtil::commandExists("pacman") ? QStringLiteral("pacman") : QString();
+    if (tool.isEmpty()) return owned;
+
+    if (tool == "dpkg") {
+        QStringList args = {"-S"}; args += sysPaths;
+        const QString o = CommandUtil::execProgramOutput("dpkg", args, 30000);
+        for (const QString &line : o.split('\n')) {          // "pkg: /opt/foo/bar"
+            const int idx = line.lastIndexOf(": ");
+            if (idx < 0) continue;
+            const QString p = line.mid(idx + 2).trimmed();
+            if (p.startsWith('/')) owned << p;
+        }
+    } else if (tool == "rpm") {
+        QStringList args = {"-qf"}; args += sysPaths;         // one output line per input, in order
+        const QStringList out = CommandUtil::execProgramOutput("rpm", args, 30000)
+                                    .split('\n');
+        for (int i = 0; i < sysPaths.size() && i < out.size(); ++i)
+            if (!out[i].contains("not owned") && !out[i].trimmed().isEmpty())
+                owned << sysPaths[i];
+    } else { // pacman -Qo
+        QStringList args = {"-Qo"}; args += sysPaths;
+        const QString o = CommandUtil::execProgramOutput("pacman", args, 30000);
+        for (const QString &line : o.split('\n'))             // "/opt/foo is owned by pkg 1.0"
+            if (line.contains("owned by")) {
+                const QString p = line.section(QStringLiteral(" is owned by"), 0, 0).trimmed();
+                if (p.startsWith('/')) owned << p;
+            }
+    }
+    return owned;
+}
+
+QString humanBytes(qint64 b)
+{
+    if (b <= 0) return {};
+    double v = b; const char *u[] = {"B","KB","MB","GB","TB"}; int i = 0;
+    while (v >= 1024.0 && i < 4) { v /= 1024.0; ++i; }
+    return QString::number(v, 'f', v < 10 && i > 0 ? 1 : 0) + " " + u[i];
+}
+
+struct ManualApp {
+    QString name, version, desktopPath, payload, base;
+    qint64  sizeBytes = 0;
+};
+
+QVector<ManualApp> scanManualApps()
+{
+    // Pass 1 — gather candidates from every .desktop launcher, remembering the
+    // executable so we can batch the (slow) package-ownership query afterwards.
+    struct Cand { ManualApp app; QString bin; };
+    QVector<Cand> cands;
+    QSet<QString> seen;
+    for (const QString &dir : manualDesktopDirs()) {
+        QDir d(dir);
+        if (!d.exists()) continue;
+        for (const QString &file : d.entryList({"*.desktop"}, QDir::Files)) {
+            const QString path = d.absoluteFilePath(file);
+            QFile f(path);
+            if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) continue;
+            QString name, exec, type, hidden, version;
+            const QList<QByteArray> lines = f.readAll().split('\n');
+            for (const QByteArray &raw : lines) {
+                const QString l = QString::fromUtf8(raw).trimmed();
+                if      (l.startsWith("Name=")        && name.isEmpty()) name = l.mid(5);
+                else if (l.startsWith("Exec=")        && exec.isEmpty()) exec = l.mid(5);
+                else if (l.startsWith("Type="))                          type = l.mid(5);
+                else if (l.startsWith("Hidden="))                        hidden = l.mid(7);
+                else if (l.startsWith("X-AppVersion="))                  version = l.mid(13);
+            }
+            if (!type.isEmpty() && type != "Application") continue;
+            if (hidden.compare("true", Qt::CaseInsensitive) == 0) continue;
+
+            const QString bin = execBinary(exec);
+            if (bin.isEmpty() || !isManualExec(bin)) continue;
+
+            ManualApp a;
+            a.name    = name.isEmpty() ? QFileInfo(bin).fileName() : name;
+            a.version = version;
+            a.desktopPath = path;
+            payloadFor(bin, a.payload, a.base);
+            if (!isSafeRemovalPath(a.payload)) continue;
+            if (seen.contains(a.payload))      continue;
+            seen.insert(a.payload);
+            cands << Cand{a, bin};
+        }
+    }
+
+    // Pass 2 — drop anything a package manager owns (shared/managed installs),
+    // then compute on-disk size for the survivors.
+    QStringList sysBins;
+    for (const auto &c : cands)
+        if (c.bin.startsWith("/opt") || c.bin.startsWith("/usr"))
+            sysBins << c.bin;
+    const QSet<QString> owned = packageOwned(sysBins);
+
+    QVector<ManualApp> apps;
+    for (const auto &c : cands) {
+        if (owned.contains(c.bin)) continue;
+        ManualApp a = c.app;
+        a.sizeBytes = duBytes(a.payload);
+        apps << a;
+    }
+    return apps;
+}
+
+} // namespace
+
+QVector<PackageInfo> PackageTool::manualPackages()
+{
+    QVector<PackageInfo> out;
+    for (const auto &a : scanManualApps()) {
+        PackageInfo p;
+        p.name        = a.name;
+        p.version     = a.version;
+        p.manager     = PkgMgr::Manual;
+        p.description = a.payload;              // where it lives on disk
+        p.size        = humanBytes(a.sizeBytes);
+        out << p;
+    }
+    return out;
+}
+
+bool PackageTool::removeManual(const QString &name)
+{
+    const QString home = QDir::homePath();
+    for (const auto &a : scanManualApps()) {
+        if (a.name != name) continue;
+
+        QStringList rootPaths, userPaths;
+        auto add = [&](const QString &p) {
+            if (p.isEmpty() || !isSafeRemovalPath(p)) return;
+            if (p.startsWith("/opt") || p.startsWith("/usr"))
+                rootPaths << p;
+            else
+                userPaths << p;
+        };
+        add(a.payload);
+        // The .desktop launcher (delete even if it sits in a system dir).
+        if (!a.desktopPath.isEmpty()) {
+            if (a.desktopPath.startsWith("/usr") || a.desktopPath.startsWith("/opt"))
+                rootPaths << a.desktopPath;
+            else
+                userPaths << a.desktopPath;
+        }
+        // Per-user leftovers keyed on the app's base name (exact, case-insensitive).
+        if (!a.base.isEmpty()) {
+            const QStringList roots = {
+                home + "/.config", home + "/.cache",
+                home + "/.local/share", home + "/.local/state",
+            };
+            for (const QString &r : roots) {
+                QDir rd(r);
+                if (!rd.exists()) continue;
+                for (const QString &e : rd.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
+                    if (e.compare(a.base, Qt::CaseInsensitive) != 0) continue;
+                    const QString full = rd.absoluteFilePath(e);
+                    if (isSafeRemovalPath(full)) userPaths << full;
+                }
+            }
+        }
+
+        bool ok = true;
+        for (const QString &p : userPaths) {
+            QFileInfo fi(p);
+            if (fi.isDir())       { if (!QDir(p).removeRecursively()) ok = false; }
+            else if (fi.exists()) { if (!QFile::remove(p))            ok = false; }
+        }
+        if (!rootPaths.isEmpty()) {
+            QStringList args = {"rm", "-rf"};
+            args += rootPaths;
+            if (CommandUtil::execProgram("pkexec", args, 120000) != 0) ok = false;
+        }
+        // Best-effort: refresh the launcher database so the entry disappears.
+        CommandUtil::execProgram("update-desktop-database",
+            {home + "/.local/share/applications"}, 8000);
+        return ok;
+    }
+    return false;
 }

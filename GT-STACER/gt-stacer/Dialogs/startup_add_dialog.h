@@ -8,6 +8,7 @@ class QStandardItemModel;
 class QSortFilterProxyModel;
 class QTabWidget;
 class QPushButton;
+class QSpinBox;
 
 // Dialog for adding a new autostart entry. Two tabs:
 //  · "From System Apps" — browse installed .desktop entries with search.
@@ -18,6 +19,11 @@ class StartupAddDialog : public QDialog {
     Q_OBJECT
 public:
     explicit StartupAddDialog(QWidget *parent = nullptr);
+
+    // Switch the dialog into "edit" mode, pre-filling the manual tab with an
+    // existing entry (including its start delay). The system-apps tab is hidden
+    // since editing operates on a concrete entry.
+    void loadForEdit(const StartupEntry &entry);
 
     StartupEntry result() const { return m_result; }
 
@@ -42,6 +48,11 @@ private:
     QLineEdit *m_manualExec    = nullptr;
     QLineEdit *m_manualComment = nullptr;
     QLineEdit *m_manualIcon    = nullptr;
+
+    // Shared: startup delay (seconds), applies to both tabs.
+    QSpinBox  *m_delaySpin     = nullptr;
+
+    bool m_editMode = false;
 
     StartupEntry m_result;
 };

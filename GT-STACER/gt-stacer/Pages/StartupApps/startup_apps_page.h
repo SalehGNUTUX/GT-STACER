@@ -22,6 +22,7 @@ private slots:
 private:
     void clearRows();
     void appendRow(const class StartupEntry &entry);
+    void openEditDialog(const class StartupEntry &entry);
 
     QLineEdit   *m_search   = nullptr;
     QVBoxLayout *m_rowsBox  = nullptr;

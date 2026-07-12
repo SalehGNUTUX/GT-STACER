@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSortFilterProxyModel>
+#include <QSpinBox>
 #include <QStandardItemModel>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -46,7 +47,25 @@ StartupAddDialog::StartupAddDialog(QWidget *parent) : QDialog(parent)
     buildManualTab();
     root->addWidget(m_tabs, 1);
 
+    // Shared startup delay — applies whichever tab is used. A delay lets heavy
+    // apps (sync clients, effects daemons) start after the desktop settles.
+    auto *delayRow = new QHBoxLayout;
+    auto *delayLbl = new QLabel(tr("Start delay (seconds):"));
+    m_delaySpin = new QSpinBox;
+    m_delaySpin->setRange(0, 600);
+    m_delaySpin->setValue(0);
+    m_delaySpin->setSpecialValueText(tr("No delay"));
+    m_delaySpin->setToolTip(tr("Wait this many seconds after login before launching."));
+    delayRow->addWidget(delayLbl);
+    delayRow->addWidget(m_delaySpin);
+    delayRow->addStretch();
+    root->addLayout(delayRow);
+
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel, this);
+    // The standard Cancel button's label comes from Qt's own translations,
+    // which we don't ship — so set our translated text explicitly.
+    if (auto *c = buttons->button(QDialogButtonBox::Cancel))
+        c->setText(tr("Cancel"));
     auto *addBtn = new QPushButton(tr("Add"));
     addBtn->setObjectName("primaryButton");
     addBtn->setDefault(true);
@@ -55,9 +74,23 @@ StartupAddDialog::StartupAddDialog(QWidget *parent) : QDialog(parent)
 
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
     connect(addBtn, &QPushButton::clicked, this, [this]() {
-        if (m_tabs->currentIndex() == 0) onAddFromSystem();
-        else                              onAddManual();
+        if (!m_editMode && m_tabs->currentIndex() == 0) onAddFromSystem();
+        else                                            onAddManual();
     });
+}
+
+void StartupAddDialog::loadForEdit(const StartupEntry &entry)
+{
+    m_editMode = true;
+    setWindowTitle(tr("Edit Startup Entry"));
+    // Editing works on the concrete entry — the system-apps picker makes no
+    // sense here, so drop it and land on the manual form.
+    m_tabs->removeTab(0);
+    m_manualName->setText(entry.name);
+    m_manualExec->setText(entry.exec);
+    m_manualComment->setText(entry.comment);
+    m_manualIcon->setText(entry.icon);
+    m_delaySpin->setValue(entry.delaySeconds);
 }
 
 void StartupAddDialog::buildSystemTab()
@@ -164,11 +197,12 @@ void StartupAddDialog::onAddFromSystem()
         return;
     }
     const QVariantMap m = idx.data(ROLE_ENTRY).toMap();
-    m_result.name    = m.value("name").toString();
-    m_result.exec    = m.value("exec").toString();
-    m_result.comment = m.value("comment").toString();
-    m_result.icon    = m.value("icon").toString();
-    m_result.enabled = true;
+    m_result.name         = m.value("name").toString();
+    m_result.exec         = m.value("exec").toString();
+    m_result.comment      = m.value("comment").toString();
+    m_result.icon         = m.value("icon").toString();
+    m_result.enabled      = true;
+    m_result.delaySeconds = m_delaySpin->value();
     accept();
 }
 
@@ -181,10 +215,11 @@ void StartupAddDialog::onAddManual()
             tr("Name and Command are required."));
         return;
     }
-    m_result.name    = name;
-    m_result.exec    = exec;
-    m_result.comment = m_manualComment->text().trimmed();
-    m_result.icon    = m_manualIcon->text().trimmed();
-    m_result.enabled = true;
+    m_result.name         = name;
+    m_result.exec         = exec;
+    m_result.comment      = m_manualComment->text().trimmed();
+    m_result.icon         = m_manualIcon->text().trimmed();
+    m_result.enabled      = true;
+    m_result.delaySeconds = m_delaySpin->value();
     accept();
 }

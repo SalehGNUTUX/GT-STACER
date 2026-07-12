@@ -9,6 +9,7 @@ struct StartupEntry {
     QString icon;
     bool    enabled = true;
     QString filePath;
+    int     delaySeconds = 0;   // 0 = launch immediately at login
 };
 
 class StartupTool {

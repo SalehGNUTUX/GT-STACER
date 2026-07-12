@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(GT-STACER
-    VERSION 26.5.0
+    VERSION 26.7.0
     DESCRIPTION "GT-STACER - Linux System Optimizer and Monitoring"
     HOMEPAGE_URL "https://github.com/SalehGNUTUX/GT-STACER"
     LANGUAGES CXX
@@ -54,8 +54,8 @@ include(GNUInstallDirs)
 # Version info as compile definitions
 add_compile_definitions(
     APP_NAME="GT-STACER"
-    APP_VERSION="26.05"
-    APP_CHANNEL="beta"
+    APP_VERSION="26.07"
+    APP_CHANNEL="stable"
     APP_ORGANIZATION="GNUTUX"
     APP_DOMAIN="gnutux.org"
     APP_REPO="https://github.com/SalehGNUTUX/GT-STACER"

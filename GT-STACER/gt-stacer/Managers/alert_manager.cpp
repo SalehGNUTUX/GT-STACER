@@ -88,10 +88,20 @@ void AlertManager::tick()
              "dialog-warning");
 
     // ── Disk usage ──────────────────────────────────────────────────────
+    // Only alert on partitions where running out of space actually matters:
+    //   - 2 GB minimum so /boot, /efi, /boot/efi (typically 100–500 MB and
+    //     naturally near-full after kernel updates) don't spam the user;
+    //   - skip read-only mounts and snap/flatpak app sandboxes;
+    //   - skip the squashfs/loop mounts AppImages create when they run.
     const int diskThreshold = s->diskThresholdPercent();
     if (diskThreshold > 0) {
+        constexpr qint64 kMinBytes = 2LL * 1024 * 1024 * 1024; // 2 GB
         for (const auto &p : DiskInfo::partitions()) {
-            if (p.total == 0) continue;
+            if (p.total < kMinBytes) continue;
+            if (p.mountPoint.startsWith("/snap")) continue;
+            if (p.mountPoint.startsWith("/var/lib/snapd")) continue;
+            if (p.mountPoint.startsWith("/run")) continue;
+            if (p.mountPoint == "/boot" || p.mountPoint.startsWith("/boot/")) continue;
             int pct = static_cast<int>((p.used * 100) / p.total);
             if (pct >= diskThreshold)
                 fire("disk:" + p.mountPoint,

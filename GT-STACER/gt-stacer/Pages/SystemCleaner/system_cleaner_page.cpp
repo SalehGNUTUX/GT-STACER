@@ -1,8 +1,11 @@
 #include "system_cleaner_page.h"
 #include "../../Dialogs/app_cache_dialog.h"
+#include "../../Dialogs/pkg_cache_dialog.h"
+#include "../../Dialogs/universal_apps_dialog.h"
 #include "../../Widgets/cleaner_card.h"
 #include "../../Widgets/cleaner_icons.h"
 #include "../../Widgets/loading_overlay.h"
+#include "../../../gt-stacer-core/Tools/package_tool.h"
 #include "../../../gt-stacer-core/Utils/file_util.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
@@ -24,12 +27,24 @@ SystemCleanerPage::SystemCleanerPage(QWidget *parent) : QWidget(parent)
 {
     const QString home = QDir::homePath();
 
+    // The package-cache card adapts to whichever package manager the host
+    // actually uses — "APT Cache" on Debian, "DNF Cache" on Fedora, etc.
+    const PkgMgr primary = PackageTool::primaryManager();
+    const QString primaryName = PackageTool::managerName(primary);
+    const QString pkgCachePath = PackageTool::cacheDir(primary);
+    const QString pkgCacheLabel = primaryName.isEmpty()
+        ? tr("Package Cache")
+        : tr("%1 Cache").arg(primaryName);
+    const QString pkgCacheDesc = primaryName.isEmpty()
+        ? tr("Downloaded packages waiting to be installed")
+        : tr("Downloaded %1 packages waiting to be installed").arg(primaryName);
+
     // Note on strategies:
     //   - "UserFiles"       — path is under $HOME, the running user owns it, no pkexec needed.
     //   - "RootRotatedLogs" — only deletes rotated archives (*.gz / *.[0-9] / *.old / *.old.*).
     //                         Leaves live log files alone so logging keeps working.
     //   - "RootAllInDir"    — deletes every regular file inside a root-owned dir (kept dir).
-    //   - "AptClean"        — calls `apt-get clean` so APT itself manages the cache directory.
+    //   - "PkgClean"        — calls PackageTool::cleanCache(primary) — works for every detected manager.
     //   - "OldKernelsApt"   — `apt-get autoremove --purge -y` (Debian/Ubuntu family).
     m_categories = {
         {tr("Trash"),         tr("Files in the user trash bin"),
@@ -42,10 +57,15 @@ SystemCleanerPage::SystemCleanerPage(QWidget *parent) : QWidget(parent)
          CleanerIcons::appLogs(),     "/var/log",                         false, CleanStrategy::RootRotatedLogs},
         {tr("Crash Reports"), tr("System crash dumps in /var/crash"),
          CleanerIcons::crashReports(), "/var/crash",                       true, CleanStrategy::RootAllInDir},
-        {tr("APT Cache"),     tr("Downloaded .deb packages waiting to be installed"),
-         CleanerIcons::aptCache(),    "/var/cache/apt/archives",          false, CleanStrategy::AptClean},
+        {pkgCacheLabel,       pkgCacheDesc,
+         CleanerIcons::aptCache(),    pkgCachePath,                       false, CleanStrategy::PkgClean},
         {tr("Old Kernels"),   tr("Remove orphaned kernel packages (autoremove)"),
          CleanerIcons::oldKernels(),  "",                                 false, CleanStrategy::OldKernelsApt},
+        // Universal-store apps — double-click opens the per-app dialog.
+        {tr("Flatpak Apps"), tr("Installed Flatpak applications — double-click to manage per-app removals"),
+         CleanerIcons::flatpak(), "", false, CleanStrategy::FlatpakUnused},
+        {tr("Snap Apps"),    tr("Installed Snap packages — double-click to manage per-app removals"),
+         CleanerIcons::snap(),    "", false, CleanStrategy::SnapDisabled},
     };
 
     buildUi();
@@ -62,11 +82,11 @@ void SystemCleanerPage::buildUi()
     root->setSpacing(14);
 
     auto *title = new QLabel(tr("System Cleaner"));
-    title->setStyleSheet("font-size:22px;font-weight:bold;color:#cdd6f4;");
+    title->setObjectName("pageTitle");
     root->addWidget(title);
 
     auto *hint = new QLabel(tr("Pick the categories to scan, then choose which results to clean."));
-    hint->setStyleSheet("color:#a6adc8;font-size:12px;");
+    hint->setObjectName("introText");
     hint->setWordWrap(true);
     root->addWidget(hint);
 
@@ -95,6 +115,30 @@ void SystemCleanerPage::buildUi()
             connect(cat.card, &CleanerCard::doubleClicked, this,
                     &SystemCleanerPage::openAppCacheDetails);
         }
+        // Package Cache: same drill-down treatment — list each .deb/.rpm/.pkg
+        // with size + date + checkbox for per-file removal.
+        if (cat.strategy == CleanStrategy::PkgClean) {
+            cat.card->setHasDetails(true);
+            cat.card->setToolTip(cat.description + "\n\n" +
+                tr("ⓘ Double-click (or use the Details button below) "
+                   "to choose which cached packages to remove."));
+            connect(cat.card, &CleanerCard::doubleClicked, this, [this]() {
+                PkgCacheDialog dlg(this);
+                dlg.exec();
+            });
+        }
+        // Flatpak / Snap — per-app drill-down dialog (same UX as App Cache).
+        if (cat.strategy == CleanStrategy::FlatpakUnused
+            || cat.strategy == CleanStrategy::SnapDisabled) {
+            cat.card->setHasDetails(true);
+            cat.card->setToolTip(cat.description);
+            PkgMgr mgr = (cat.strategy == CleanStrategy::FlatpakUnused)
+                            ? PkgMgr::Flatpak : PkgMgr::Snap;
+            connect(cat.card, &CleanerCard::doubleClicked, this, [this, mgr]() {
+                UniversalAppsDialog dlg(mgr, this);
+                dlg.exec();
+            });
+        }
         grid->addWidget(cat.card, i / kColumns, i % kColumns);
     }
     // Fill the trailing columns so cards keep a uniform width.
@@ -115,7 +159,7 @@ void SystemCleanerPage::buildUi()
     controls->addStretch();
 
     m_statusLabel = new QLabel;
-    m_statusLabel->setStyleSheet("color:#a6adc8;");
+    m_statusLabel->setObjectName("statusLabel");
     controls->addWidget(m_statusLabel);
 
     controls->addSpacing(12);
@@ -310,12 +354,24 @@ bool SystemCleanerPage::cleanCategory(const Category &c) const
             {"find", c.path, "-mindepth", "1", "-type", "f", "-delete"},
             120000) == 0;
     }
-    case CleanStrategy::AptClean:
-        return CommandUtil::execProgram("pkexec",
-            {"apt-get", "clean"}, 120000) == 0;
+    case CleanStrategy::PkgClean:
+        // Delegated to PackageTool so every supported manager is covered
+        // (APT, DNF, Pacman, Zypper, Yum, TDNF, XBPS, APK, Portage, Eopkg,
+        //  Equo, Swupd, Nix, Flatpak, Snap, Homebrew).
+        return PackageTool::cleanCache(PackageTool::primaryManager());
     case CleanStrategy::OldKernelsApt:
         return CommandUtil::execProgram("pkexec",
             {"apt-get", "autoremove", "--purge", "-y"}, 300000) == 0;
+    case CleanStrategy::FlatpakUnused:
+        // Removes runtimes nothing depends on anymore. Per-app removal is
+        // available through the drill-down dialog.
+        return CommandUtil::execProgram("flatpak",
+            {"uninstall", "--unused", "-y"}, 300000) == 0;
+    case CleanStrategy::SnapDisabled:
+        // Removes superseded snap revisions (the previous version that snapd
+        // keeps for rollback). Per-app removal in the dialog.
+        return CommandUtil::execProgram("pkexec",
+            {"snap", "remove-disabled"}, 300000) == 0;
     }
     return false;
 }
@@ -344,12 +400,15 @@ void SystemCleanerPage::clean()
         switch (c.strategy) {
         case CleanStrategy::RootRotatedLogs:
         case CleanStrategy::RootAllInDir:
-        case CleanStrategy::AptClean:
+        case CleanStrategy::PkgClean:
         case CleanStrategy::OldKernelsApt:
+        case CleanStrategy::SnapDisabled:
             needsRoot = true;
             rootBadge = QStringLiteral(" <span style='color:#f38ba8;'>· requires root</span>");
             break;
-        default: break;
+        case CleanStrategy::FlatpakUnused:
+        case CleanStrategy::UserFiles:
+            break;
         }
         QString sizeText = (c.strategy == CleanStrategy::OldKernelsApt)
             ? tr("(autoremove)")

@@ -1,9 +1,10 @@
 /* GT-STACER Light Theme - GNUTUX 2026 */
-/* Color Palette (Catppuccin Latte inspired): */
+/* Color Palette (Catppuccin Latte): */
 /* Base:    #eff1f5  Mantle: #e6e9ef  Crust: #dce0e8 */
-/* Surface: #ccd0da  Overlay:#bcc0cc  Subtext:#9ca0b0 */
-/* Text:    #4c4f69  Blue:   #1e66f5  Green: #40a02b */
-/* Red:     #d20f39  Yellow: #df8e1d                  */
+/* Surface: #ccd0da  Overlay:#bcc0cc  Subtext:#6c6f85 / #5c5f77 */
+/* Text:    #4c4f69  Blue:   #1e66f5  Sky:   #209fb5 */
+/* Green:   #40a02b  Yellow: #df8e1d  Peach: #fe640b */
+/* Red:     #d20f39  Mauve:  #8839ef                 */
 
 * {
     font-family: "Ubuntu", "Noto Sans", sans-serif;
@@ -16,6 +17,12 @@ QMainWindow, QWidget {
     background-color: #eff1f5;
 }
 
+/* ---- Page Stack ---- */
+#pageStack {
+    background-color: #eff1f5;
+}
+
+/* ---- Sidebar ---- */
 #sidebar {
     background-color: #e6e9ef;
     border-right: 1px solid #ccd0da;
@@ -40,28 +47,30 @@ QMainWindow, QWidget {
     border-left: 3px solid transparent;
     text-align: left;
     padding: 0 16px;
-    color: #9ca0b0;
+    color: #6c6f85;
     font-size: 13px;
 }
 
 #navButton:hover {
-    background-color: #ccd0da;
+    background-color: #dce0e8;
     color: #4c4f69;
     border-left: 3px solid #bcc0cc;
 }
 
 #navButton:checked {
-    background-color: #ccd0da;
+    background-color: #dce0e8;
     color: #1e66f5;
     border-left: 3px solid #1e66f5;
     font-weight: bold;
 }
 
 #versionLabel {
-    color: #bcc0cc;
+    color: #9ca0b0;
     font-size: 11px;
+    padding: 4px;
 }
 
+/* ---- Cards / Frames ---- */
 #infoCard, #metricCard {
     background-color: #e6e9ef;
     border: 1px solid #ccd0da;
@@ -69,11 +78,17 @@ QMainWindow, QWidget {
     padding: 8px;
 }
 
+#metricCard QLabel {
+    color: #6c6f85;
+}
+
+/* ---- Progress Bars ---- */
 QProgressBar {
     background-color: #ccd0da;
     border: none;
     border-radius: 4px;
     height: 8px;
+    text-align: center;
     color: transparent;
 }
 
@@ -82,8 +97,11 @@ QProgressBar::chunk {
     border-radius: 4px;
 }
 
+QProgressBar[value="0"]::chunk { background-color: #40a02b; }
+
+/* ---- Buttons ---- */
 QPushButton {
-    background-color: #ccd0da;
+    background-color: #dce0e8;
     border: 1px solid #bcc0cc;
     border-radius: 6px;
     padding: 6px 16px;
@@ -92,65 +110,96 @@ QPushButton {
 }
 
 QPushButton:hover {
+    background-color: #ccd0da;
+    border-color: #acb0be;
+}
+
+QPushButton:pressed {
     background-color: #bcc0cc;
 }
 
 #primaryButton {
     background-color: #1e66f5;
     border: none;
-    color: #eff1f5;
+    color: #ffffff;
     font-weight: bold;
 }
 
 #primaryButton:hover {
-    background-color: #04a5e5;
+    background-color: #4a80f7;
 }
 
 #dangerButton {
     background-color: #d20f39;
     border: none;
-    color: #eff1f5;
+    color: #ffffff;
     font-weight: bold;
 }
 
+#dangerButton:hover {
+    background-color: #e0264d;
+}
+
+/* ---- Line Edits ---- */
 QLineEdit, QTextEdit, QPlainTextEdit {
-    background-color: #e6e9ef;
+    background-color: #ffffff;
     border: 1px solid #bcc0cc;
     border-radius: 6px;
     padding: 6px 10px;
     color: #4c4f69;
-    selection-background-color: #ccd0da;
+    selection-background-color: #bcc0cc;
+    selection-color: #4c4f69;
 }
 
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
     border-color: #1e66f5;
 }
 
+/* ---- ComboBox ---- */
 QComboBox {
-    background-color: #e6e9ef;
+    background-color: #ffffff;
     border: 1px solid #bcc0cc;
     border-radius: 6px;
     padding: 6px 10px;
     color: #4c4f69;
+    min-width: 80px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    padding-right: 8px;
 }
 
 QComboBox QAbstractItemView {
-    background-color: #e6e9ef;
-    selection-background-color: #ccd0da;
+    background-color: #ffffff;
+    border: 1px solid #bcc0cc;
+    border-radius: 4px;
+    selection-background-color: #dce0e8;
     color: #4c4f69;
 }
 
+/* ---- Spin Box ---- */
+QSpinBox {
+    background-color: #ffffff;
+    border: 1px solid #bcc0cc;
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: #4c4f69;
+}
+
+/* ---- Table Views ---- */
 QTableView, QListView, QTreeView {
     background-color: #e6e9ef;
     border: 1px solid #ccd0da;
     border-radius: 6px;
     gridline-color: #dce0e8;
-    selection-background-color: #ccd0da;
+    selection-background-color: #dce0e8;
     selection-color: #4c4f69;
+    alternate-background-color: #eff1f5;
 }
 
 QHeaderView::section {
-    background-color: #ccd0da;
+    background-color: #dce0e8;
     border: none;
     border-bottom: 1px solid #bcc0cc;
     border-right: 1px solid #bcc0cc;
@@ -159,9 +208,14 @@ QHeaderView::section {
     font-weight: bold;
 }
 
+QTableView::item:hover    { background-color: #dce0e8; }
+QTableView::item:selected { background-color: #ccd0da; color: #4c4f69; }
+
+/* ---- Scroll Bars ---- */
 QScrollBar:vertical {
     background-color: transparent;
     width: 8px;
+    margin: 0;
 }
 
 QScrollBar::handle:vertical {
@@ -170,14 +224,37 @@ QScrollBar::handle:vertical {
     min-height: 20px;
 }
 
+QScrollBar::handle:vertical:hover {
+    background-color: #acb0be;
+}
+
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     height: 0; background: transparent;
 }
 
-QScrollBar:horizontal { height: 8px; background: transparent; }
-QScrollBar::handle:horizontal { background-color: #bcc0cc; border-radius: 4px; min-width: 20px; }
+QScrollBar:horizontal {
+    background-color: transparent;
+    height: 8px;
+    margin: 0;
+}
 
+QScrollBar::handle:horizontal {
+    background-color: #bcc0cc;
+    border-radius: 4px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #acb0be;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal,
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    width: 0; background: transparent;
+}
+
+/* ---- Group Box ---- */
 QGroupBox {
     background-color: #e6e9ef;
     border: 1px solid #ccd0da;
@@ -194,9 +271,109 @@ QGroupBox::title {
     padding: 0 4px;
 }
 
+/* ---- Check Boxes ---- */
 QCheckBox { color: #4c4f69; spacing: 8px; }
-QCheckBox::indicator { width: 16px; height: 16px; border: 2px solid #bcc0cc; border-radius: 4px; background-color: #e6e9ef; }
-QCheckBox::indicator:checked { background-color: #1e66f5; border-color: #1e66f5; }
+QCheckBox::indicator {
+    width: 16px; height: 16px;
+    border: 2px solid #bcc0cc;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+QCheckBox::indicator:checked {
+    background-color: #1e66f5;
+    border-color: #1e66f5;
+}
 
-QToolTip { background-color: #e6e9ef; color: #4c4f69; border: 1px solid #bcc0cc; border-radius: 4px; padding: 4px 8px; }
+/* ---- Tool Tips ---- */
+QToolTip {
+    background-color: #e6e9ef;
+    color: #4c4f69;
+    border: 1px solid #bcc0cc;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* ---- Message Box ---- */
 QMessageBox { background-color: #e6e9ef; }
+
+/* ---- Chart background ---- */
+QChartView { background-color: transparent; border: none; }
+
+/* ──────────────────────────────────────────
+   Sidebar header / footer
+────────────────────────────────────────── */
+#sidebarHeader {
+    background-color: #e6e9ef;
+    border-bottom: 1px solid #ccd0da;
+}
+#sidebarAppName { font-size: 16px; font-weight: bold; color: #1e66f5; letter-spacing: 1px; }
+#sidebarVersion { font-size: 10px; color: #9ca0b0; }
+#sidebarToggle  {
+    background: transparent; border: 1px solid #ccd0da;
+    border-radius: 4px; color: #6c6f85; font-size: 10px; padding: 0;
+}
+#sidebarToggle:hover { background: #dce0e8; color: #4c4f69; }
+#sidebarFooter  { font-size: 10px; color: #9ca0b0; padding: 4px; }
+#sidebarSep     { background-color: #ccd0da; border: none; }
+
+/* ──────────────────────────────────────────
+   Dashboard cards
+────────────────────────────────────────── */
+#dashCard, #sysInfoCard, #gaugesCard, #netCard, #gpuCard, #batCard {
+    background-color: #e6e9ef;
+    border: 1px solid #ccd0da;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+#infoKey   { color: #6c6f85; font-size: 11px; font-weight: 600; }
+#infoValue { color: #4c4f69; font-size: 13px; }
+#cardTitle { font-size: 14px; font-weight: bold; color: #4c4f69; }
+#pageTitle { font-size: 22px; font-weight: bold; color: #4c4f69; }
+
+/* ──────────────────────────────────────────
+   Welcome dialog
+────────────────────────────────────────── */
+#welcomeDialog { background-color: #e6e9ef; }
+#welcomePage   { background-color: #e6e9ef; }
+#welcomeBar    { background-color: #dce0e8; border-top: 1px solid #ccd0da; }
+#welcomeSkip   { background: transparent; border: none; color: #6c6f85; }
+#welcomeSkip:hover { color: #4c4f69; }
+#welcomeNav    { background: #dce0e8; border: 1px solid #bcc0cc; border-radius: 6px;
+                 padding: 6px 16px; color: #4c4f69; }
+#welcomeNext   { background: #1e66f5; border: none; border-radius: 6px;
+                 padding: 6px 20px; color: #ffffff; font-weight: bold; }
+#welcomeNext:hover { background: #4a80f7; }
+
+/* ──────────────────────────────────────────
+   Loading overlay
+────────────────────────────────────────── */
+#loadingOverlay { background: rgba(220,224,232,190); border-radius: 8px; }
+
+/* ──────────────────────────────────────────
+   Shared component text (was inline in C++)
+────────────────────────────────────────── */
+#introText  { color: #6c6f85; font-size: 12px; }
+#emptyHint  { color: #8c8fa1; padding: 24px; }
+#countLabel { color: #8c8fa1; }
+#statusLabel{ color: #6c6f85; }
+#cardSep    { background-color: #ccd0da; border: none; }
+#netTitle   { font-size: 14px; font-weight: bold; color: #209fb5; }
+#gpuTitle   { font-size: 14px; font-weight: bold; color: #8839ef; }
+#batTitle   { font-size: 14px; font-weight: bold; color: #40a02b; }
+#bannerText { color: #df8e1d; font-weight: bold; }
+
+/* ── Startup application rows ── */
+QFrame#startupRow        { background: #e6e9ef; border: 1px solid #ccd0da; border-radius: 10px; }
+QFrame#startupRow:hover  { background: #dce0e8; border-color: #bcc0cc; }
+#startupName  { color: #4c4f69; font-weight: 600; }
+#startupExec  { color: #6c6f85; font-family: Monospace; font-size: 11px; }
+#startupDelay { color: #df8e1d; font-size: 11px; }
+#startupToggle             { border: none; border-radius: 6px; padding: 6px 14px; font-weight: bold; }
+#startupToggle[on="true"]  { background: #40a02b; color: #ffffff; }
+#startupToggle[on="false"] { background: #ccd0da; color: #4c4f69; }
+#startupEdit, #startupRemove { background: transparent; border: 1px solid #bcc0cc; border-radius: 6px; padding: 4px 10px; }
+#startupEdit          { color: #1e66f5; }
+#startupEdit:hover    { background: #dce0e8; }
+#startupRemove        { color: #d20f39; }
+#startupRemove:hover  { background: #f2d5dc; }

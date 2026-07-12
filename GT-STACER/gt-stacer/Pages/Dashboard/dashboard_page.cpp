@@ -16,8 +16,8 @@
 static QFrame *makeSep()
 {
     auto *f = new QFrame;
+    f->setObjectName("cardSep");
     f->setFrameShape(QFrame::VLine);
-    f->setStyleSheet("background:#313244; border:none;");
     f->setFixedWidth(1);
     return f;
 }
@@ -58,7 +58,7 @@ void DashboardPage::buildUi()
 
     // Title
     auto *titleLbl = new QLabel(tr("Dashboard"));
-    titleLbl->setStyleSheet("font-size:22px;font-weight:bold;color:#cdd6f4;");
+    titleLbl->setObjectName("pageTitle");
     root->addWidget(titleLbl);
 
     // ─── System Info Card ───────────────────────────────────────────
@@ -131,10 +131,10 @@ void DashboardPage::buildUi()
     auto *nl = new QVBoxLayout(netCard);
     nl->setContentsMargins(18,14,18,14); nl->setSpacing(8);
     auto *nt = new QLabel(tr("Network"));
-    nt->setStyleSheet("font-size:14px;font-weight:bold;color:#89dceb;");
+    nt->setObjectName("netTitle");
     nl->addWidget(nt);
-    auto *ns = new QFrame; ns->setFrameShape(QFrame::HLine);
-    ns->setStyleSheet("background:#313244;border:none;"); ns->setFixedHeight(1);
+    auto *ns = new QFrame; ns->setObjectName("cardSep"); ns->setFrameShape(QFrame::HLine);
+    ns->setFixedHeight(1);
     nl->addWidget(ns);
 
     auto addNetRow = [&](const QString &k, QLabel **out){
@@ -159,10 +159,10 @@ void DashboardPage::buildUi()
     auto *gpuL = new QVBoxLayout(m_gpuCard);
     gpuL->setContentsMargins(18,14,18,14); gpuL->setSpacing(8);
     auto *gt2 = new QLabel(tr("GPU"));
-    gt2->setStyleSheet("font-size:14px;font-weight:bold;color:#cba6f7;");
+    gt2->setObjectName("gpuTitle");
     gpuL->addWidget(gt2);
-    auto *gs = new QFrame; gs->setFrameShape(QFrame::HLine);
-    gs->setStyleSheet("background:#313244;border:none;"); gs->setFixedHeight(1);
+    auto *gs = new QFrame; gs->setObjectName("cardSep"); gs->setFrameShape(QFrame::HLine);
+    gs->setFixedHeight(1);
     gpuL->addWidget(gs);
 
     auto addGpuRow = [&](const QString &k, QLabel **out){
@@ -185,10 +185,10 @@ void DashboardPage::buildUi()
     auto *batL = new QVBoxLayout(m_batCard);
     batL->setContentsMargins(18,14,18,14); batL->setSpacing(8);
     auto *bt = new QLabel(tr("Battery"));
-    bt->setStyleSheet("font-size:14px;font-weight:bold;color:#a6e3a1;");
+    bt->setObjectName("batTitle");
     batL->addWidget(bt);
-    auto *bs2 = new QFrame; bs2->setFrameShape(QFrame::HLine);
-    bs2->setStyleSheet("background:#313244;border:none;"); bs2->setFixedHeight(1);
+    auto *bs2 = new QFrame; bs2->setObjectName("cardSep"); bs2->setFrameShape(QFrame::HLine);
+    bs2->setFixedHeight(1);
     batL->addWidget(bs2);
 
     m_batGauge = new CircularGauge;

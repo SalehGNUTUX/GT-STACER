@@ -1,10 +1,74 @@
 #include "startup_tool.h"
 #include "../Utils/file_util.h"
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QSet>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QTextStream>
+
+namespace {
+
+// Strip freedesktop field codes (%f %F %u %U %i %c %k …) from an Exec line.
+// Autostart entries run with no file/URL arguments, so leaving the codes in
+// would pass literal "%F" to the program (or make a sh -c wrapper malformed).
+QString stripFieldCodes(QString exec)
+{
+    exec.replace(QRegularExpression("%[fFuUdDnNickvm]"), "");
+    return exec.simplified();
+}
+
+// Read a .desktop file's [Desktop Entry] group into an ordered key→value map.
+// QSettings parses freedesktop files fine for *reading*; the trouble is only
+// on write (it re-quotes/escapes values in a way desktops reject), so all
+// writing below goes through writeDesktopEntry() as plain UTF-8 text instead.
+QMap<QString, QString> readDesktopEntry(const QString &path)
+{
+    QMap<QString, QString> map;
+    QSettings ini(path, QSettings::IniFormat);
+    ini.beginGroup("Desktop Entry");
+    for (const QString &key : ini.childKeys())
+        map.insert(key, ini.value(key).toString());
+    return map;
+}
+
+// Write a freedesktop-compliant .desktop file as plain UTF-8 text. This is the
+// fix for "Add didn't work": QSettings mangled Exec/Name (quoting, unicode
+// escapes) so desktop environments silently ignored the generated entry.
+bool writeDesktopEntry(const QString &path, const QMap<QString, QString> &map)
+{
+    QFile f(path);
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        return false;
+    QTextStream out(&f);
+    out.setEncoding(QStringConverter::Utf8);
+    out << "[Desktop Entry]\n";
+    // Type first for readability; the rest in insertion/sorted order.
+    if (map.contains("Type"))
+        out << "Type=" << map.value("Type") << "\n";
+    for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
+        if (it.key() == "Type") continue;
+        out << it.key() << "=" << it.value() << "\n";
+    }
+    out.flush();
+    f.close();
+    return true;
+}
+
+// Wrap a command so it launches `delay` seconds after login. Portable across
+// desktops (unlike the GNOME/KDE-specific delay keys) — we shell out to a
+// sleep. The original command is stored separately so the UI can show it clean.
+QString buildDelayedExec(const QString &original, int delay)
+{
+    if (delay <= 0) return original;
+    QString inner = stripFieldCodes(original);
+    inner.replace('\\', "\\\\").replace('"', "\\\"");
+    return QString("sh -c \"sleep %1 && exec %2\"").arg(delay).arg(inner);
+}
+
+} // namespace
 
 QString StartupTool::autostartDir()
 {
@@ -21,16 +85,23 @@ QVector<StartupEntry> StartupTool::entries()
 
     for (const auto &file : dir.entryList({"*.desktop"}, QDir::Files)) {
         QString path = dir.filePath(file);
-        QSettings ini(path, QSettings::IniFormat);
-        ini.beginGroup("Desktop Entry");
+        const auto map = readDesktopEntry(path);
 
         StartupEntry e;
         e.filePath = path;
-        e.name     = ini.value("Name").toString();
-        e.exec     = ini.value("Exec").toString();
-        e.comment  = ini.value("Comment").toString();
-        e.icon     = ini.value("Icon").toString();
-        e.enabled  = ini.value("X-GNOME-Autostart-enabled", true).toBool();
+        e.name     = map.value("Name");
+        e.comment  = map.value("Comment");
+        e.icon     = map.value("Icon");
+        // X-GNOME-Autostart-enabled defaults to true when absent.
+        e.enabled  = map.value("X-GNOME-Autostart-enabled", "true").toLower() != "false";
+        // If we wrote a delayed wrapper, prefer the stored original command +
+        // delay so the row shows the real program, not the sh -c wrapper.
+        if (map.contains("X-GTStacer-Exec")) {
+            e.exec         = map.value("X-GTStacer-Exec");
+            e.delaySeconds = map.value("X-GTStacer-Delay", "0").toInt();
+        } else {
+            e.exec = map.value("Exec");
+        }
         result << e;
     }
     return result;
@@ -38,18 +109,16 @@ QVector<StartupEntry> StartupTool::entries()
 
 bool StartupTool::enable(const QString &filePath)
 {
-    QSettings ini(filePath, QSettings::IniFormat);
-    ini.beginGroup("Desktop Entry");
-    ini.setValue("X-GNOME-Autostart-enabled", true);
-    return true;
+    auto map = readDesktopEntry(filePath);
+    map["X-GNOME-Autostart-enabled"] = "true";
+    return writeDesktopEntry(filePath, map);
 }
 
 bool StartupTool::disable(const QString &filePath)
 {
-    QSettings ini(filePath, QSettings::IniFormat);
-    ini.beginGroup("Desktop Entry");
-    ini.setValue("X-GNOME-Autostart-enabled", false);
-    return true;
+    auto map = readDesktopEntry(filePath);
+    map["X-GNOME-Autostart-enabled"] = "false";
+    return writeDesktopEntry(filePath, map);
 }
 
 bool StartupTool::remove(const QString &filePath)
@@ -59,16 +128,25 @@ bool StartupTool::remove(const QString &filePath)
 
 bool StartupTool::add(const StartupEntry &entry)
 {
-    QString path = autostartDir() + "/" + entry.name.simplified().replace(' ', '-') + ".desktop";
-    QSettings ini(path, QSettings::IniFormat);
-    ini.beginGroup("Desktop Entry");
-    ini.setValue("Type",    "Application");
-    ini.setValue("Name",    entry.name);
-    ini.setValue("Exec",    entry.exec);
-    ini.setValue("Comment", entry.comment);
-    ini.setValue("Icon",    entry.icon);
-    ini.setValue("X-GNOME-Autostart-enabled", entry.enabled);
-    return true;
+    QString base = entry.name.simplified().replace(' ', '-');
+    if (base.isEmpty()) base = "gt-stacer-entry";
+    QString path = autostartDir() + "/" + base + ".desktop";
+
+    QMap<QString, QString> map;
+    map["Type"]    = "Application";
+    map["Name"]    = entry.name;
+    map["Exec"]    = buildDelayedExec(entry.exec, entry.delaySeconds);
+    map["Comment"] = entry.comment;
+    if (!entry.icon.isEmpty())
+        map["Icon"] = entry.icon;
+    map["Terminal"] = "false";
+    map["X-GNOME-Autostart-enabled"] = entry.enabled ? "true" : "false";
+    // Round-trip metadata so entries() can restore the clean command + delay.
+    if (entry.delaySeconds > 0) {
+        map["X-GTStacer-Exec"]  = entry.exec;
+        map["X-GTStacer-Delay"] = QString::number(entry.delaySeconds);
+    }
+    return writeDesktopEntry(path, map);
 }
 
 QVector<StartupEntry> StartupTool::systemApplications()
@@ -87,9 +165,11 @@ QVector<StartupEntry> StartupTool::systemApplications()
         ? QDir::homePath() + "/.local/share"
         : QString::fromLocal8Bit(xdgHome);
     searchDirs << userBase + "/applications";
-    // Flatpak exports.
+    // Flatpak exports (system-wide + per-user).
     searchDirs << "/var/lib/flatpak/exports/share/applications"
                << userBase + "/flatpak/exports/share/applications";
+    // Snap desktop files.
+    searchDirs << "/var/lib/snapd/desktop/applications";
 
     QSet<QString> seen; // by basename, so user-local entries override system-wide.
 

@@ -89,4 +89,10 @@ inline QString helpers() { return R"svg(
            a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
 </svg>)svg"; }
 
+inline QString relief() { return R"svg(
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+</svg>)svg"; }
+
 } // namespace SidebarIcons

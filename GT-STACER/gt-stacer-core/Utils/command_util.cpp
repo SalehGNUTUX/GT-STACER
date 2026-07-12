@@ -1,9 +1,33 @@
 #include "command_util.h"
+#include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QTemporaryFile>
 #include <QRegularExpression>
 #include <QDir>
+
+namespace {
+// True when GT-STACER is running inside a Flatpak sandbox. We detect this once
+// at startup; the result never changes during a session.
+bool runningInFlatpak()
+{
+    static const bool inside =
+        !qEnvironmentVariableIsEmpty("FLATPAK_ID")
+        || QFileInfo::exists("/.flatpak-info");
+    return inside;
+}
+
+// Wrap an argv array with `flatpak-spawn --host` when we're sandboxed, so the
+// command runs on the host system rather than inside the sandbox (which has
+// no pkexec, no apt, no systemctl). Outside Flatpak this is a no-op.
+void wrapForHost(QString &program, QStringList &args)
+{
+    if (!runningInFlatpak()) return;
+    args.prepend(program);
+    args.prepend("--host");
+    program = "flatpak-spawn";
+}
+} // namespace
 
 QString CommandUtil::exec(const QString &command)
 {
@@ -30,7 +54,17 @@ int CommandUtil::execStatus(const QString &command)
 
 bool CommandUtil::commandExists(const QString &command)
 {
-    return !QStandardPaths::findExecutable(command).isEmpty();
+    // Outside Flatpak this is a straight PATH lookup. Inside Flatpak the
+    // sandbox PATH almost never matches the host's, so we ask the host via
+    // `flatpak-spawn --host which …` instead — otherwise every PackageTool
+    // probe ("does apt-get exist?") would falsely report missing.
+    if (!runningInFlatpak())
+        return !QStandardPaths::findExecutable(command).isEmpty();
+
+    QProcess p;
+    p.start("flatpak-spawn", {"--host", "which", command});
+    if (!p.waitForFinished(3000)) { p.kill(); return false; }
+    return p.exitCode() == 0;
 }
 
 QString CommandUtil::execSudo(const QString &command)
@@ -40,8 +74,11 @@ QString CommandUtil::execSudo(const QString &command)
 
 int CommandUtil::execProgram(const QString &program, const QStringList &args, int timeoutMs)
 {
+    QString prog = program;
+    QStringList a = args;
+    wrapForHost(prog, a);     // no-op outside Flatpak
     QProcess p;
-    p.start(program, args);
+    p.start(prog, a);
     if (!p.waitForStarted(timeoutMs)) return -1;
     if (!p.waitForFinished(timeoutMs)) { p.kill(); return -1; }
     return p.exitCode();
@@ -49,8 +86,11 @@ int CommandUtil::execProgram(const QString &program, const QStringList &args, in
 
 QString CommandUtil::execProgramOutput(const QString &program, const QStringList &args, int timeoutMs)
 {
+    QString prog = program;
+    QStringList a = args;
+    wrapForHost(prog, a);
     QProcess p;
-    p.start(program, args);
+    p.start(prog, a);
     if (!p.waitForStarted(timeoutMs)) return {};
     if (!p.waitForFinished(timeoutMs)) { p.kill(); return {}; }
     return QString::fromUtf8(p.readAllStandardOutput()).trimmed();
@@ -65,8 +105,20 @@ bool CommandUtil::pkexecWriteFile(const QString &destPath, const QByteArray &con
     if (destPath.contains(QChar(0)) || destPath.contains('\n') || destPath.isEmpty())
         return false;
 
-    // Write content to a temp file under the user's runtime/temp dir.
-    QTemporaryFile tmp(QDir::tempPath() + "/gt-stacer-XXXXXX");
+    // Pick a temp directory that both the sandbox and the host can see.
+    //  - Outside Flatpak: regular /tmp is fine.
+    //  - Inside Flatpak:  /tmp is private to the sandbox, so we drop the file
+    //    into ~/.cache/gt-stacer-tmp/ which both sides can read (we exposed
+    //    --filesystem=home in the manifest).
+    QString tmpDir;
+    if (qEnvironmentVariableIsSet("FLATPAK_ID") || QFileInfo::exists("/.flatpak-info")) {
+        tmpDir = QDir::homePath() + "/.cache/gt-stacer-tmp";
+        QDir().mkpath(tmpDir);
+    } else {
+        tmpDir = QDir::tempPath();
+    }
+
+    QTemporaryFile tmp(tmpDir + "/gt-stacer-XXXXXX");
     tmp.setAutoRemove(true);
     if (!tmp.open()) return false;
     if (tmp.write(content) != content.size()) return false;

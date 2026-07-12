@@ -1,5 +1,6 @@
 #include "startup_apps_page.h"
 #include "../../Dialogs/startup_add_dialog.h"
+#include "../../Managers/theme.h"
 #include "../../../gt-stacer-core/Tools/startup_tool.h"
 #include <QFileInfo>
 #include <QFrame>
@@ -33,11 +34,11 @@ QPixmap iconPixmapFor(const QString &iconKey, int size)
         QPixmap pm(size, size); pm.fill(Qt::transparent);
         QPainter p(&pm);
         p.setRenderHint(QPainter::Antialiasing);
-        p.setBrush(QColor(0x31, 0x32, 0x44));
-        p.setPen(QColor(0x45, 0x47, 0x5a));
+        p.setBrush(Theme::surface());
+        p.setPen(Theme::overlay());
         p.drawRoundedRect(1, 1, size - 2, size - 2, 6, 6);
         QFont f = p.font(); f.setBold(true); f.setPixelSize(size / 2);
-        p.setFont(f); p.setPen(QColor(0xa6, 0xad, 0xc8));
+        p.setFont(f); p.setPen(Theme::subtext());
         p.drawText(QRect(0, 0, size, size), Qt::AlignCenter, "?");
         return pm;
     }
@@ -52,7 +53,7 @@ StartupAppsPage::StartupAppsPage(QWidget *parent) : QWidget(parent)
     root->setSpacing(12);
 
     auto *title = new QLabel(tr("Startup Applications"));
-    title->setStyleSheet("font-size:22px;font-weight:bold;color:#cdd6f4;");
+    title->setObjectName("pageTitle");
     root->addWidget(title);
 
     // Header row: search + add + refresh + count.
@@ -81,7 +82,7 @@ StartupAppsPage::StartupAppsPage(QWidget *parent) : QWidget(parent)
     m_rowsBox->setContentsMargins(0, 0, 0, 0);
     m_rowsBox->setSpacing(8);
     m_emptyHint = new QLabel(tr("No autostart entries yet. Click \"Add…\" to create one."));
-    m_emptyHint->setStyleSheet("color:#6c7086;padding:24px;");
+    m_emptyHint->setObjectName("emptyHint");
     m_emptyHint->setAlignment(Qt::AlignCenter);
     m_rowsBox->addWidget(m_emptyHint);
     m_rowsBox->addStretch();
@@ -89,7 +90,7 @@ StartupAppsPage::StartupAppsPage(QWidget *parent) : QWidget(parent)
     root->addWidget(scroll, 1);
 
     m_countLabel = new QLabel;
-    m_countLabel->setStyleSheet("color:#6c7086;");
+    m_countLabel->setObjectName("countLabel");
     root->addWidget(m_countLabel);
 
     connect(addBtn,     &QPushButton::clicked, this, &StartupAppsPage::openAddDialog);
@@ -121,10 +122,6 @@ void StartupAppsPage::appendRow(const StartupEntry &entry)
 {
     auto *row = new QFrame;
     row->setObjectName("startupRow");
-    row->setStyleSheet(
-        "QFrame#startupRow { background:#181825; border:1px solid #313244; "
-        "border-radius:10px; padding:8px; }"
-        "QFrame#startupRow:hover { background:#1f2238; }");
     auto *h = new QHBoxLayout(row);
     h->setContentsMargins(10, 8, 10, 8);
     h->setSpacing(12);
@@ -138,31 +135,33 @@ void StartupAppsPage::appendRow(const StartupEntry &entry)
     auto *textCol = new QVBoxLayout;
     textCol->setSpacing(2);
     auto *nameLbl = new QLabel(entry.name.isEmpty() ? QFileInfo(entry.filePath).baseName() : entry.name);
-    nameLbl->setStyleSheet("color:#cdd6f4;font-weight:600;");
+    nameLbl->setObjectName("startupName");
     auto *execLbl = new QLabel(entry.exec);
-    execLbl->setStyleSheet("color:#6c7086;font-family:Monospace;font-size:11px;");
+    execLbl->setObjectName("startupExec");
     execLbl->setTextInteractionFlags(Qt::TextSelectableByMouse);
     textCol->addWidget(nameLbl);
     textCol->addWidget(execLbl);
+    if (entry.delaySeconds > 0) {
+        auto *delayLbl = new QLabel(tr("⏱ delayed %1 s after login").arg(entry.delaySeconds));
+        delayLbl->setObjectName("startupDelay");
+        textCol->addWidget(delayLbl);
+    }
     h->addLayout(textCol, 1);
 
     // Toggle ON/OFF: QPushButton + checkable, colored by state.
     auto *toggle = new QPushButton;
+    toggle->setObjectName("startupToggle");
     toggle->setCheckable(true);
     toggle->setChecked(entry.enabled);
     toggle->setMinimumWidth(78);
+    // Styling lives in QSS keyed on the dynamic "on" property so it follows the
+    // active theme; we only flip the property + text here and re-polish.
     auto applyToggleStyle = [toggle]() {
-        if (toggle->isChecked()) {
-            toggle->setText(tr("ON"));
-            toggle->setStyleSheet(
-                "background:#a6e3a1;color:#11111b;font-weight:bold;"
-                "border-radius:6px;padding:6px 14px;");
-        } else {
-            toggle->setText(tr("OFF"));
-            toggle->setStyleSheet(
-                "background:#45475a;color:#cdd6f4;"
-                "border-radius:6px;padding:6px 14px;");
-        }
+        const bool on = toggle->isChecked();
+        toggle->setText(on ? tr("ON") : tr("OFF"));
+        toggle->setProperty("on", on);
+        toggle->style()->unpolish(toggle);
+        toggle->style()->polish(toggle);
     };
     applyToggleStyle();
     const QString path = entry.filePath;
@@ -173,14 +172,22 @@ void StartupAppsPage::appendRow(const StartupEntry &entry)
     });
     h->addWidget(toggle);
 
+    // Edit button — reopens the add dialog pre-filled so the delay and other
+    // fields of an already-configured entry can be changed.
+    auto *editBtn = new QToolButton;
+    editBtn->setText("✎");
+    editBtn->setObjectName("startupEdit");
+    editBtn->setToolTip(tr("Edit this entry"));
+    connect(editBtn, &QToolButton::clicked, this, [this, entry]() {
+        openEditDialog(entry);
+    });
+    h->addWidget(editBtn);
+
     // Remove button (trash icon)
     auto *rmBtn = new QToolButton;
     rmBtn->setText("✕");
+    rmBtn->setObjectName("startupRemove");
     rmBtn->setToolTip(tr("Remove from autostart"));
-    rmBtn->setStyleSheet(
-        "QToolButton { color:#f38ba8; background:transparent; "
-        "border:1px solid #45475a; border-radius:6px; padding:4px 10px; }"
-        "QToolButton:hover { background:#311b22; }");
     connect(rmBtn, &QToolButton::clicked, this, [this, path, entry]() {
         int yes = QMessageBox::question(this, tr("Remove"),
             tr("Remove '%1' from autostart?").arg(entry.name));
@@ -228,6 +235,24 @@ void StartupAppsPage::openAddDialog()
         QMessageBox::warning(this, tr("Error"),
             tr("Could not write the autostart entry."));
         return;
+    }
+    refresh();
+}
+
+void StartupAppsPage::openEditDialog(const StartupEntry &entry)
+{
+    StartupAddDialog dlg(this);
+    dlg.loadForEdit(entry);
+    if (dlg.exec() != QDialog::Accepted) return;
+
+    StartupEntry updated = dlg.result();
+    updated.enabled = entry.enabled;   // preserve the ON/OFF state across an edit
+    // Remove the old file first — renaming the entry changes the derived
+    // filename, so overwriting alone would leave a stale duplicate behind.
+    StartupTool::remove(entry.filePath);
+    if (!StartupTool::add(updated)) {
+        QMessageBox::warning(this, tr("Error"),
+            tr("Could not update the autostart entry."));
     }
     refresh();
 }

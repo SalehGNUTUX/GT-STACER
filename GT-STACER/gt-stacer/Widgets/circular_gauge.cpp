@@ -1,4 +1,5 @@
 #include "circular_gauge.h"
+#include "../Managers/theme.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QtMath>
@@ -42,10 +43,10 @@ void CircularGauge::setValueAnimated(double v)
 QColor CircularGauge::arcColor() const
 {
     double pct = (m_max > m_min) ? (m_value - m_min) / (m_max - m_min) * 100.0 : 0.0;
-    if (pct < 60.0) return QColor("#a6e3a1");
-    if (pct < 80.0) return QColor("#f9e2af");
-    if (pct < 90.0) return QColor("#fab387");
-    return QColor("#f38ba8");
+    if (pct < 60.0) return Theme::green();
+    if (pct < 80.0) return Theme::yellow();
+    if (pct < 90.0) return Theme::peach();
+    return Theme::red();
 }
 
 void CircularGauge::paintEvent(QPaintEvent *)
@@ -71,7 +72,7 @@ void CircularGauge::paintEvent(QPaintEvent *)
     const int lw = qMax(6, side / 11);
 
     // ── Track arc ────────────────────────────────────────────────────
-    QPen trackPen(QColor(255, 255, 255, 18), lw, Qt::SolidLine, Qt::FlatCap);
+    QPen trackPen(Theme::gaugeTrack(), lw, Qt::SolidLine, Qt::FlatCap);
     p.setPen(trackPen);
     p.setBrush(Qt::NoBrush);
     const QRect arcRect = gaugeRect.adjusted(lw/2, lw/2, -lw/2, -lw/2);
@@ -101,7 +102,7 @@ void CircularGauge::paintEvent(QPaintEvent *)
     QFont valFont = font();
     valFont.setPixelSize(qMax(11, side / 4));
     valFont.setBold(true);
-    p.setPen(QColor(0xcd, 0xd6, 0xf4));
+    p.setPen(Theme::text());
     p.setFont(valFont);
 
     QString valStr = (m_unit == "%")
@@ -115,7 +116,7 @@ void CircularGauge::paintEvent(QPaintEvent *)
     labelFont.setPixelSize(qMax(10, side / 8));
     labelFont.setBold(true);
     p.setFont(labelFont);
-    p.setPen(QColor(0xa6, 0xad, 0xc8));
+    p.setPen(Theme::subtext());
     p.drawText(QRect(0, labelY, W, labelH), Qt::AlignCenter, m_label);
 
     // ── النص الفرعي (مثل "4.6 GB / 7.65 GB") — أسفل الاسم ───────────
@@ -123,7 +124,7 @@ void CircularGauge::paintEvent(QPaintEvent *)
         QFont subFont = font();
         subFont.setPixelSize(qMax(8, side / 10));
         p.setFont(subFont);
-        p.setPen(QColor(0x6c, 0x70, 0x86));
+        p.setPen(Theme::faint());
         p.drawText(QRect(4, labelY + labelH, W - 8, subH),
                    Qt::AlignCenter, m_subText);
     }

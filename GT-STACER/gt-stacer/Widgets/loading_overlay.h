@@ -10,6 +10,7 @@ public:
     explicit LoadingOverlay(QWidget *parent);
 
     void start(const QString &message = "");
+    void setMessage(const QString &message);
     void stop();
 
 protected:

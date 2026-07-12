@@ -13,6 +13,7 @@
 #include "Pages/AptSourceManager/apt_source_page.h"
 #include "Pages/Settings/settings_page.h"
 #include "Pages/Helpers/helpers_page.h"
+#include "Pages/Relief/relief_page.h"
 #include "Dialogs/about_dialog.h"
 
 #include <QHBoxLayout>
@@ -23,7 +24,7 @@
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
 
-static constexpr int kNumPages = 10;
+static constexpr int kNumPages = 11;
 
 App::App(QWidget *parent) : QMainWindow(parent)
 {
@@ -40,8 +41,10 @@ App::App(QWidget *parent) : QMainWindow(parent)
     AppManager::instance()->initTray(this);
 
     // ── Keyboard shortcuts ─────────────────────────────────────────────
-    // Ctrl+1..9,0 jump to the corresponding sidebar page (0 = page 10, Helpers).
-    for (int i = 0; i < kNumPages; ++i) {
+    // Ctrl+1..9,0 jump to the first ten sidebar pages (0 = page 10, Helpers).
+    // Pages beyond the tenth (System Relief) have no digit shortcut — mapping
+    // an 11th would collide with Ctrl+1.
+    for (int i = 0; i < qMin(kNumPages, 10); ++i) {
         QKeySequence keys(QString("Ctrl+%1").arg((i + 1) % 10));
         auto *sc = new QShortcut(keys, this);
         connect(sc, &QShortcut::activated, this, [this, i]{ navigateTo(i); });
@@ -133,6 +136,7 @@ QWidget *App::materializePage(int index)
     case 7: page = new AptSourcePage;     break;
     case 8: page = new SettingsPage;      break;
     case 9: page = new HelpersPage;       break;
+    case 10: page = new ReliefPage;       break;
     default: return nullptr;
     }
 
@@ -162,6 +166,7 @@ void App::setupSidebar()
         {SidebarIcons::aptSources(),  tr("APT Sources"),      tr("Package repositories")},
         {SidebarIcons::settings(),    tr("Settings"),         tr("Application settings")},
         {SidebarIcons::helpers(),     tr("Helpers"),          tr("System utilities")},
+        {SidebarIcons::relief(),      tr("System Relief"),    tr("Relieve RAM/CPU pressure")},
     };
     for (const auto &item : items)
         m_sidebar->addItem(item);
@@ -246,4 +251,36 @@ void App::changeEvent(QEvent *event)
         hide();
     }
     QMainWindow::changeEvent(event);
+}
+
+// When the window is hidden (minimised to tray), pause every page's QTimer.
+// Refresh data in the background while the user can't see it is pure waste —
+// CPU samples, network polls and table rebuilds chew through battery without
+// anyone benefiting. We restart them on showEvent().
+//
+// The CpuSampler worker thread (in gt-stacer-core) keeps running because the
+// tray tooltip still needs current values; it's already throttled to one
+// sample per second.
+void App::hideEvent(QHideEvent *event)
+{
+    for (QWidget *page : m_pages) {
+        if (!page) continue;
+        for (QTimer *t : page->findChildren<QTimer*>()) {
+            // keepAlive timers (e.g. the System Relief auto-mode watchdog) must
+            // keep running in the tray — background protection is their purpose.
+            if (t->property("keepAlive").toBool()) continue;
+            if (t->isActive()) { t->setProperty("wasActive", true); t->stop(); }
+        }
+    }
+    QMainWindow::hideEvent(event);
+}
+
+void App::showEvent(QShowEvent *event)
+{
+    for (QWidget *page : m_pages) {
+        if (!page) continue;
+        for (QTimer *t : page->findChildren<QTimer*>())
+            if (t->property("wasActive").toBool()) { t->setProperty("wasActive", false); t->start(); }
+    }
+    QMainWindow::showEvent(event);
 }

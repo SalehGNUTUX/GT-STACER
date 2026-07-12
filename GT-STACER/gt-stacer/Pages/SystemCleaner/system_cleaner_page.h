@@ -32,8 +32,10 @@ private:
         UserFiles,        // QFile::remove inside path (user owns it)
         RootRotatedLogs,  // pkexec find … -name *.gz/*.1/*.old -delete
         RootAllInDir,     // pkexec find … -mindepth 1 -delete
-        AptClean,         // pkexec apt-get clean
+        PkgClean,         // PackageTool::cleanCache(primary) — works for every manager
         OldKernelsApt,    // pkexec apt-get autoremove --purge
+        FlatpakUnused,    // flatpak uninstall --unused -y  (per-app drill-down available)
+        SnapDisabled,     // pkexec snap remove-disabled    (per-app drill-down available)
     };
 
     struct Category {

@@ -6,6 +6,201 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.07-stable] — 2026-07-11
+
+Field-test follow-up to 26.06. Focus: making long operations visibly
+in-progress, fixing autostart, two new headline tools (System Relief and a
+Power timer), and finishing the Arabic UI to 100 %.
+
+### Startup Applications
+- **Autostart entries now actually launch.** Entries were written through
+  `QSettings`, which mangles a `.desktop` file (value quoting / unicode
+  escaping) so desktops silently ignored them. `StartupTool` now writes
+  freedesktop-compliant `.desktop` files as plain UTF-8 text; `enable`/
+  `disable` edit them in place the same way.
+- **Flatpak & Snap apps** are now listed in the "Add…" browser (Snap desktop
+  files under `/var/lib/snapd/desktop/applications`, alongside the existing
+  Flatpak exports).
+- **Start delay** — each autostart entry can wait N seconds after login before
+  launching (wrapped as `sh -c "sleep N && exec …"`, field codes stripped).
+  The configured delay is shown on the row.
+
+### Settings
+- **Start GT-STACER on system login** — a new checkbox that reflects the real
+  state of the managed `~/.config/autostart` entry and writes/removes it on
+  apply (AppImage uses `$APPIMAGE`, otherwise the installed binary path).
+- **Power timer** — schedule Shut down / Restart / Suspend (to RAM) /
+  Hibernate (to disk) after a set number of minutes, with a live countdown and
+  a cancel button. Runs through `systemctl` (logind/polkit), so it works under
+  Flatpak too. A confirmation guards against an accidental schedule.
+
+### System Relief (new page)
+- Temporarily **freezes idle, non-critical, user-owned processes** (SIGSTOP) to
+  relieve RAM/CPU pressure, then thaws them (SIGCONT). Freezing is fully
+  reversible — no process state is lost.
+- Safety layers: only the current user's own processes are eligible;
+  `ProcessInfo::isCriticalProcess` plus a desktop-shell denylist (compositors,
+  panels, portals, input methods) are excluded; GT-STACER never freezes itself;
+  everything frozen is resumed on exit.
+- **Fix — never freeze the launching session.** Relief could suspend the very
+  terminal, shell, or `node`/agent process that launched GT-STACER (its comm may
+  be a version string, not `node`), freezing the user's session. `candidates()`
+  now excludes (1) GT-STACER's full ancestor chain walked via `/proc/<pid>/stat`,
+  (2) every process in its controlling-terminal session (`getsid`), and (3) a
+  name denylist of terminals, shells and multiplexers. Both the manual and
+  automatic paths are covered.
+- **Manual**: pick from a memory-sorted candidate list and "Relieve now",
+  optionally dropping clean file caches (`vm.drop_caches=3` via pkexec).
+- **Automatic mode** (off by default): watches CPU/RAM and freezes idle apps
+  after sustained pressure, thawing them once it clears. Its watchdog keeps
+  running in the tray.
+
+### Uninstaller
+- **Visible progress** — a full-page spinner overlay with a live "Removing X
+  (i of n)…" message now dims the page and blocks interaction during removal,
+  so a slow uninstall no longer looks like a hang.
+- **Externally / manually installed apps are now detected** (`External`). Apps
+  dropped in by install scripts (e.g. Megacubo via `wget | bash`), tarballs
+  under `/opt`, or AppImages are found by scanning `.desktop` launchers whose
+  `Exec` lives under `/opt`, `/usr/local`, `~`, or ends in `.AppImage` — none of
+  which any package manager tracked, so they were previously impossible to
+  remove from here.
+- **Respects shared installs.** A single batched ownership query
+  (`dpkg -S` / `rpm -qf` / `pacman -Qo`) drops anything a package manager owns,
+  so e.g. a Brave PWA launcher pointing at `/opt/brave.com` never offers to
+  delete the whole browser.
+- Removal is end-to-end: the `.desktop` launcher, the `/opt` payload (or the
+  AppImage/binary), and per-user leftovers in `~/.config`, `~/.cache`,
+  `~/.local/{share,state}` — guarded by a path allowlist that can never delete a
+  shared system root.
+
+### Appearance
+- **Light theme rebuilt.** The light (Catppuccin Latte) theme was badly broken —
+  a dark sidebar, near-white titles that vanished on the light background, dark
+  cards and table rows — because many colors were hard-coded for dark mode in
+  C++ and the light QSS was missing ~150 lines of rules. A central `Theme`
+  palette (`Managers/theme.*`) now resolves every painted widget's colors from
+  the active theme (gauges, sidebar, cleaner cards), the remaining inline styles
+  moved to theme-aware `objectName` + QSS, and the light stylesheet was brought
+  to full parity with a modern, comfortable Latte look. The dark theme is
+  unchanged.
+
+### Translations
+- **Arabic UI at 100 %** again (486/486), covering every new string.
+- GPU is now "بطاقة الرسوميات" everywhere (was the transliterated "كرت").
+
+### Build / packaging
+- Version bumped to **26.07** (CMake 26.7.0, `APP_VERSION="26.07"`) across the
+  DEB / RPM / AppImage / Flatpak scripts.
+
+---
+
+## [26.06-stable] — 2026-05-15
+
+First **stable** release after the 26.05 beta. Every regression surfaced
+during field testing is fixed here, plus three large additions: Flatpak/Snap
+drill-down in the cleaner, multi-package uninstall, and a configurable
+notifications panel. No architectural changes — only polish, breadth, and
+safety.
+
+### Processes
+- **Multi-field search** (PID + name + cmdline + user). The 26.05 search hit
+  only the truncated 15-char kernel `comm`, so AppImage and wrapper processes
+  appeared "hidden" — a Stacer AppImage with `comm=AppRun` would not match
+  `stacer`. The new proxy searches across all four fields simultaneously.
+- **Smarter display name** — prefer the cmdline basename over `comm` when it
+  carries more characters. AppImage entries now show as
+  `Stacer-1.1.0-x64.AppImage` instead of `Stacer-1.1.0-x6`.
+- **Five new actions** beyond plain Terminate: Force kill (SIGKILL),
+  Suspend (SIGSTOP), Resume (SIGCONT), Lower priority, Raise priority — all
+  exposed in a **right-click context menu**.
+- **Critical-process guard**: kernel threads, PID 1, `systemd*`, `dbus`,
+  `Xorg`/`Xwayland`, `gnome-shell`/`plasmashell`, `pipewire*`, `NetworkManager`,
+  etc. trigger a red, escalated confirmation dialog before signalling.
+
+### System Cleaner
+- **Flatpak Apps** + **Snap Apps** cards (custom SVG icons) sit alongside
+  Trash / App Cache / Package Cache. Double-click opens a per-app dialog
+  with version, size, ID, search, sort, Select-All, and Remove-Selected —
+  the same UX as App Cache and Package Cache.
+- `PackageTool::flatpakApps()` parses `flatpak list --columns=name,application,version,size`;
+  `PackageTool::snapApps()` parses `snap list` and reads the on-disk
+  `.snap` blob size from `/var/lib/snapd/snaps` when present.
+- **Dynamic package-cache card** — labeled `APT Cache` on Debian/Ubuntu,
+  `DNF Cache` on Fedora, `Pacman Cache` on Arch, `Zypper Cache` on openSUSE,
+  and so on. Description and target path follow the detected manager.
+- **`Package Cache` drill-down** — list every `.deb` / `.rpm` / `.pkg.tar.zst`
+  with size + last-modified, search, sort, per-file removal through a single
+  `pkexec` prompt.
+- **Cleanup support for 13+ managers** — `cleanCache()` now covers APT, DNF,
+  DNF5, YUM, TDNF, Pacman/Yay/Paru, Zypper, XBPS, APK, Portage, Eopkg, Equo,
+  Swupd, Nix, Flatpak, Snap and Homebrew. Every branch uses `execProgram`
+  (no shell).
+
+### Uninstaller — multi-select
+- `ExtendedSelection` enabled; **Ctrl/Shift-click + Ctrl+A** queue up several
+  rows at once. The Uninstall button re-labels itself ("Uninstall 5 packages")
+  and the confirmation dialog lists every queued name.
+- Removals run sequentially on a `QtConcurrent::run` worker thread; the
+  status label updates "Removing X (3 of 5)…" between packages.
+- Final summary reports successes vs. failures with the failing names so the
+  user knows what to retry manually.
+- The Uninstall button stays disabled until a row is selected — the 26.05
+  beta silently no-op'd when users clicked the table without realising.
+- **First-visit auto-load** — `Load Packages` was renamed to **Reload**; the
+  scan starts automatically when the page first opens.
+
+### Notifications & alerts
+- The default disk-full notification was firing on tiny system partitions
+  (`/boot`, `/efi`) — those are now skipped, along with `/snap`, `/run`, and
+  any partition under 2 GB. Disk-threshold default raised to 95 %.
+- New **Settings → Notifications & alerts** group with checkbox + 4 spin
+  boxes (CPU/GPU °C, RAM %, Disk %, Battery %). `0` disables an individual
+  threshold without disabling the whole alert system. Live-applied through
+  `AlertManager::setEnabled()`.
+
+### Translations
+- **19 languages compiled at 100 %.** Every entry is `finished` from Qt's
+  point of view, so `lrelease` produces a usable QM for each language.
+- Arabic + English at full native coverage. French at **83 % native**
+  (346 / 417); German / Italian / Portuguese / Russian / Turkish at 33–43 %.
+- Per-language fallback policy: when a dictionary doesn't cover a string,
+  the English source is used as the visible text rather than an empty
+  `unfinished` entry. Better than blank, and contributors can refine each
+  string over time. The QM ships clean regardless.
+
+### Performance / power
+- **Hide-event timer pause**: when the window is minimised to the tray,
+  every page's `QTimer` is stopped (Dashboard refresh, Resources charts,
+  Processes refresh, Services refresh). `showEvent()` restarts only those
+  that were previously running, tagged via a dynamic `wasActive` property.
+- CpuSampler keeps running for the tray tooltip but is already on its own
+  thread and already throttled to 1 Hz.
+
+### Build / packaging
+- Version bumped to **26.06** (CMake 26.6.0, `APP_VERSION="26.06"`,
+  `APP_CHANNEL="stable"`).
+- **Flatpak packaging added** — `org.gnutux.gt-stacer` against
+  `org.kde.Platform//6.9`. Manifest at
+  `packaging/flatpak/org.gnutux.gt-stacer.yaml`, AppStream metainfo at
+  `packaging/flatpak/org.gnutux.gt-stacer.metainfo.xml`, build script
+  `packaging/build-flatpak.sh`. Sandbox-aware command layer in
+  `CommandUtil`: when `FLATPAK_ID` is set (or `/.flatpak-info` exists),
+  every `execProgram`, `execProgramOutput`, `commandExists` and
+  `pkexecWriteFile` call is rewritten to go through `flatpak-spawn --host`,
+  with the write-via-temp-file path relocated from `/tmp` to
+  `~/.cache/gt-stacer-tmp/` so the host can see the staged content. Tray
+  works without `--own-name` (newer Flatpak rejects the glob form), the
+  `StatusNotifierWatcher` registers items on demand.
+- Resized hicolor icons to their proper sizes (16/32/48/64/128/256) —
+  required by Flatpak's strict icon validator.
+- `scripts/build-all.sh` learns a new `flatpak` target and lists
+  `flatpak-builder` in `install-deps` for every supported distro.
+- DEB / RPM / AppImage / Flatpak rebuilt and verified; SHA-256 sums in
+  `release/SHA256SUMS.txt`.
+
+---
+
 ## [26.05-beta] — 2026-05-14
 
 ### Security
@@ -102,5 +297,6 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+[26.06-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.06-stable
 [26.05-beta]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.05-beta
 [26.04-alpha]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.04-alpha

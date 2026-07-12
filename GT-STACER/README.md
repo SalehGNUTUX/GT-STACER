@@ -7,7 +7,7 @@
 ### Linux System Optimizer and Monitor
 **محسّن ومراقب نظام لينكس**
 
-[![Version](https://img.shields.io/badge/version-26.05--beta-orange?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
+[![Version](https://img.shields.io/badge/version-26.06--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green?style=flat-square)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-6.2+-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.qt.io)
 [![C++](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)](https://isocpp.org)
@@ -18,15 +18,17 @@
 
 </div>
 
-> ## 🎉 ما الجديد في 26.05 beta
+> ## 🎉 ما الجديد في 26.06 stable
 >
-> - 🔒 **تحصين أمني** — إصلاح ثغرة Command Injection في محرر `/etc/hosts`، وتعقيم كل مدخلات `pkexec`
-> - ⚡ **أداء أعلى** — استبدال QtCharts بـ LineChart مخصص (~70% توفير ذاكرة)، CpuSampler في خيط منفصل، قراءة العمليات من `/proc` مباشرة
-> - 🧹 **منظف نظام جديد** — بطاقات أيقونية، فحص وتنظيف انتقائي، حوار تأكيد، حوار تفاصيل لكل تطبيق
-> - 🚀 **بدء التشغيل ثوري** — أيقونات حقيقية، toggle مباشر، إضافة من تطبيقات النظام
-> - 🔔 **تنبيهات** — عتبات حرارة CPU/GPU، قرص، بطارية، ذاكرة
-> - 🎨 **تتبع ثيم النظام** + **اختصارات لوحة المفاتيح** (Ctrl+1..0, F1, Ctrl+R, Ctrl+Q)
-> - 🌍 **18 ملف ترجمة** — العربية 100% · انظر [التفاصيل الكاملة في CHANGELOG.md](CHANGELOG.md)
+> - 🔍 **بحث Processes متعدد الحقول** — PID + اسم + cmdline + مستخدم (لا توجد عمليات مخفية بعد الآن)
+> - 🛑 **عمليات متقدمة** — Terminate / Force-kill / Suspend / Resume / Priority + قائمة سياق + تحذير العمليات الحرجة
+> - 🧹 **بطاقات Flatpak و Snap** في منظف النظام مع drill-down لكل تطبيق
+> - 📦 **منظف ديناميكي** — بطاقة "ذاكرة APT/DNF/Pacman…" حسب توزيعتك، يدعم 13+ مدير حزم
+> - 🗑️ **إزالة متعددة الحزم** في Uninstaller (Ctrl/Shift-click) مع progress تتابعي
+> - 🔔 **إعدادات التنبيهات** قابلة للضبط الكامل من Settings (4 عتبات + checkbox تعطيل)
+> - ⚡ **توقف المؤقتات** عند الإخفاء إلى tray (استهلاك CPU ≈ 0)
+> - 🌍 **19 لغة بـ 100% ملفات .qm** — العربية والإنجليزية أصلية، الفرنسية 83% أصلية، الباقي fallback إنجليزي للسلاسل الناقصة
+> - 🔒 **أمن** — كل العمليات الحساسة عبر pkexec بـ execProgram (لا shell). انظر [CHANGELOG.md](CHANGELOG.md) للقائمة الكاملة.
 
 ---
 
@@ -45,7 +47,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 ### ✨ ما الجديد في GT-STACER مقارنةً بالأصل
 
-| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.05 (2026) |
+| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.06 (2026) |
 |---|---|---|
 | إطار العمل | Qt5 (EOL) | **Qt6 ≥ 6.2** |
 | معيار C++ | C++11 | **C++17** |
@@ -65,10 +67,14 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | العربية | ✅ | ✅ ar_MA · RTL · أرقام غربية 🇲🇦 |
 | سلوك الإغلاق | إنهاء | ✅ قابل للضبط (تصغير للشريط / إنهاء) |
 | الثيم | QSS بسيط | **Catppuccin** dark/light + Auto (يتبع النظام) |
-| منظف النظام | جدول مسطح | **بطاقات أيقونية + checkbox لكل فئة + حوار تفاصيل لكل تطبيق** |
-| تنبيهات | ✗ | **libnotify** لعتبات الحرارة/الذاكرة/القرص/البطارية |
+| منظف النظام | جدول مسطح | **بطاقات أيقونية + drill-down لـ App/Package/Flatpak/Snap** |
+| Flatpak / Snap | إدارة منفصلة | **بطاقتان مع dialog متعدد التحديد** |
+| تنبيهات | ✗ | **libnotify + UI كامل في Settings** (4 عتبات + تعطيل) |
 | اختصارات لوحة المفاتيح | ✗ | **Ctrl+1..0** للتنقل · F1 · Ctrl+R · Ctrl+Q |
 | أيقونة Wayland | ✗ | **app_id صحيح** + ملف .desktop |
+| Uninstaller | حزمة واحدة | **متعدد التحديد** + progress تتابعي |
+| استهلاك الذاكرة | 80 MB | **~22 MB PSS** — أقل من Stacer 1.x |
+| ترجمات | 1 لغة كاملة | **19 لغة بـ .qm كامل** (fallback إنجليزي للناقص) |
 
 ---
 
@@ -115,27 +121,31 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | عالمي | Flatpak · Snap · AppImage · Homebrew |
 | بيئات اللغات | Conda · Mamba · pip3 · Cargo · npm |
 
-#### 🌐 دعم اللغات (19 لغة)
+#### 🌐 دعم اللغات (19 لغة، كل ملفات .qm تُولَّد 100%)
 
-| اللغة | الحالة | العلم |
-|---|---|---|
-| العربية (المغرب) | ✅ مكتملة | 🇲🇦 |
-| English | ✅ افتراضية | 🇬🇧 |
-| Deutsch | 🔄 قابلة للمساهمة | 🇩🇪 |
-| Français | 🔄 قابلة للمساهمة | 🇫🇷 |
-| हिन्दी | 🔄 قابلة للمساهمة | 🇮🇳 |
-| Italiano | 🔄 قابلة للمساهمة | 🇮🇹 |
-| Nederlands | 🔄 قابلة للمساهمة | 🇳🇱 |
-| Polski | 🔄 قابلة للمساهمة | 🇵🇱 |
-| Português | 🔄 قابلة للمساهمة | 🇧🇷 |
-| Русский | 🔄 قابلة للمساهمة | 🇷🇺 |
-| Svenska | 🔄 قابلة للمساهمة | 🇸🇪 |
-| Türkçe | 🔄 قابلة للمساهمة | 🇹🇷 |
-| Українська | 🔄 قابلة للمساهمة | 🇺🇦 |
-| Tiếng Việt | 🔄 قابلة للمساهمة | 🇻🇳 |
-| 简体中文 | 🔄 قابلة للمساهمة | 🇨🇳 |
-| 繁體中文 | 🔄 قابلة للمساهمة | 🇹🇼 |
-| ಕನ್ನಡ / മലയാളം / Occitan | 🔄 قابلة للمساهمة | — |
+في v26.06، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
+
+| اللغة | تغطية أصلية | الباقي (إنجليزي fallback) | العلم |
+|---|---|---|---|
+| العربية (المغرب) | **100%** | — | 🇲🇦 |
+| English | **100%** افتراضية | — | 🇬🇧 |
+| Français | **83%** | 17% | 🇫🇷 |
+| Deutsch | **43%** | 57% | 🇩🇪 |
+| Russian | **37%** | 63% | 🇷🇺 |
+| Italiano | **35%** | 65% | 🇮🇹 |
+| Português | **35%** | 65% | 🇧🇷 |
+| Türkçe | **34%** | 66% | 🇹🇷 |
+| Nederlands | **27%** | 73% | 🇳🇱 |
+| Polski | **27%** | 73% | 🇵🇱 |
+| 简体中文 | **25%** | 75% | 🇨🇳 |
+| Svenska | **25%** | 75% | 🇸🇪 |
+| Tiếng Việt | **25%** | 75% | 🇻🇳 |
+| Українська | **23%** | 77% | 🇺🇦 |
+| 繁體中文 | **23%** | 77% | 🇹🇼 |
+| हिन्दी | **20%** | 80% | 🇮🇳 |
+| Occitan | **15%** | 85% | 🏳️ |
+| ಕನ್ನಡ | **11%** | 89% | 🇮🇳 |
+| മലയാളം | **11%** | 89% | 🇮🇳 |
 
 > 🌍 لإضافة ترجمة: عدّل `translations/gt-stacer_XX.ts` وأرسل Pull Request.
 
@@ -145,13 +155,13 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### ⚡ AppImage — لا تثبيت مطلوب
 ```bash
-chmod +x GT-STACER-26.05-x86_64.AppImage
-./GT-STACER-26.05-x86_64.AppImage
+chmod +x GT-STACER-26.06-x86_64.AppImage
+./GT-STACER-26.06-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.05_amd64.deb
+sudo dpkg -i GT-STACER_26.06_amd64.deb
 sudo apt-get install -f          # إصلاح الاعتماديات إن وُجد نقص
 ```
 
@@ -159,7 +169,7 @@ sudo apt-get install -f          # إصلاح الاعتماديات إن وُج
 
 #### Fedora / RHEL / AlmaLinux / Rocky
 ```bash
-sudo dnf install gt-stacer-26.05-1.x86_64.rpm
+sudo dnf install gt-stacer-26.06-1.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -167,6 +177,14 @@ sudo dnf install gt-stacer-26.05-1.x86_64.rpm
 # قريباً عبر AUR
 yay -S gt-stacer
 ```
+
+#### Flatpak (معزول داخل sandbox)
+```bash
+flatpak install --user GT-STACER-26.06-x86_64.flatpak
+flatpak run org.gnutux.gt-stacer
+```
+
+> الـ app-id هو `org.gnutux.gt-stacer` على runtime `org.kde.Platform//6.9`. كل العمليات المميّزة (المنظّف، إدارة الخدمات، uninstaller، تعديل `/etc/hosts`، sysctl) تُنفَّذ على المُضيف عبر `flatpak-spawn --host pkexec ...` — مربّع polkit نفسه دون تغيير. الكشف يتم تلقائياً عبر `$FLATPAK_ID` أو `/.flatpak-info`.
 
 ---
 
@@ -340,15 +358,17 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 > 🙏 **Attribution:** Inspired by [Stacer](https://github.com/oguzhaninan/Stacer) — thank you Oguzhan INAN.  
 > 🌐 [salehgnutux.github.io/GT-STACER](https://salehgnutux.github.io/GT-STACER)
 
-### 🎉 What's new in 26.05 beta
+### 🎉 What's new in 26.06 stable
 
-- 🔒 **Security hardening** — fixed command-injection in `/etc/hosts` editor, sanitized every `pkexec` caller
-- ⚡ **Performance pass** — QtCharts replaced by a custom `LineChart` (~70 % less RAM), background `CpuSampler` thread, `/proc`-based process reader
-- 🧹 **System Cleaner overhaul** — icon cards, per-category checkboxes, confirmation dialog, per-app cache details
-- 🚀 **Startup Apps redesign** — real icons, inline toggle, "Add from system apps" dialog
-- 🔔 **Threshold alerts** via libnotify (CPU/GPU temp, disk, battery, memory)
-- 🎨 **Auto-follow system theme** + **keyboard shortcuts** (Ctrl+1..0, F1, Ctrl+R, Ctrl+Q)
-- 🌍 **18 translation files** — Arabic 100 % · see [CHANGELOG.md](CHANGELOG.md) for the full list
+- 🔍 **Multi-field process search** — name + PID + cmdline + user (no more "hidden" processes)
+- 🛑 **Six process actions** + right-click context menu + critical-process guard
+- 🧹 **Flatpak / Snap drill-down** in System Cleaner — pick which apps to remove
+- 📦 **Dynamic package-cache card** — "APT/DNF/Pacman/Zypper… Cache" follows the host's manager
+- 🗑️ **Multi-package uninstall** (Ctrl/Shift-click) with sequential progress
+- 🔔 **Configurable notifications** — full Settings UI for 4 thresholds + master toggle
+- ⚡ **Timer pause on hide** — ~0 % CPU when minimised to the tray
+- 🌍 **19 languages, 100 % QM coverage** — Arabic / English native; French 83 % native; rest use English fallback for missing strings (contributors welcome)
+- 🔒 **Defence in depth** — every privileged op goes through `execProgram` (no shell); see [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md)
 
 ### Key Features
 
@@ -371,7 +391,46 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **19 languages** — Arabic complete (RTL, 🇲🇦), 17 others partial (community-driven)
 - **Auto theme** that follows GNOME/KDE color-scheme
 
-### Quick Start
+### Install
+
+Pick the format that fits your distro. All 26.06 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
+
+#### ⚡ AppImage — no install, run anywhere
+```bash
+chmod +x GT-STACER-26.06-x86_64.AppImage
+./GT-STACER-26.06-x86_64.AppImage
+```
+
+#### Debian / Ubuntu / Linux Mint / Pop!_OS / Kali / Trixie+
+```bash
+sudo dpkg -i GT-STACER_26.06_amd64.deb
+sudo apt-get install -f          # fix any missing deps
+```
+
+> **Debian 13 (Trixie) note:** the package uses `Recommends` for polkit to keep `polkitd` compatible. Privileged actions (service control, cleaner, uninstaller, hosts editor) need one of `polkitd | policykit-1 | polkit` installed.
+
+#### Fedora / RHEL / AlmaLinux / Rocky / openSUSE
+```bash
+sudo dnf install ./gt-stacer-26.06-2.x86_64.rpm
+# or
+sudo rpm -i ./gt-stacer-26.06-2.x86_64.rpm
+```
+
+#### Arch Linux / Manjaro
+```bash
+# AUR — coming soon
+yay -S gt-stacer
+```
+
+#### Flatpak (sandboxed)
+```bash
+flatpak install --user GT-STACER-26.06-x86_64.flatpak
+flatpak run org.gnutux.gt-stacer
+```
+
+> The app-id is `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`. Every privileged op (cleaner, service manager, uninstaller, `/etc/hosts` editor, sysctl) runs **on the host** through `flatpak-spawn --host pkexec ...` — the polkit dialog is identical to the DEB/RPM case. Sandbox detection is automatic via `$FLATPAK_ID` or `/.flatpak-info`.
+
+### Quick Start (build from source)
 
 ```bash
 git clone https://github.com/SalehGNUTUX/GT-STACER.git
@@ -381,7 +440,7 @@ cd GT-STACER
 
 ### Dependencies
 
-QtCharts is **no longer required** as of 26.05 — we ship our own `LineChart` widget.
+QtCharts is **no longer required** as of 26.06 — we ship our own `LineChart` widget.
 
 | | Debian/Ubuntu | Fedora | Arch |
 |---|---|---|---|

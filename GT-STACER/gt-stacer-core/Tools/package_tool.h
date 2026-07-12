@@ -48,6 +48,10 @@ enum class PkgMgr {
     Pip3,       // Python pip
     Cargo,      // Rust
     Npm,        // Node.js
+    // Manually / externally installed (install scripts, tarballs, AppImages) —
+    // not tracked by any package manager. Detected by scanning .desktop launchers
+    // whose Exec lives under /opt, /usr/local, ~/.local, ~, or is an AppImage.
+    Manual,
     // Unknown / Fallback
     Unknown
 };
@@ -89,14 +93,42 @@ public:
     static QVector<PackageInfo> flatpakPackages();
     static QVector<PackageInfo> snapPackages();
     static QVector<PackageInfo> brewPackages();
+    // Externally / manually installed apps (install scripts, /opt, AppImages) that
+    // no package manager knows about — e.g. Megacubo via `wget | bash`.
+    static QVector<PackageInfo> manualPackages();
     static QVector<PackageInfo> allPackages();
 
     // ── الإزالة ──
     static bool remove(const QString &name, PkgMgr mgr);
+    // Removes a manually-installed app end-to-end: its .desktop launcher, its
+    // payload under /opt (or the AppImage/binary), and per-user leftovers in
+    // ~/.config, ~/.cache, ~/.local/{share,state}. Matches `name` against a
+    // fresh scan, so no shell-unsafe identifier ever reaches a command.
+    static bool removeManual(const QString &name);
 
     // ── الصيانة ──
     static bool cleanCache(PkgMgr mgr = PkgMgr::Unknown); // Unknown = primary
     static bool update(PkgMgr mgr = PkgMgr::Unknown);
+
+    // Filesystem path of the manager's downloaded-packages cache, e.g.
+    //   APT      → /var/cache/apt/archives
+    //   DNF      → /var/cache/dnf
+    //   Pacman   → /var/cache/pacman/pkg
+    // Returns an empty string when there is no on-disk cache.
+    static QString cacheDir(PkgMgr mgr);
+
+    // Lightweight per-app description for Flatpak / Snap so the cleaner
+    // dialog can render a checkbox list without paying for a full
+    // PackageInfo. `appId` is what `remove()` must be called with.
+    struct UniversalApp {
+        QString  name;          // human label
+        QString  appId;         // unique id (Flatpak: org.foo.Bar; Snap: foo)
+        QString  version;
+        qint64   sizeBytes = 0; // 0 when the manager doesn't report a size
+        PkgMgr   manager   = PkgMgr::Unknown;
+    };
+    static QVector<UniversalApp> flatpakApps();
+    static QVector<UniversalApp> snapApps();
 
     // ── البحث ──
     static QVector<PackageInfo> search(const QString &query, PkgMgr mgr);

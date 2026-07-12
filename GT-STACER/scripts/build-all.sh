@@ -17,8 +17,8 @@ BUILD_DIR="$ROOT_DIR/build"
 RELEASE_DIR="$ROOT_DIR/release"
 APP_NAME="gt-stacer"
 APP_DISPLAY="GT-STACER"
-VERSION="26.05"
-CHANNEL="beta"
+VERSION="26.07"
+CHANNEL="stable"
 ARCH="$(uname -m)"
 BUILD_TOOL="Unix Makefiles"
 BUILD_CMD="make"
@@ -119,6 +119,8 @@ install_deps() {
         $SUDO apt-get install -y fuse libfuse2t64 2>/dev/null || \
         $SUDO apt-get install -y fuse libfuse2 2>/dev/null || true
         $SUDO apt-get install -y alien rpm 2>/dev/null || true
+        # Flatpak builder (optional — only needed for `./build-all.sh flatpak`)
+        $SUDO apt-get install -y flatpak flatpak-builder 2>/dev/null || true
         ;;
 
     fedora|rhel)
@@ -134,14 +136,16 @@ install_deps() {
             qt6-qtsvg-devel \
             qt6-qttools-devel \
             rpm-build patchelf wget curl \
-            fuse fuse-libs 2>/dev/null || true
+            fuse fuse-libs \
+            flatpak flatpak-builder 2>/dev/null || true
         ;;
 
     arch)
         $SUDO pacman -Sy --noconfirm \
             base-devel cmake ninja make \
             qt6-base qt6-svg qt6-tools \
-            fakeroot patchelf fuse2 wget curl 2>/dev/null || true
+            fakeroot patchelf fuse2 wget curl \
+            flatpak flatpak-builder 2>/dev/null || true
         ;;
 
     suse)
@@ -150,7 +154,8 @@ install_deps() {
             libqt6-qtbase-devel \
             libqt6-qttools-devel \
             libqt6-qtsvg-devel \
-            rpm-build patchelf wget curl fuse 2>/dev/null || true
+            rpm-build patchelf wget curl fuse \
+            flatpak flatpak-builder 2>/dev/null || true
         ;;
 
     *)
@@ -704,13 +709,14 @@ print_report() {
     echo "══════════════════════════════════════════════════════════"
     echo ""
     echo "الحزم الجاهزة في release/:"
-    ls -lh "$RELEASE_DIR"/*.AppImage "$RELEASE_DIR"/*.deb "$RELEASE_DIR"/*.rpm 2>/dev/null \
+    ls -lh "$RELEASE_DIR"/*.AppImage "$RELEASE_DIR"/*.deb "$RELEASE_DIR"/*.rpm "$RELEASE_DIR"/*.flatpak 2>/dev/null \
         | awk '{print "   " $5 "  " $NF}' \
         || echo "   (لا توجد مخرجات)"
     echo ""
     echo "💡 تثبيت DEB:      sudo dpkg -i release/*.deb"
     echo "💡 تثبيت RPM:      sudo rpm -i release/*.rpm"
     echo "💡 تشغيل AppImage: chmod +x release/*.AppImage && ./release/*.AppImage"
+    echo "💡 تثبيت Flatpak:  flatpak install --user release/*.flatpak"
     echo ""
     echo "🌐 المشروع: https://github.com/SalehGNUTUX/GT-STACER"
     echo ""
@@ -759,6 +765,18 @@ rpm)
     build_rpm
     print_report
     ;;
+flatpak)
+    # Delegated to packaging/build-flatpak.sh — it has its own runtime
+    # detection (org.kde.Platform/Sdk 6.9) and doesn't need cmake_build
+    # because flatpak-builder runs the CMake step inside the sandbox.
+    if [ -x "$ROOT_DIR/packaging/build-flatpak.sh" ]; then
+        "$ROOT_DIR/packaging/build-flatpak.sh" && BUILT+=("Flatpak") || FAILED+=("Flatpak")
+    else
+        echo "❌ packaging/build-flatpak.sh مفقود"
+        FAILED+=("Flatpak")
+    fi
+    print_report
+    ;;
 all)
     install_deps
     check_requirements
@@ -767,15 +785,28 @@ all)
     build_appimage
     build_deb
     build_rpm
+    # Flatpak is optional in `all` — it adds ~10 min of build time and pulls
+    # ~1 GB of KDE runtime on first run. Only attempt it if flatpak-builder
+    # is installed; otherwise quietly skip with a hint.
+    if command -v flatpak-builder &>/dev/null && [ -x "$ROOT_DIR/packaging/build-flatpak.sh" ]; then
+        echo
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📦 بناء Flatpak..."
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        "$ROOT_DIR/packaging/build-flatpak.sh" && BUILT+=("Flatpak") || FAILED+=("Flatpak")
+    else
+        echo "ℹ️  لتضمين Flatpak: ثبّت flatpak-builder وأعد التشغيل بـ $0 flatpak"
+    fi
     print_report
     ;;
 *)
-    echo "الاستخدام: $0 [all|appimage|deb|rpm|build|install-deps]"
+    echo "الاستخدام: $0 [all|appimage|deb|rpm|flatpak|build|install-deps]"
     echo ""
-    echo "  all          — بناء جميع الحزم (AppImage + DEB + RPM)"
+    echo "  all          — بناء جميع الحزم (AppImage + DEB + RPM + Flatpak إن أمكن)"
     echo "  appimage     — بناء AppImage فقط"
     echo "  deb          — بناء حزمة DEB فقط"
     echo "  rpm          — بناء حزمة RPM فقط"
+    echo "  flatpak      — بناء حزمة Flatpak فقط (يتطلب flatpak-builder)"
     echo "  build        — تهيئة وبناء فقط (بدون تحزيم)"
     echo "  install-deps — تثبيت المتطلبات فقط"
     exit 1

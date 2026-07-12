@@ -14,8 +14,9 @@ report it before disclosing.
 
 | Version       | Supported                |
 |---------------|--------------------------|
-| 26.05 beta    | ✅ current                |
-| 26.04 alpha   | ⚠️ security fixes only    |
+| 26.06 stable  | ✅ current (recommended)  |
+| 26.05 beta    | ⚠️ security fixes only    |
+| 26.04 alpha   | ❌ unsupported            |
 | older         | ❌ unsupported            |
 
 We do **not** publish patches for unsupported versions. The fix lands in the
@@ -64,16 +65,22 @@ disclosure with you.
 These are the surfaces we consider security-relevant:
 
 - **`pkexec` callers** — any path that constructs a privileged command:
-  `PackageTool::remove`, `ServiceTool::{start,stop,enable,disable}`,
+  `PackageTool::remove`, `PackageTool::cleanCache`, `ServiceTool::{start,stop,enable,disable}`,
   `AptSourceTool::{add,remove,setEnabled}`, `HelpersPage::saveHosts`,
   `HelpersPage::flushDns`, `HelpersPage::applySwappiness`,
-  `SystemCleanerPage::cleanCategory` for root strategies.
+  `SystemCleanerPage::cleanCategory` for root strategies,
+  `PkgCacheDialog::cleanSelected`, `UninstallerPage::uninstallSelected`
+  (multi-package loop).
 - **`CommandUtil::pkexecWriteFile`** — temp-file-then-install pattern.
-- **`CommandUtil::isSafeIdentifier`** — input sanitisation gatekeeper.
+- **`CommandUtil::isSafeIdentifier`** — input-sanitisation gatekeeper.
+- **`CommandUtil::execProgram(prog, args)`** — replaces the previous
+  shell-out path. All sensitive callers must use it, never `exec()` /
+  `execStatus()` which go through `/bin/sh -c`.
 - **Path traversal** in cleaner / cache walkers (`/var/log`, `~/.cache`,
-  `~/.local/share/Trash`).
-- **TOCTOU** between scan and clean phases in System Cleaner.
-- **Notification spoofing** if libnotify args were ever shell-built.
+  `~/.local/share/Trash`, `/var/cache/<manager>`, snap/flatpak app dirs).
+- **TOCTOU** between scan and clean phases in System Cleaner, including
+  the new Package Cache and Flatpak/Snap drill-down dialogs.
+- **Notification spoofing** if `notify-send` args were ever shell-built.
 - **Translation injection** — `.ts` files end up parsed at runtime, so
   malicious `<source>`/`<translation>` payloads count if they can poison a
   build.
@@ -92,11 +99,56 @@ These are the surfaces we consider security-relevant:
 
 ---
 
+## Flatpak distribution
+
+GT-STACER 26.06 also ships as a Flatpak (`org.gnutux.gt-stacer` on
+`org.kde.Platform//6.9`). The Flatpak does **not** change the privilege
+model — it adds a transparent wrapper:
+
+- **pkexec still gates every privileged op.** Inside the sandbox the binary
+  has no `pkexec` at all; `CommandUtil::wrapForHost()` rewrites every
+  privileged call as `flatpak-spawn --host pkexec …`, so the polkit Authority
+  on the **host** is what authorises the action. The polkit dialog, the
+  policies that apply, and the actor on the wire are identical to the
+  DEB/RPM/AppImage case.
+- **The portal is a chokepoint, not a bypass.** `flatpak-spawn` is gated by
+  `org.freedesktop.Flatpak` on the session bus. That permission is granted
+  once via the manifest (`--talk-name=org.freedesktop.Flatpak`) and is what
+  the user implicitly accepts when installing the Flatpak. An unprivileged
+  caller inside the sandbox cannot reach pkexec by any other route.
+- **Temp file path widens slightly.** `pkexecWriteFile()` stages its content
+  in `~/.cache/gt-stacer-tmp/` under Flatpak instead of `/tmp`, because the
+  sandbox's `/tmp` is private to the app. The temp file is still
+  user-owned, mode `0600`, removed on close, and the privileged step is
+  `pkexec install -o root -m 644 <tmp> <dest>` — no shell, no metacharacter
+  expansion. The widening only means a malicious *local* user with the same
+  uid sees the staged file briefly; the existing threat model already
+  trusts the local uid.
+- **Sandbox detection cannot be spoofed by attacker input.** Both signals
+  are read-only at process start (`FLATPAK_ID` env var, `/.flatpak-info`
+  file) and come from `flatpak run` itself. There is no code path in
+  GT-STACER that lets remote/user data influence whether `wrapForHost()`
+  fires.
+- **Out of scope for the Flatpak build specifically:**
+  - Container escape from `org.kde.Platform`. Report those to Flatpak / KDE.
+  - Mis-trusted runtime updates pulled by `flatpak update`. We don't
+    distribute the runtime.
+  - Attacks that require the user to add a malicious extra remote
+    (`flatpak --user remote-add …`) before installing.
+
+When reporting a Flatpak-only issue, please include:
+`flatpak --version`, `flatpak info org.gnutux.gt-stacer`, and the output of
+`flatpak-spawn --host pkexec --version` from inside the sandbox so we can
+distinguish app bugs from portal / runtime issues.
+
+---
+
 ## Past advisories
 
 | ID    | Date       | Severity | Summary                                              |
 |-------|------------|----------|------------------------------------------------------|
 | —     | 2026-05-14 | High     | Command-injection in `/etc/hosts` editor (v26.04). Fixed in v26.05 by routing writes through `pkexec install` instead of `pkexec sh -c 'echo "%1" > …'`. Discovered internally during code review; no known exploitation in the wild. |
+| —     | 2026-05-15 | Medium   | Several APT/service/cleaner callers still went through `pkexec sh -c …` in v26.05's first cut. All were ported to `execProgram(prog, args)` (no shell) before the v26.05 beta and reverified for v26.06. No exploit reported. |
 
 (This table will grow as we publish further advisories. Each row links to a
 GitHub Security Advisory once the fix ships.)
@@ -124,8 +176,9 @@ If you're packaging GT-STACER for a distro:
 
 Maintained by **GNUTUX** (`gnutux.arabic@gmail.com`).
 
-Security review of v26.05 was performed during the 2026-05-14 audit; all
-findings from that pass are listed above.
+Security review of v26.05 was performed during the 2026-05-14 audit, and a
+follow-up sweep alongside the 26.06 stable rollout on 2026-05-15. All
+findings from both passes are listed above.
 
 Thanks to **Oguzhan INAN** for the original Stacer codebase and to every
 contributor who reports issues responsibly.

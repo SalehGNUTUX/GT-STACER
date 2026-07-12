@@ -2,6 +2,7 @@
 #include <QWidget>
 
 namespace Ui { class SettingsPage; }
+class QTimer;
 
 class SettingsPage : public QWidget {
     Q_OBJECT
@@ -21,5 +22,12 @@ private slots:
 
 private:
     void loadSettings();
+    void startPowerTimer();
+    void cancelPowerTimer();
+    void tickPowerTimer();
+
     Ui::SettingsPage *ui;
+    QTimer *m_powerTimer   = nullptr;
+    int     m_powerRemaining = 0;   // seconds left until the scheduled action
+    int     m_powerAction    = 0;   // PowerTool::Action index
 };

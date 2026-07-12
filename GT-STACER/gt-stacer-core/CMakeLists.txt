@@ -13,6 +13,8 @@ add_library(gt-stacer-core STATIC
     Tools/startup_tool.cpp
     Tools/apt_source_tool.cpp
     Tools/notification_tool.cpp
+    Tools/power_tool.cpp
+    Tools/relief_tool.cpp
     Utils/command_util.cpp
     Utils/file_util.cpp
     Utils/format_util.cpp

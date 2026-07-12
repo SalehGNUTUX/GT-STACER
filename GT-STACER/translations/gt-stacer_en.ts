@@ -84,102 +84,102 @@
 <context>
     <name>App</name>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="153" />
+        <location filename="../gt-stacer/app.cpp" line="155" />
         <source>Dashboard</source>
         <translation>Dashboard</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="153" />
+        <location filename="../gt-stacer/app.cpp" line="155" />
         <source>System overview</source>
         <translation>System overview</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="154" />
+        <location filename="../gt-stacer/app.cpp" line="156" />
         <source>Resources</source>
         <translation>Resources</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="154" />
+        <location filename="../gt-stacer/app.cpp" line="156" />
         <source>CPU, RAM, GPU, Network</source>
         <translation>CPU, RAM, GPU, Network</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="155" />
+        <location filename="../gt-stacer/app.cpp" line="157" />
         <source>Processes</source>
         <translation>Processes</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="155" />
+        <location filename="../gt-stacer/app.cpp" line="157" />
         <source>Running processes</source>
         <translation>Running processes</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="156" />
+        <location filename="../gt-stacer/app.cpp" line="158" />
         <source>Services</source>
         <translation>Services</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="156" />
+        <location filename="../gt-stacer/app.cpp" line="158" />
         <source>System services</source>
         <translation>System services</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="157" />
+        <location filename="../gt-stacer/app.cpp" line="159" />
         <source>Startup Apps</source>
         <translation>Startup Apps</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="157" />
+        <location filename="../gt-stacer/app.cpp" line="159" />
         <source>Autostart applications</source>
         <translation>Autostart applications</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="158" />
+        <location filename="../gt-stacer/app.cpp" line="160" />
         <source>System Cleaner</source>
         <translation>System Cleaner</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="158" />
+        <location filename="../gt-stacer/app.cpp" line="160" />
         <source>Free up disk space</source>
         <translation>Free up disk space</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="159" />
+        <location filename="../gt-stacer/app.cpp" line="161" />
         <source>Uninstaller</source>
         <translation>Uninstaller</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="159" />
+        <location filename="../gt-stacer/app.cpp" line="161" />
         <source>Remove packages</source>
         <translation>Remove packages</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="160" />
+        <location filename="../gt-stacer/app.cpp" line="162" />
         <source>APT Sources</source>
         <translation>APT Sources</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="160" />
+        <location filename="../gt-stacer/app.cpp" line="162" />
         <source>Package repositories</source>
         <translation>Package repositories</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="161" />
+        <location filename="../gt-stacer/app.cpp" line="163" />
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="161" />
+        <location filename="../gt-stacer/app.cpp" line="163" />
         <source>Application settings</source>
         <translation>Application settings</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="162" />
+        <location filename="../gt-stacer/app.cpp" line="164" />
         <source>Helpers</source>
         <translation>Helpers</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/app.cpp" line="162" />
+        <location filename="../gt-stacer/app.cpp" line="164" />
         <source>System utilities</source>
         <translation>System utilities</translation>
     </message>
@@ -287,17 +287,17 @@ Apps will rebuild their caches on next launch.</translation>
 <context>
     <name>AppManager</name>
     <message>
-        <location filename="../gt-stacer/Managers/app_manager.cpp" line="121" />
+        <location filename="../gt-stacer/Managers/app_manager.cpp" line="123" />
         <source>Show</source>
         <translation>Show</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/app_manager.cpp" line="122" />
+        <location filename="../gt-stacer/Managers/app_manager.cpp" line="124" />
         <source>About GT-STACER</source>
         <translation>About GT-STACER</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/app_manager.cpp" line="123" />
+        <location filename="../gt-stacer/Managers/app_manager.cpp" line="125" />
         <source>Quit</source>
         <translation>Quit</translation>
     </message>
@@ -906,6 +906,128 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
     </message>
 </context>
 <context>
+    <name>PkgCacheDialog</name>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="54" />
+        <source>Package cache</source>
+        <translation>Package cache</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="55" />
+        <source>%1 cache — %2</source>
+        <translation>%1 cache — %2</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="67" />
+        <source>No on-disk package cache for the detected manager (&lt;b&gt;%1&lt;/b&gt;). Universal managers like Flatpak/Snap manage their own storage.</source>
+        <translation>No on-disk package cache for the detected manager (&lt;b&gt;%1&lt;/b&gt;). Universal managers like Flatpak/Snap manage their own storage.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="69" />
+        <source>Unknown</source>
+        <translation>Unknown</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="71" />
+        <source>Files inside &lt;code&gt;%1&lt;/code&gt;. Tick what to remove — only files inside this directory are touched.</source>
+        <translation>Files inside &lt;code&gt;%1&lt;/code&gt;. Tick what to remove — only files inside this directory are touched.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="79" />
+        <source>Search…</source>
+        <translation>Search…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="84" />
+        <source>Largest first</source>
+        <translation>Largest first</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="85" />
+        <source>Oldest first</source>
+        <translation>Oldest first</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="86" />
+        <source>Newest first</source>
+        <translation>Newest first</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="87" />
+        <source>Name A→Z</source>
+        <translation>Name A→Z</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="90" />
+        <source>Select All</source>
+        <translation>Select All</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="95" />
+        <source>File</source>
+        <translation>File</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="95" />
+        <source>Size</source>
+        <translation>Size</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="95" />
+        <source>Modified</source>
+        <translation>Modified</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="122" />
+        <source>Rescan</source>
+        <translation>Rescan</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="125" />
+        <source>Clean Selected</source>
+        <translation>Clean Selected</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="130" />
+        <source>Close</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="164" />
+        <source>Scanning…</source>
+        <translation>Scanning…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="212" />
+        <source>—</source>
+        <translation>—</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="235" />
+        <source>No cache directory available.</source>
+        <translation>No cache directory available.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="251" />
+        <source>%1 files · %2 total · %3 selected (%4)</source>
+        <translation>%1 files · %2 total · %3 selected (%4)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="269" />
+        <source>Confirm clean</source>
+        <translation>Confirm clean</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/pkg_cache_dialog.cpp" line="270" />
+        <source>Remove %1 file(s) from %2?
+
+You will be asked for your password.</source>
+        <translation>Remove %1 file(s) from %2?
+
+You will be asked for your password.</translation>
+    </message>
+</context>
+<context>
     <name>ProcessesPage</name>
     <message>
         <location filename="../gt-stacer/Pages/Processes/processes_page.ui" line="10" />
@@ -929,7 +1051,6 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
     </message>
     <message>
         <location filename="../gt-stacer/Pages/Processes/processes_page.ui" line="18" />
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="101" />
         <source>Kill Process</source>
         <translation>Kill Process</translation>
     </message>
@@ -939,49 +1060,161 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
         <translation>dangerButton</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="17" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="53" />
         <source>PID</source>
         <translation>PID</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="17" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="53" />
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="17" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="53" />
         <source>User</source>
         <translation>User</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="17" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="53" />
         <source>CPU %</source>
         <translation>CPU %</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="17" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="53" />
         <source>Memory</source>
         <translation>Memory</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="90" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="66" />
+        <source>Search by name, PID, command, or user…</source>
+        <translation>Search by name, PID, command, or user…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="135" />
         <source>%1 processes</source>
         <translation>%1 processes</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="102" />
-        <source>Kill process '%1' (PID %2)?</source>
-        <translation>Kill process '%1' (PID %2)?</translation>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="161" />
+        <source>terminate</source>
+        <translation>terminate</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="106" />
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="162" />
+        <source>force-kill</source>
+        <translation>force-kill</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="163" />
+        <source>suspend</source>
+        <translation>suspend</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="164" />
+        <source>resume</source>
+        <translation>resume</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="165" />
+        <source>lower priority of</source>
+        <translation>lower priority of</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="166" />
+        <source>raise priority of</source>
+        <translation>raise priority of</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="170" />
+        <source>Confirm action</source>
+        <translation>Confirm action</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="172" />
+        <source>About to &lt;b&gt;%1&lt;/b&gt; process &lt;b&gt;'%2'&lt;/b&gt; (PID %3).</source>
+        <translation>About to &lt;b&gt;%1&lt;/b&gt; process &lt;b&gt;'%2'&lt;/b&gt; (PID %3).</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="174" />
+        <source>⚠ &lt;span style='color:#f38ba8;'&gt;&lt;b&gt;This is a critical system process.&lt;/b&gt;&lt;/span&gt; Ending it can hang your session, log you out, or require a reboot. Continue only if you understand the impact.</source>
+        <translation>⚠ &lt;span style='color:#f38ba8;'&gt;&lt;b&gt;This is a critical system process.&lt;/b&gt;&lt;/span&gt; Ending it can hang your session, log you out, or require a reboot. Continue only if you understand the impact.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="181" />
+        <source>Yes, I understand the risk</source>
+        <translation>Yes, I understand the risk</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="181" />
+        <source>Yes</source>
+        <translation>Yes</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="183" />
+        <source>Cancel</source>
+        <translation>Cancel</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="195" />
+        <source>Lower priority</source>
+        <translation>Lower priority</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="196" />
+        <source>Niceness for '%1' (higher = lower priority, 1..19):</source>
+        <translation>Niceness for '%1' (higher = lower priority, 1..19):</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="204" />
+        <source>Raise priority</source>
+        <translation>Raise priority</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="205" />
+        <source>Niceness for '%1' (lower = higher priority, -20..-1).
+Requires root privileges.</source>
+        <translation>Niceness for '%1' (lower = higher priority, -20..-1).
+Requires root privileges.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="216" />
+        <source>Operation failed for PID %1. You may not own this process.</source>
+        <translation>Operation failed for PID %1. You may not own this process.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="226" />
+        <source>Terminate (SIGTERM)</source>
+        <translation>Terminate (SIGTERM)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="227" />
+        <source>Force kill (SIGKILL)</source>
+        <translation>Force kill (SIGKILL)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="229" />
+        <source>Suspend (SIGSTOP)</source>
+        <translation>Suspend (SIGSTOP)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="230" />
+        <source>Resume (SIGCONT)</source>
+        <translation>Resume (SIGCONT)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="232" />
+        <source>Lower priority…</source>
+        <translation>Lower priority…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="233" />
+        <source>Raise priority…</source>
+        <translation>Raise priority…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="215" />
         <source>Error</source>
         <translation>Error</translation>
-    </message>
-    <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="106" />
-        <source>Could not kill process.</source>
-        <translation>Could not kill process.</translation>
     </message>
 </context>
 <context>
@@ -1510,7 +1743,7 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
     <name>SystemCleanerPage</name>
     <message>
         <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.ui" line="7" />
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="64" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="84" />
         <source>System Cleaner</source>
         <translation>System Cleaner</translation>
     </message>
@@ -1526,7 +1759,7 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
     </message>
     <message>
         <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.ui" line="12" />
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="123" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="167" />
         <source>Scan</source>
         <translation>Scan</translation>
     </message>
@@ -1541,187 +1774,222 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
         <translation>primaryButton</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="35" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="50" />
         <source>Trash</source>
         <translation>Trash</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="35" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="50" />
         <source>Files in the user trash bin</source>
         <translation>Files in the user trash bin</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="37" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="52" />
         <source>App Cache</source>
         <translation>App Cache</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="37" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="52" />
         <source>Application cache files in ~/.cache</source>
         <translation>Application cache files in ~/.cache</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="39" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="54" />
         <source>Thumbnails</source>
         <translation>Thumbnails</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="39" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="54" />
         <source>Image thumbnail cache</source>
         <translation>Image thumbnail cache</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="41" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="56" />
         <source>System Logs</source>
         <translation>System Logs</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="41" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="56" />
         <source>Rotated log archives in /var/log</source>
         <translation>Rotated log archives in /var/log</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="43" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="58" />
         <source>Crash Reports</source>
         <translation>Crash Reports</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="43" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="58" />
         <source>System crash dumps in /var/crash</source>
         <translation>System crash dumps in /var/crash</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="45" />
-        <source>APT Cache</source>
-        <translation>APT Cache</translation>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="36" />
+        <source>Package Cache</source>
+        <translation>Package Cache</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="45" />
-        <source>Downloaded .deb packages waiting to be installed</source>
-        <translation>Downloaded .deb packages waiting to be installed</translation>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="37" />
+        <source>%1 Cache</source>
+        <translation>%1 Cache</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="47" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="39" />
+        <source>Downloaded packages waiting to be installed</source>
+        <translation>Downloaded packages waiting to be installed</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="40" />
+        <source>Downloaded %1 packages waiting to be installed</source>
+        <translation>Downloaded %1 packages waiting to be installed</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="62" />
         <source>Old Kernels</source>
         <translation>Old Kernels</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="47" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="62" />
         <source>Remove orphaned kernel packages (autoremove)</source>
         <translation>Remove orphaned kernel packages (autoremove)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="68" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="65" />
+        <source>Flatpak Apps</source>
+        <translation>Flatpak Apps</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="65" />
+        <source>Installed Flatpak applications — double-click to manage per-app removals</source>
+        <translation>Installed Flatpak applications — double-click to manage per-app removals</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="67" />
+        <source>Snap Apps</source>
+        <translation>Snap Apps</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="67" />
+        <source>Installed Snap packages — double-click to manage per-app removals</source>
+        <translation>Installed Snap packages — double-click to manage per-app removals</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="88" />
         <source>Pick the categories to scan, then choose which results to clean.</source>
         <translation>Pick the categories to scan, then choose which results to clean.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="93" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="113" />
         <source>ⓘ Double-click (or use the Details button below) to manage per-application caches.</source>
         <translation>ⓘ Double-click (or use the Details button below) to manage per-application caches.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="111" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="123" />
+        <source>ⓘ Double-click (or use the Details button below) to choose which cached packages to remove.</source>
+        <translation>ⓘ Double-click (or use the Details button below) to choose which cached packages to remove.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="155" />
         <source>Select All</source>
         <translation>Select All</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="131" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="175" />
         <source>App Cache Details…</source>
         <translation>App Cache Details…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="132" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="176" />
         <source>Manage which application caches to clean individually</source>
         <translation>Manage which application caches to clean individually</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="139" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="183" />
         <source>Clean</source>
         <translation>Clean</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="219" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="263" />
         <source>Pick at least one category to scan.</source>
         <translation>Pick at least one category to scan.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="225" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="269" />
         <source>Scanning…</source>
         <translation>Scanning…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="226" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="270" />
         <source>Scanning selected categories…</source>
         <translation>Scanning selected categories…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="254" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="298" />
         <source>autoremove</source>
         <translation>autoremove</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="263" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="307" />
         <source>Found %1 to clean. Select what to remove, then press Clean.</source>
         <translation>Found %1 to clean. Select what to remove, then press Clean.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="329" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="385" />
         <source>Nothing selected to clean.</source>
         <translation>Nothing selected to clean.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="340" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="396" />
         <source>&lt;b&gt;You are about to remove:&lt;/b&gt;&lt;br&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;You are about to remove:&lt;/b&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="355" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="414" />
         <source>(autoremove)</source>
         <translation>(autoremove)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="359" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="418" />
         <source>Estimated total: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>Estimated total: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="362" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="421" />
         <source>ⓘ You will be asked for your password to perform the root-level cleanups.</source>
         <translation>ⓘ You will be asked for your password to perform the root-level cleanups.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="366" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="425" />
         <source>Confirm clean</source>
         <translation>Confirm clean</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="370" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="429" />
         <source>Clean now</source>
         <translation>Clean now</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="372" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="431" />
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="378" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="437" />
         <source>Cleaning…</source>
         <translation>Cleaning…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="379" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="438" />
         <source>Cleaning selected categories…</source>
         <translation>Cleaning selected categories…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="394" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="453" />
         <source>Cleaning complete — %1 categories processed.</source>
         <translation>Cleaning complete — %1 categories processed.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="397" />
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="456" />
         <source>Cleaned %1, failed %2 (%3). Authorization may have been denied.</source>
         <translation>Cleaned %1, failed %2 (%3). Authorization may have been denied.</translation>
     </message>
@@ -1745,12 +2013,13 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
     </message>
     <message>
         <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.ui" line="14" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="55" />
         <source>Load Packages</source>
         <translation>Load Packages</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.ui" line="15" />
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="73" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="168" />
         <source>Uninstall</source>
         <translation>Uninstall</translation>
     </message>
@@ -1760,54 +2029,180 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
         <translation>dangerButton</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="13" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="23" />
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="13" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="23" />
         <source>Version</source>
         <translation>Version</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="13" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="23" />
         <source>Size</source>
         <translation>Size</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="13" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="23" />
         <source>Manager</source>
         <translation>Manager</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="27" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="53" />
+        <source>Browse installed packages</source>
+        <translation>Browse installed packages</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="54" />
+        <source>Click "Load Packages" to scan installed software across every detected package manager.</source>
+        <translation>Click "Load Packages" to scan installed software across every detected package manager.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="78" />
+        <source>No packages match your filter</source>
+        <translation>No packages match your filter</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="79" />
+        <source>Try a different search term, or pick "All" from the manager dropdown.</source>
+        <translation>Try a different search term, or pick "All" from the manager dropdown.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="85" />
         <source>All</source>
         <translation>All</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="46" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="111" />
+        <source>Reload</source>
+        <translation>Reload</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="127" />
         <source>Loading packages...</source>
         <translation>Loading packages...</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="60" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="149" />
         <source>%1 packages</source>
         <translation>%1 packages</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="74" />
-        <source>Uninstall '%1'?</source>
-        <translation>Uninstall '%1'?</translation>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="169" />
+        <source>Uninstall &lt;b&gt;%1&lt;/b&gt; using &lt;b&gt;%2&lt;/b&gt;?
+
+You will be asked for your password.</source>
+        <translation>Uninstall &lt;b&gt;%1&lt;/b&gt; using &lt;b&gt;%2&lt;/b&gt;?
+
+You will be asked for your password.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="78" />
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="177" />
+        <source>Removing %1…</source>
+        <translation>Removing %1…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="186" />
+        <source>Failed to uninstall '%1'. Authorization may have been denied, or the package is a system dependency.</source>
+        <translation>Failed to uninstall '%1'. Authorization may have been denied, or the package is a system dependency.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="185" />
         <source>Error</source>
         <translation>Error</translation>
     </message>
+</context>
+<context>
+    <name>UniversalAppsDialog</name>
     <message>
-        <location filename="../gt-stacer/Pages/Uninstaller/uninstaller_page.cpp" line="78" />
-        <source>Failed to uninstall '%1'.</source>
-        <translation>Failed to uninstall '%1'.</translation>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="43" />
+        <source>%1 applications</source>
+        <translation>%1 applications</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="52" />
+        <source>Installed %1 apps. Tick the entries you want to remove — Flatpak/Snap reclaim space automatically once an app is uninstalled.</source>
+        <translation>Installed %1 apps. Tick the entries you want to remove — Flatpak/Snap reclaim space automatically once an app is uninstalled.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="62" />
+        <source>Search…</source>
+        <translation>Search…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="67" />
+        <source>Largest first</source>
+        <translation>Largest first</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="68" />
+        <source>Name A→Z</source>
+        <translation>Name A→Z</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="71" />
+        <source>Select All</source>
+        <translation>Select All</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="77" />
+        <source>Application</source>
+        <translation>Application</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="77" />
+        <source>Version</source>
+        <translation>Version</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="77" />
+        <source>Size</source>
+        <translation>Size</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="77" />
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="106" />
+        <source>Rescan</source>
+        <translation>Rescan</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="109" />
+        <source>Remove Selected</source>
+        <translation>Remove Selected</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="114" />
+        <source>Close</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="142" />
+        <source>Loading…</source>
+        <translation>Loading…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="204" />
+        <source>%1 apps · %2 total · %3 selected (%4)</source>
+        <translation>%1 apps · %2 total · %3 selected (%4)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="222" />
+        <source>Confirm removal</source>
+        <translation>Confirm removal</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/universal_apps_dialog.cpp" line="223" />
+        <source>Remove %1 %2 application(s)?
+
+This cannot be undone — you'll need to reinstall any app you remove here.</source>
+        <translation>Remove %1 %2 application(s)?
+
+This cannot be undone — you'll need to reinstall any app you remove here.</translation>
     </message>
 </context>
 <context>

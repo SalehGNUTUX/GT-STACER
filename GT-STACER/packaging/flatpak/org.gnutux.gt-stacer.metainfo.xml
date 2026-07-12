@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.gnutux.gt-stacer</id>
+
+  <name>GT-STACER</name>
+  <summary>Linux system optimizer and monitor</summary>
+  <summary xml:lang="ar">محسّن ومراقب نظام لينكس</summary>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <developer id="org.gnutux">
+    <name>GNUTUX</name>
+  </developer>
+
+  <description>
+    <p>
+      GT-STACER is a modernised fork of Stacer by Oguzhan INAN, rebuilt with
+      Qt 6 and C++ 17 for 2026. It provides a single unified interface for
+      monitoring system resources, managing services and startup items,
+      cleaning caches, and inspecting installed packages across 28+ package
+      managers.
+    </p>
+    <p xml:lang="ar">
+      GT-STACER هو انشقاق محدّث من Stacer بقلم Oguzhan INAN، أُعيد بناؤه
+      بـ Qt 6 و C++ 17 لعام 2026. يوفّر واجهة موحّدة لمراقبة موارد النظام،
+      وإدارة الخدمات وبرامج بدء التشغيل، وتنظيف الذواكر المؤقتة، وإدارة
+      الحزم المثبّتة عبر أكثر من 28 مدير حزم.
+    </p>
+    <p>Highlights:</p>
+    <ul>
+      <li>Real-time CPU / memory / disk / network / GPU / temperature / battery dashboards</li>
+      <li>System cleaner with per-application drill-down for cache directories</li>
+      <li>Service manager (systemd / OpenRC / runit / s6 / SysV)</li>
+      <li>Startup application editor with icons and toggle switches</li>
+      <li>Package uninstaller covering 13+ package managers (APT, DNF, Pacman, Zypper, Flatpak, Snap, …)</li>
+      <li>Configurable desktop notifications for CPU temperature, memory, disk and battery thresholds</li>
+      <li>19 translated languages, full RTL support for Arabic</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">org.gnutux.gt-stacer.desktop</launchable>
+
+  <url type="homepage">https://salehgnutux.github.io/GT-STACER</url>
+  <url type="bugtracker">https://github.com/SalehGNUTUX/GT-STACER/issues</url>
+  <url type="vcs-browser">https://github.com/SalehGNUTUX/GT-STACER</url>
+  <url type="help">https://github.com/SalehGNUTUX/GT-STACER#readme</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://salehgnutux.github.io/GT-STACER/images/screenshoots/EN/Dashboard.png</image>
+      <caption>The Dashboard with circular gauges, system info, and network/disk activity</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://salehgnutux.github.io/GT-STACER/images/screenshoots/EN/Resources.png</image>
+      <caption>Resources page with CPU/memory/network history and per-core load bars</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://salehgnutux.github.io/GT-STACER/images/screenshoots/EN/System_Cleaner.png</image>
+      <caption>System Cleaner with per-category icon cards</caption>
+    </screenshot>
+  </screenshots>
+
+  <content_rating type="oars-1.1" />
+
+  <categories>
+    <category>System</category>
+    <category>Monitor</category>
+    <category>Utility</category>
+  </categories>
+
+  <keywords>
+    <keyword>system</keyword>
+    <keyword>monitor</keyword>
+    <keyword>optimizer</keyword>
+    <keyword>cleaner</keyword>
+    <keyword>stacer</keyword>
+    <keyword>cpu</keyword>
+    <keyword>memory</keyword>
+    <keyword>processes</keyword>
+    <keyword>services</keyword>
+  </keywords>
+
+  <provides>
+    <binary>gt-stacer</binary>
+  </provides>
+
+  <releases>
+    <release version="26.07" date="2026-07-11">
+      <description>
+        <p>Field-test follow-up to 26.06. Highlights:</p>
+        <ul>
+          <li>Startup Apps: autostart entries now launch (freedesktop-compliant writer), plus Flatpak/Snap detection and a per-entry start delay</li>
+          <li>Settings: start on login toggle, and a Power timer (shut down / restart / suspend / hibernate after N minutes)</li>
+          <li>System Relief (new): temporarily freeze idle, non-critical apps to relieve RAM/CPU pressure, then thaw them — manual or automatic</li>
+          <li>Uninstaller: full-page progress overlay during removal</li>
+          <li>Arabic UI back to 100 %; GPU renamed to "بطاقة الرسوميات"</li>
+        </ul>
+      </description>
+    </release>
+    <release version="26.06" date="2026-05-15">
+      <description>
+        <p>First stable release. Highlights:</p>
+        <ul>
+          <li>Multi-field process search (PID, name, cmdline, user)</li>
+          <li>Six process actions with critical-process safety guard</li>
+          <li>Multi-package uninstall with sequential progress</li>
+          <li>Flatpak / Snap drill-down in System Cleaner</li>
+          <li>Dynamic package-cache labelling (APT / DNF / Pacman / Zypper / …)</li>
+          <li>Configurable notification thresholds</li>
+          <li>19 translation files compiled (Arabic 100 %, French 83 %)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="26.05" date="2026-05-14">
+      <description>
+        <p>Public beta — security hardening, performance pass, UX redesign.</p>
+      </description>
+    </release>
+    <release version="26.04" date="2026-04-27">
+      <description>
+        <p>First public alpha.</p>
+      </description>
+    </release>
+  </releases>
+
+  <update_contact>gnutux.arabic_AT_gmail.com</update_contact>
+</component>

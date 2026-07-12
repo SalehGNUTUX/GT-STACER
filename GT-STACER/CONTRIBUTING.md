@@ -79,7 +79,36 @@ Release flags: `-Os -ffunction-sections -fdata-sections` plus
 ./packaging/build-deb.sh        # .deb for Debian/Ubuntu
 ./packaging/build-rpm.sh        # .rpm for Fedora/RHEL/Suse
 ./packaging/build-appimage.sh   # universal AppImage (needs linuxdeploy)
+./packaging/build-flatpak.sh    # .flatpak (org.gnutux.gt-stacer)
 ```
+
+All four are also wired into `scripts/build-all.sh` (`deb`, `rpm`, `appimage`,
+`flatpak`, or `all`).
+
+### Flatpak development loop
+
+The Flatpak build uses `org.kde.{Platform,Sdk}//6.9`. First-time setup pulls
+~500 MB of runtimes — subsequent builds are incremental.
+
+```bash
+./packaging/build-flatpak.sh --install   # build + install --user in one step
+flatpak run org.gnutux.gt-stacer
+flatpak kill org.gnutux.gt-stacer
+
+# Drop into a sandbox shell to test wrapper behaviour:
+flatpak run --command=bash org.gnutux.gt-stacer
+# Inside the sandbox:
+echo $FLATPAK_ID && ls /.flatpak-info
+flatpak-spawn --host which pkexec        # confirm host reachability
+flatpak-spawn --host pkexec --version    # confirm polkit binary is callable
+```
+
+> **Important contract:** when adding new privileged code, **always** go
+> through `CommandUtil::execProgram*` / `pkexecWriteFile`. Calling
+> `QProcess::start("pkexec", …)` directly bypasses the `wrapForHost()` layer
+> and will silently fail in the Flatpak build — the sandbox has no `pkexec`
+> at all, only the host does. See the *Flatpak sandbox / host boundary*
+> section in [CLAUDE.md](CLAUDE.md) for the full contract.
 
 ---
 
@@ -204,25 +233,43 @@ currently at 18-38 % coverage. The way to help:
 
 ### Add or improve a translation
 
-1. Identify the file: `translations/gt-stacer_<lang>.ts`. If your language
-   isn't there, copy any unfinished file and rename it.
+As of v26.06, every `.ts` file ships with **all 417 entries marked finished**.
+For languages without a complete native dictionary (everything except Arabic
+and English) the missing entries fall back to the English source text rather
+than staying blank. The job for contributors is to **replace those fallbacks
+with real translations**, not to fix `unfinished` flags.
+
+1. Open the file: `translations/gt-stacer_<lang>.ts`. If your language isn't
+   listed yet, copy an existing one as a starting template (e.g. `gt-stacer_fr.ts`)
+   and rename it. Open `translations/CMakeLists.txt`-adjacent code in
+   `gt-stacer/CMakeLists.txt` and add the new file to `TS_FILES`.
+
 2. Open it in **Qt Linguist** (recommended) or any text editor.
 
    ```bash
    /usr/lib/qt6/bin/linguist translations/gt-stacer_fr.ts
    ```
 
-3. Translate entries marked `type="unfinished"`. Leave the surrounding XML
-   alone; Linguist handles it.
-4. Test by compiling:
+3. Walk through the entries. The ones where the `<translation>` field is the
+   English source repeated verbatim are the fallbacks waiting to be replaced.
+   Type the proper translation over it.
+
+4. Compile to verify nothing broke:
 
    ```bash
    /usr/lib/qt6/bin/lrelease translations/gt-stacer_fr.ts
    ```
 
-   If you see `0 unfinished` and the QM size is non-trivial, you're done.
+   Expect to see something like `Generated 417 translation(s) (417 finished and 0 unfinished)`.
+
 5. Submit a PR with the `.ts` change. Don't commit the `.qm` — CMake
    regenerates it at build time.
+
+> **Coverage report for v26.06.** Native-translation rates per language:
+> AR 100 %, EN 100 %, FR 83 %, DE 43 %, RU 37 %, IT 35 %, PT 35 %, TR 34 %,
+> NL 27 %, PL 27 %, ZH-CN 25 %, SV 25 %, VI 25 %, UK 23 %, ZH-TW 23 %, HI 20 %,
+> OC 15 %, KN 11 %, ML 11 %. The English-fallback share for each language is
+> 100 % − native %.
 
 ### Translation conventions
 

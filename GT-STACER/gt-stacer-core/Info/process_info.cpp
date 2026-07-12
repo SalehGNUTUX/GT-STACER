@@ -10,8 +10,10 @@
 #include <QRegularExpression>
 #include <QThread>
 #include <algorithm>
+#include <QSet>
 #include <pwd.h>
 #include <signal.h>
+#include <sys/resource.h>
 #include <unistd.h>
 
 // We read /proc/<pid>/stat directly instead of shelling out to ps. CPU% is
@@ -157,6 +159,15 @@ QVector<ProcessData> ProcessInfo::processes()
 
         p.command = readCmdline(pid);
         if (p.command.isEmpty()) p.command = p.name;
+        // Prefer a friendlier display name: argv[0]'s basename when available
+        // (kernel comm field is truncated to 15 chars, hiding e.g. AppImage
+        // entries that should match a "stacer" search). Fall back to comm.
+        if (!p.command.isEmpty()) {
+            QString first = p.command.section(' ', 0, 0);
+            QString base  = first.section('/', -1);
+            if (!base.isEmpty() && base.size() > p.name.size())
+                p.name = base;
+        }
 
         // CPU% delta from previous sample
         ProcSample s;
@@ -191,9 +202,56 @@ QVector<ProcessData> ProcessInfo::processes()
     return result;
 }
 
-bool ProcessInfo::kill(int pid)
+bool ProcessInfo::kill(int pid)       { return ::kill(pid, SIGTERM) == 0; }
+bool ProcessInfo::forceKill(int pid)  { return ::kill(pid, SIGKILL) == 0; }
+bool ProcessInfo::suspend(int pid)    { return ::kill(pid, SIGSTOP) == 0; }
+bool ProcessInfo::resume(int pid)     { return ::kill(pid, SIGCONT) == 0; }
+
+bool ProcessInfo::setPriority(int pid, int niceness)
 {
-    return ::kill(pid, SIGTERM) == 0;
+    // renice via setpriority(2). Requires CAP_SYS_NICE for negative values.
+    return setpriority(PRIO_PROCESS, pid, qBound(-20, niceness, 19)) == 0;
+}
+
+bool ProcessInfo::isCriticalProcess(int pid, const QString &name)
+{
+    // PID 1 and kernel threads are always off-limits.
+    if (pid == 1) return true;
+    // Kernel threads have no command-line; quick test is parent == 2 (kthreadd).
+    QByteArray statRaw;
+    if (QFile f("/proc/" + QString::number(pid) + "/stat"); f.open(QIODevice::ReadOnly))
+        statRaw = f.readAll();
+    if (!statRaw.isEmpty()) {
+        int rparen = statRaw.lastIndexOf(')');
+        if (rparen > 0) {
+            auto fields = statRaw.mid(rparen + 2).split(' ');
+            if (fields.size() > 1 && fields.value(1).toInt() == 2) return true; // kthread
+        }
+    }
+
+    // Name-based blocklist — exact match against the kernel comm (15 chars max).
+    static const QSet<QString> critical = {
+        // Init systems & service bus
+        "systemd", "init", "openrc-init", "runit-init", "dbus-daemon",
+        "dbus-broker", "elogind", "systemd-logind", "systemd-journal",
+        "systemd-resolve", "systemd-network", "systemd-udevd", "systemd-timesyn",
+        // Display server / compositor
+        "Xorg", "Xwayland", "gnome-shell", "plasmashell", "kwin_x11",
+        "kwin_wayland", "mutter", "sway", "weston", "wayfire", "hyprland",
+        "compton", "picom", "xfwm4", "openbox",
+        // Networking
+        "NetworkManager", "wpa_supplicant", "ModemManager", "iwd",
+        // Audio
+        "pipewire", "pipewire-pulse", "wireplumber", "pulseaudio",
+        // GVFS / desktop
+        "gvfsd", "gvfsd-fuse", "gvfsd-trash", "polkitd", "polkit-1",
+        // Misc but important
+        "rsyslogd", "cron", "crond", "atd", "sshd", "agetty", "login",
+    };
+    if (critical.contains(name)) return true;
+    // Anything beginning with a sensitive prefix (gvfs-*, systemd-*).
+    if (name.startsWith("systemd-") || name.startsWith("gvfsd")) return true;
+    return false;
 }
 
 int ProcessInfo::count()
