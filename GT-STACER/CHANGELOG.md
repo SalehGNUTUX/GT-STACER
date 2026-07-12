@@ -24,15 +24,29 @@ Power timer), and finishing the Arabic UI to 100 %.
 - **Start delay** — each autostart entry can wait N seconds after login before
   launching (wrapped as `sh -c "sleep N && exec …"`, field codes stripped).
   The configured delay is shown on the row.
+- **Fix — the list now refreshes when you open the page.** An entry added
+  elsewhere (e.g. the Settings "start on login" checkbox) used to be invisible
+  here until a manual Refresh, which looked like "add didn't work". The page now
+  re-scans `~/.config/autostart` on every `showEvent`.
 
 ### Settings
 - **Start GT-STACER on system login** — a new checkbox that reflects the real
   state of the managed `~/.config/autostart` entry and writes/removes it on
-  apply (AppImage uses `$APPIMAGE`, otherwise the installed binary path).
+  apply (AppImage uses `$APPIMAGE`, otherwise the installed binary path). The
+  checkbox re-syncs with the on-disk entry each time the page is shown, so it
+  never displays a stale state.
 - **Power timer** — schedule Shut down / Restart / Suspend (to RAM) /
   Hibernate (to disk) after a set number of minutes, with a live countdown and
   a cancel button. Runs through `systemctl` (logind/polkit), so it works under
-  Flatpak too. A confirmation guards against an accidental schedule.
+  Flatpak too. A confirmation guards against an accidental schedule. No root
+  password is requested because logind grants an active local session these
+  actions — the same reason the desktop's own shutdown button doesn't ask.
+- **Fix — hibernate availability now asks logind.** `isAvailable()` consulted
+  only `/sys/power/state`, which can advertise `disk` even when no usable
+  swap/resume exists; the timer would then schedule a hibernate that silently
+  failed. It now queries logind's `CanSuspend`/`CanHibernate` (falling back to
+  the kernel state only if logind is unreachable), so unsupported modes are
+  correctly greyed out.
 
 ### System Relief (new page)
 - Temporarily **freezes idle, non-critical, user-owned processes** (SIGSTOP) to

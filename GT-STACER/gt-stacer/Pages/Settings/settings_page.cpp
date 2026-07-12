@@ -8,6 +8,7 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QMessageBox>
+#include <QShowEvent>
 #include <QTimer>
 
 struct LangEntry {
@@ -247,4 +248,13 @@ void SettingsPage::changeEvent(QEvent *event)
     if (event->type() == QEvent::LanguageChange && ui)
         ui->retranslateUi(this);
     QWidget::changeEvent(event);
+}
+
+void SettingsPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    // The "start on login" state lives in a .desktop file that can change while
+    // this page is alive (added/removed from the Startup page). Re-sync the
+    // checkbox each time the page is shown so it always reflects reality.
+    if (ui) ui->autoStartCheck->setChecked(selfAutostartActive());
 }

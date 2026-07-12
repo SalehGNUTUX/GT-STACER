@@ -12,6 +12,7 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QShowEvent>
 #include <QStyle>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -105,6 +106,15 @@ StartupAppsPage::~StartupAppsPage() = default;
 void StartupAppsPage::changeEvent(QEvent *event)
 {
     QWidget::changeEvent(event);
+}
+
+void StartupAppsPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    // Re-scan the autostart dir every time the page is shown, so entries added
+    // elsewhere (e.g. the Settings "start on login" checkbox) appear without
+    // needing a manual Refresh.
+    refresh();
 }
 
 void StartupAppsPage::clearRows()

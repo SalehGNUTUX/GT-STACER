@@ -13,6 +13,7 @@ public:
 
 protected:
     void changeEvent(QEvent *event) override;
+    void showEvent(class QShowEvent *event) override;
 
 private slots:
     void refresh();
