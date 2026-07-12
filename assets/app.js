@@ -21,14 +21,14 @@
                     features_subtitle: 'A complete overhaul with modern tooling, broader hardware support, and a refined user experience.',
                     screenshots_tag: 'Screenshots',
                     screenshots_title: 'See GT-STACER in Action',
-                    screenshots_subtitle: 'Browse through the interface — screenshots update based on your selected language.',
+                    screenshots_subtitle: 'Browse through the interface — screenshots follow your selected language and theme.',
                     comparison_tag: 'Comparison',
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.06 STABLE',
+                    download_title: 'Get GT-STACER 26.07 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.06 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.07 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -56,7 +56,7 @@
                     pkg_flatpak_desc: 'Sandboxed — runs on any distro with Flatpak',
                     table_header_aspect: 'Aspect',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.06 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.07 (2026)',
                 },
                 ar: {
                     nav_features: 'المزايا',
@@ -73,14 +73,14 @@
                     features_subtitle: 'تطوير شامل بأدوات حديثة، دعم أوسع للعتاد، وتجربة مستخدم محسّنة.',
                     screenshots_tag: 'لقطات الشاشة',
                     screenshots_title: 'شاهد GT-STACER أثناء العمل',
-                    screenshots_subtitle: 'تصفّح الواجهة — تتغيّر لقطات الشاشة حسب اللغة المختارة.',
+                    screenshots_subtitle: 'تصفّح الواجهة — تتغيّر لقطات الشاشة حسب اللغة والسمة المختارتين.',
                     comparison_tag: 'المقارنة',
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.06 STABLE',
+                    download_title: 'حمّل GT-STACER 26.07 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.06 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.07 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -108,7 +108,7 @@
                     pkg_flatpak_desc: 'معزولة في sandbox — تعمل في أي توزيعة فيها Flatpak',
                     table_header_aspect: 'الجانب',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.06 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.07 (2026)',
                 }
             };
 
@@ -133,7 +133,7 @@
                         'Quit confirmation dialog (Stacer-style)',
                       ] },
                     { ver: 'v26.06 stable', status: 'shipped',
-                      title: 'Stable release — every beta regression fixed',
+                      title: 'First stable — every beta regression fixed',
                       bullets: [
                         'Multi-field process search (PID + name + cmdline + user)',
                         '6 process actions + right-click menu + critical-process guard',
@@ -143,21 +143,30 @@
                         '19 .qm translation files at 100% coverage',
                         'New Flatpak distribution (org.gnutux.gt-stacer on KDE 6.9)',
                       ] },
-                    { ver: 'v26.07', status: 'planned',
+                    { ver: 'v26.07 stable', status: 'shipped',
+                      title: 'System Relief · Power timer · light theme',
+                      bullets: [
+                        'System Relief — freeze idle apps (SIGSTOP) to relieve RAM/CPU, fully reversible',
+                        'Power timer — schedule shutdown / restart / suspend / hibernate via logind',
+                        'Uninstaller detects externally-installed apps (/opt, scripts, AppImages)',
+                        'Light theme rebuilt — modern Catppuccin Latte at full parity with dark',
+                        'Autostart fixes + Arabic UI at 100% (486/486)',
+                      ] },
+                    { ver: 'v26.08', status: 'planned',
                       title: 'Network & power tools',
                       bullets: [
                         'Live network connections (ss -tunap)',
                         'TLP / power profiles UI',
                         'Per-app firewall rules (ufw / firewalld)',
                       ] },
-                    { ver: 'v26.08', status: 'future',
+                    { ver: 'v26.09', status: 'future',
                       title: 'Backup & snapshots',
                       bullets: [
                         'Btrfs/ZFS snapshot manager',
                         'rsync-based home backup',
                         'Restore points before risky cleans',
                       ] },
-                    { ver: 'v26.09', status: 'future',
+                    { ver: 'v26.10', status: 'future',
                       title: 'Plugin system',
                       bullets: [
                         'Lua/Python plugin API',
@@ -183,7 +192,7 @@
                         'حوار تأكيد الإغلاق (على نمط Stacer)',
                       ] },
                     { ver: 'إصدار 26.06 stable', status: 'shipped',
-                      title: 'الإصدار المستقر — كل مشاكل الاختبار حُلَّت',
+                      title: 'أول إصدار مستقر — كل مشاكل الاختبار حُلَّت',
                       bullets: [
                         'بحث Processes متعدد الحقول (PID + اسم + cmdline + مستخدم)',
                         '6 إجراءات للعمليات + قائمة سياق + تحذير العمليات الحرجة',
@@ -193,21 +202,30 @@
                         '19 ملف ترجمة بتغطية 100%',
                         'حزمة Flatpak جديدة (org.gnutux.gt-stacer على KDE 6.9)',
                       ] },
-                    { ver: 'إصدار 26.07', status: 'planned',
+                    { ver: 'إصدار 26.07 stable', status: 'shipped',
+                      title: 'إنعاش النظام · مؤقّت الطاقة · الوضع الفاتح',
+                      bullets: [
+                        'إنعاش النظام — تجميد التطبيقات الخاملة (SIGSTOP) لتخفيف الذاكرة/المعالج، قابل للعكس',
+                        'مؤقّت الطاقة — جدولة إطفاء / إعادة تشغيل / تعليق / سُبات عبر logind',
+                        'إلغاء التثبيت يكشف البرامج المثبَّتة خارجيًّا (/opt، سكربتات، AppImage)',
+                        'إعادة بناء الوضع الفاتح — مظهر Latte عصريّ مكافئ للداكن',
+                        'إصلاحات بدء التشغيل + الواجهة العربيّة 100% (486/486)',
+                      ] },
+                    { ver: 'إصدار 26.08', status: 'planned',
                       title: 'أدوات الشبكة والطاقة',
                       bullets: [
                         'اتصالات الشبكة الحية (ss -tunap)',
                         'واجهة TLP / ملفات الطاقة',
                         'قواعد جدار حماية لكل تطبيق',
                       ] },
-                    { ver: 'إصدار 26.08', status: 'future',
+                    { ver: 'إصدار 26.09', status: 'future',
                       title: 'النسخ الاحتياطية واللقطات',
                       bullets: [
                         'مدير لقطات Btrfs/ZFS',
                         'نسخ احتياطي بـ rsync',
                         'نقاط استعادة قبل عمليات التنظيف الخطرة',
                       ] },
-                    { ver: 'إصدار 26.09', status: 'future',
+                    { ver: 'إصدار 26.10', status: 'future',
                       title: 'نظام إضافات',
                       bullets: [
                         'واجهة برمجة إضافات بـ Lua/Python',
@@ -220,6 +238,15 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.07 stable', date: '2026-07-12', headline: 'System Relief · Power timer · light theme rebuilt · external-app uninstall',
+                      items: [
+                        'System Relief (new) — temporarily freeze idle apps (SIGSTOP) to relieve RAM/CPU, fully reversible; never freezes the terminal/shell/agent that launched it',
+                        'Power timer — schedule shutdown / restart / suspend / hibernate with a live countdown (via logind)',
+                        'Autostart fixed — freedesktop-compliant .desktop writing, Flatpak/Snap listing, per-entry start delay; the list now refreshes on show',
+                        'Uninstaller now finds externally-installed apps (/opt tarballs, install scripts, AppImages) and respects shared installs',
+                        'Light theme rebuilt — a central Theme palette drives every widget; modern Catppuccin Latte at full parity with the (unchanged) dark theme',
+                        'Arabic UI at 100% (486/486)',
+                      ] },
                     { ver: '26.06 stable', date: '2026-05-15', headline: 'First stable · Flatpak distribution · every beta regression fixed',
                       items: [
                         'Multi-field process search — PID + name + cmdline + user (no more "hidden" processes)',
@@ -262,6 +289,15 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.07 stable', date: '2026-07-12', headline: 'إنعاش النظام · مؤقّت الطاقة · إعادة بناء الوضع الفاتح · كشف البرامج الخارجيّة',
+                      items: [
+                        'إنعاش النظام (جديد) — تجميد مؤقّت للتطبيقات الخاملة (SIGSTOP) لتخفيف الذاكرة/المعالج، قابل للعكس تماماً؛ لا يجمّد أبداً الطرفية أو الصدفة التي أطلقته',
+                        'مؤقّت الطاقة — جدولة إطفاء / إعادة تشغيل / تعليق / سُبات مع عدّاد حيّ (عبر logind)',
+                        'إصلاح برامج بدء التشغيل — كتابة .desktop متوافقة مع freedesktop، إدراج Flatpak/Snap، تأخير بدء لكل عنصر؛ القائمة تتحدّث عند العرض',
+                        'إلغاء التثبيت يكشف البرامج المثبَّتة خارجيًّا (حزم /opt، سكربتات، AppImage) مع احترام التبعيّات المشتركة',
+                        'إعادة بناء الوضع الفاتح — مُعِين ألوان مركزيّ يقود كل العناصر؛ مظهر Latte عصريّ مكافئ للوضع الداكن',
+                        'الواجهة العربيّة 100% (486/486)',
+                      ] },
                     { ver: '26.06 stable', date: '2026-05-15', headline: 'أول إصدار مستقر · توزيع عبر Flatpak · إصلاح جميع مشاكل الإصدار التجريبي',
                       items: [
                         'بحث Processes متعدد الحقول — PID + الاسم + cmdline + المستخدم (لا مزيد من "العمليات المخفية")',
@@ -318,6 +354,7 @@
                     { file: 'APT_Sources0.png', title: 'APT Sources' },
                     { file: 'Helpers.png', title: 'Helpers' },
                     { file: 'Settings.png', title: 'Settings' },
+                    { file: 'System_Relief.png', title: 'System Relief' },
                 ],
                 ar: [
                     { file: 'لوحة_التحكم.png', title: 'لوحة التحكم' },
@@ -330,6 +367,7 @@
                     { file: 'أدوات_مساعدة.png', title: 'أدوات مساعدة' },
                     { file: 'الإعدادات.png', title: 'الإعدادات' },
                     { file: 'مصادر_الحزم.png', title: 'مصادر الحزم' },
+                    { file: 'إنعاش_النظام.png', title: 'إنعاش النظام' },
                 ]
             };
 
@@ -390,43 +428,45 @@
                 descAr: 'يعرض CPU% و RAM% في Tooltip الشريط ويُحدَّث كل 3 ثوانٍ.',
             }, ];
             const comparisonRows = [
-                { aspect: 'Framework', stacer: 'Qt5 (EOL)', gtstacer: 'Qt6 ≥ 6.2', stacerIcon: '⚠️',
-                gtstacerIcon: '✅' },
-                { aspect: 'C++ Standard', stacer: 'C++11', gtstacer: 'C++17', stacerIcon: '⚠️',
-                gtstacerIcon: '✅' },
-                { aspect: 'Dashboard', stacer: 'Linear progress', gtstacer: 'Animated circular gauges',
-                    stacerIcon: '⚠️', gtstacerIcon: '✅' },
-                { aspect: 'Sidebar', stacer: 'Text only', gtstacer: 'SVG icons + collapsible (220↔64 px)',
-                    stacerIcon: '⚠️', gtstacerIcon: '✅' },
-                { aspect: 'GPU Monitoring', stacer: '✗', gtstacer: 'Intel · AMD · NVIDIA', stacerIcon: '❌',
-                    gtstacerIcon: '✅' },
-                { aspect: 'Temperatures', stacer: '✗', gtstacer: 'hwmon · thermal zones', stacerIcon: '❌',
-                    gtstacerIcon: '✅' },
-                { aspect: 'Battery', stacer: '✗', gtstacer: 'Circular gauge + time remaining', stacerIcon: '❌',
-                    gtstacerIcon: '✅' },
-                { aspect: 'Flatpak Support', stacer: '✗', gtstacer: '✅', stacerIcon: '❌', gtstacerIcon: '✅' },
-                { aspect: 'Package Managers', stacer: 'APT · Snap', gtstacer: '28+ managers', stacerIcon: '⚠️',
-                    gtstacerIcon: '✅' },
-                { aspect: 'Init Systems', stacer: 'systemd only', gtstacer: 'systemd · OpenRC · runit · s6 · SysV',
-                    stacerIcon: '⚠️', gtstacerIcon: '✅' },
-                { aspect: 'Loading Indicators', stacer: '✗', gtstacer: 'Animated spinner overlay', stacerIcon: '❌',
-                    gtstacerIcon: '✅' },
-                { aspect: 'System Tray', stacer: '✗', gtstacer: 'CPU% · RAM% tooltip live', stacerIcon: '❌',
-                    gtstacerIcon: '✅' },
-                { aspect: 'Welcome Screen', stacer: '✗', gtstacer: '6 onboarding slides', stacerIcon: '❌',
-                    gtstacerIcon: '✅' },
-                { aspect: 'Wayland', stacer: 'Partial', gtstacer: 'Full', stacerIcon: '⚠️', gtstacerIcon: '✅' },
-                { aspect: 'Arabic / RTL', stacer: '✅', gtstacer: '✅ ar_MA · Western numerals 🇲🇦',
-                stacerIcon: '✅', gtstacerIcon: '✅' },
-                { aspect: 'Close Behavior', stacer: 'Quit only', gtstacer: 'Configurable (tray / quit)',
-                    stacerIcon: '⚠️', gtstacerIcon: '✅' },
-                { aspect: 'Theme', stacer: 'Simple QSS', gtstacer: 'Catppuccin dark/light', stacerIcon: '⚠️',
-                    gtstacerIcon: '✅' },
+                { aspect: 'Framework', aspectAr: 'إطار العمل',
+                  stacer: 'Qt5 (EOL)', stacerAr: 'Qt5 (منتهٍ)', gtstacer: 'Qt6 ≥ 6.2', gtstacerAr: 'Qt6 ≥ 6.2', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'C++ Standard', aspectAr: 'معيار C++',
+                  stacer: 'C++11', stacerAr: 'C++11', gtstacer: 'C++17', gtstacerAr: 'C++17', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'Dashboard', aspectAr: 'لوحة التحكّم',
+                  stacer: 'Linear progress', stacerAr: 'أشرطة خطّية', gtstacer: 'Animated circular gauges', gtstacerAr: 'عدّادات دائريّة متحرّكة', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'Sidebar', aspectAr: 'الشريط الجانبيّ',
+                  stacer: 'Text only', stacerAr: 'نصّ فقط', gtstacer: 'SVG icons + collapsible (220↔64 px)', gtstacerAr: 'أيقونات SVG + قابل للطيّ (220↔64 بكسل)', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'GPU Monitoring', aspectAr: 'مراقبة كرت الشاشة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Intel · AMD · NVIDIA', gtstacerAr: 'Intel · AMD · NVIDIA', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Temperatures', aspectAr: 'الحرارة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'hwmon · thermal zones', gtstacerAr: 'hwmon · مناطق حراريّة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Battery', aspectAr: 'البطاريّة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Circular gauge + time remaining', gtstacerAr: 'عدّاد دائريّ + الوقت المتبقّي', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Flatpak Support', aspectAr: 'دعم Flatpak',
+                  stacer: '✗', stacerAr: '✗', gtstacer: '✅', gtstacerAr: '✅', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Package Managers', aspectAr: 'مدراء الحزم',
+                  stacer: 'APT · Snap', stacerAr: 'APT · Snap', gtstacer: '28+ managers', gtstacerAr: '28+ مديراً', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'Init Systems', aspectAr: 'أنظمة التهيئة',
+                  stacer: 'systemd only', stacerAr: 'systemd فقط', gtstacer: 'systemd · OpenRC · runit · s6 · SysV', gtstacerAr: 'systemd · OpenRC · runit · s6 · SysV', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'Loading Indicators', aspectAr: 'مؤشّرات التحميل',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Animated spinner overlay', gtstacerAr: 'طبقة دوّار متحرّكة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'System Tray', aspectAr: 'شريط النظام',
+                  stacer: 'Tray icon', stacerAr: 'أيقونة شريط', gtstacer: 'Tray + live CPU% / RAM% tooltip', gtstacerAr: 'شريط + Tooltip حيّ لـ CPU%/RAM%', stacerIcon: '✅', gtstacerIcon: '✅' },
+                { aspect: 'Welcome Screen', aspectAr: 'شاشة الترحيب',
+                  stacer: '✗', stacerAr: '✗', gtstacer: '6 onboarding slides', gtstacerAr: '6 شرائح تعريفيّة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Wayland', aspectAr: 'Wayland',
+                  stacer: 'Partial', stacerAr: 'جزئيّ', gtstacer: 'Full', gtstacerAr: 'كامل', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'Arabic / RTL', aspectAr: 'العربيّة / RTL',
+                  stacer: '✅', stacerAr: '✅', gtstacer: '✅ ar_MA · Western numerals 🇲🇦', gtstacerAr: '✅ ar_MA · أرقام غربيّة 🇲🇦', stacerIcon: '✅', gtstacerIcon: '✅' },
+                { aspect: 'Close Behavior', aspectAr: 'سلوك الإغلاق',
+                  stacer: 'Tray / quit', stacerAr: 'شريط / إنهاء', gtstacer: 'Tray / quit + confirm dialog', gtstacerAr: 'شريط / إنهاء + حوار تأكيد', stacerIcon: '✅', gtstacerIcon: '✅' },
+                { aspect: 'Theme', aspectAr: 'السمة',
+                  stacer: 'Simple QSS', stacerAr: 'QSS بسيط', gtstacer: 'Catppuccin dark/light', gtstacerAr: 'Catppuccin داكن/فاتح', stacerIcon: '⚠️', gtstacerIcon: '✅' },
             ];
 
             // ── Download data ──
-            // GT-STACER 26.06 STABLE — published 2026-05-15 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.06_STABLE
+            // GT-STACER 26.07 STABLE — published 2026-07-12 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.07_STABLE
             const downloadsData = [{
                 id: 'appimage',
                 icon: `<i class=\"fa-brands fa-linux\" style=\"font-size:3.5rem;color:#d29922;\"></i>`,
@@ -434,8 +474,8 @@
                 descKey: 'pkg_appimage_desc',
                 size: '54 MB',
                 sha256: '7a47118a3319208ed0600d053bc63056f215e6e463f5e0bb0bfbfc9a07e30ac4',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.06_STABLE/GT-STACER-26.06-x86_64.AppImage',
-                filename: 'GT-STACER-26.06-x86_64.AppImage',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/GT-STACER-26.07-x86_64.AppImage',
+                filename: 'GT-STACER-26.07-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
@@ -443,8 +483,8 @@
                 descKey: 'pkg_deb_desc',
                 size: '1.8 MB',
                 sha256: '89e885d9bfbf1ff7d05856b6a39fb02c34e22c0e36b7693b768d1219be75553b',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.06_STABLE/GT-STACER_26.06_amd64.deb',
-                filename: 'GT-STACER_26.06_amd64.deb',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/GT-STACER_26.07_amd64.deb',
+                filename: 'GT-STACER_26.07_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
@@ -452,8 +492,8 @@
                 descKey: 'pkg_rpm_desc',
                 size: '8.2 MB',
                 sha256: '5304e80737c8f9e2587adfab67a5e691779d6b2708fd6088d44192cb21d880b2',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.06_STABLE/gt-stacer-26.06-2.x86_64.rpm',
-                filename: 'gt-stacer-26.06-2.x86_64.rpm',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/gt-stacer-26.07-2.x86_64.rpm',
+                filename: 'gt-stacer-26.07-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
@@ -461,8 +501,8 @@
                 descKey: 'pkg_flatpak_desc',
                 size: '2.0 MB',
                 sha256: '7322326e4bd3f1022e6c5a8ab99be991880b95f6c7bfdb5a60210a00650341bc',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.06_STABLE/GT-STACER-26.06-x86_64.flatpak',
-                filename: 'GT-STACER-26.06-x86_64.flatpak',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/GT-STACER-26.07-x86_64.flatpak',
+                filename: 'GT-STACER-26.07-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──
@@ -490,6 +530,12 @@
                 $themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
                 localStorage.setItem('gtstacer-theme', theme);
                 currentTheme = theme;
+                // Screenshots live under a per-theme folder, so re-point them when
+                // the theme changes (dots + main image).
+                if (typeof updateScreenshot === 'function') {
+                    updateScreenshot(true);
+                    buildGalleryDots();
+                }
             }
             $themeToggle.addEventListener('click', () => {
                 applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
@@ -545,7 +591,7 @@
                 scrollThumbIntoView(idx);
 
                 if (skipFade) {
-                    $screenshotImg.src = `images/screenshoots/${folder}/${shot.file}`;
+                    $screenshotImg.src = `images/screenshoots/${folder}/${currentTheme}/${shot.file}`;
                     $screenshotImg.alt = shot.title;
                     $galleryCaption.textContent = shot.title;
                     return;
@@ -554,7 +600,7 @@
                 // Fade out → swap → fade in
                 $screenshotImg.style.opacity = '0';
                 setTimeout(() => {
-                    $screenshotImg.src = `images/screenshoots/${folder}/${shot.file}`;
+                    $screenshotImg.src = `images/screenshoots/${folder}/${currentTheme}/${shot.file}`;
                     $screenshotImg.alt = shot.title;
                     $galleryCaption.textContent = shot.title;
                     $screenshotImg.onload = () => { $screenshotImg.style.opacity = '1'; };
@@ -573,7 +619,7 @@
                     dot.setAttribute('aria-label', shot.title);
 
                     const thumb = document.createElement('img');
-                    thumb.src = `images/screenshoots/${folder}/${shot.file}`;
+                    thumb.src = `images/screenshoots/${folder}/${currentTheme}/${shot.file}`;
                     thumb.alt = shot.title;
                     thumb.loading = 'lazy';
 
@@ -680,13 +726,17 @@
                 $comparisonTable.innerHTML = `
               <thead><tr><th>${thAspect}</th><th>${thStacer}</th><th>${thGtstacer}</th></tr></thead>
               <tbody>
-                ${comparisonRows.map(r => `
+                ${comparisonRows.map(r => {
+                  const asp = lang === 'ar' ? (r.aspectAr || r.aspect) : r.aspect;
+                  const sta = lang === 'ar' ? (r.stacerAr || r.stacer) : r.stacer;
+                  const gt  = lang === 'ar' ? (r.gtstacerAr || r.gtstacer) : r.gtstacer;
+                  return `
                   <tr>
-                    <td><strong>${r.aspect}</strong></td>
-                    <td><span class="${r.stacerIcon === '✅' ? 'check-icon' : r.stacerIcon === '❌' ? 'cross-icon' : ''}">${r.stacerIcon}</span> ${r.stacer}</td>
-                    <td><span class="check-icon">${r.gtstacerIcon}</span> <strong>${r.gtstacer}</strong></td>
+                    <td><strong>${asp}</strong></td>
+                    <td><span class="${r.stacerIcon === '✅' ? 'check-icon' : r.stacerIcon === '❌' ? 'cross-icon' : ''}">${r.stacerIcon}</span> ${sta}</td>
+                    <td><span class="check-icon">${r.gtstacerIcon}</span> <strong>${gt}</strong></td>
                   </tr>
-                `).join('')}
+                `;}).join('')}
               </tbody>
             `;
             }

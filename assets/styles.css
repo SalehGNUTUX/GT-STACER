@@ -678,7 +678,12 @@
     z-index: 1;
     overflow: hidden;
     border-radius: 0;
-    background: #000;
+    /* Match the app's own background so the brief gap during a screenshot
+       fade blends in: dark app base in dark mode, light app base in light. */
+    background: #1e1e2e;
+}
+:root[data-theme="light"] .laptop-screen-area {
+    background: #eff1f5;
 }
 
 .laptop-screen-area img {
