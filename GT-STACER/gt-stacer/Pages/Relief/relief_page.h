@@ -21,6 +21,8 @@ public:
 
 protected:
     void changeEvent(QEvent *event) override;
+    void showEvent(QShowEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
 
 private slots:
     void refreshCandidates();
@@ -28,31 +30,43 @@ private slots:
     void resumeAll();
     void tickMonitor();
     void onAutoToggled(bool on);
+    void toggleSelectAll();
 
 private:
+    void loadSettings();
+    void saveSettings();
+    void applyMonitorCadence();             // interval + keepAlive from state/visibility
     void updateLiveLabels();
+    void updateStatusBadge();
     void updateBanner();
 
-    QTableWidget *m_table       = nullptr;
-    QLabel       *m_ramLabel    = nullptr;
-    QLabel       *m_cpuLabel    = nullptr;
-    QLabel       *m_banner      = nullptr;
-    QPushButton  *m_suspendBtn  = nullptr;
-    QPushButton  *m_resumeBtn   = nullptr;
-    QPushButton  *m_refreshBtn  = nullptr;
-    QCheckBox    *m_dropCaches  = nullptr;
+    QTableWidget *m_table        = nullptr;
+    QLabel       *m_ramLabel     = nullptr;
+    QLabel       *m_cpuLabel     = nullptr;
+    QLabel       *m_badge        = nullptr;  // colored status pill
+    QLabel       *m_banner       = nullptr;
+    QPushButton  *m_suspendBtn   = nullptr;
+    QPushButton  *m_resumeBtn    = nullptr;
+    QPushButton  *m_refreshBtn   = nullptr;
+    QPushButton  *m_selectAllBtn = nullptr;
+    QCheckBox    *m_dropCaches   = nullptr;
+    QCheckBox    *m_autoRefresh  = nullptr;
+    QSpinBox     *m_refreshSecs  = nullptr;
 
-    QCheckBox    *m_autoCheck   = nullptr;
-    QSpinBox     *m_cpuThresh   = nullptr;
-    QSpinBox     *m_ramThresh   = nullptr;
-    QSpinBox     *m_holdSecs    = nullptr;
+    QCheckBox    *m_autoCheck    = nullptr;
+    QSpinBox     *m_cpuThresh    = nullptr;
+    QSpinBox     *m_ramThresh    = nullptr;
+    QSpinBox     *m_holdSecs     = nullptr;
 
-    QTimer       *m_monitor     = nullptr;  // live labels + auto-mode watchdog
+    QTimer       *m_monitor      = nullptr;  // live labels + auto-mode watchdog
 
-    QSet<int>     m_suspended;              // PIDs we have frozen
+    QSet<int>     m_suspended;               // PIDs we have frozen
     CpuStat       m_prevStat{};
-    bool          m_haveStat    = false;
-    int           m_overSeconds = 0;        // consecutive seconds over threshold
-    int           m_underSeconds= 0;        // consecutive seconds back under threshold
-    double        m_lastCpu     = 0.0;
+    bool          m_haveStat     = false;
+    bool          m_allSelected  = true;     // select-all toggle state
+    bool          m_loading      = false;    // suppress save while loading settings
+    int           m_overSeconds  = 0;        // consecutive seconds over threshold
+    int           m_underSeconds = 0;        // consecutive seconds back under threshold
+    int           m_refreshAccum = 0;        // seconds accumulated toward auto-refresh
+    double        m_lastCpu      = 0.0;
 };

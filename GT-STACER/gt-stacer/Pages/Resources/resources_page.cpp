@@ -5,6 +5,8 @@
 #include "../../Widgets/line_chart.h"
 #include "../../Widgets/per_core_bars.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
+#include <QHideEvent>
+#include <QShowEvent>
 
 ResourcesPage::ResourcesPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::ResourcesPage)
@@ -114,4 +116,17 @@ void ResourcesPage::changeEvent(QEvent *event)
     if (event->type() == QEvent::LanguageChange && ui)
         ui->retranslateUi(this);
     QWidget::changeEvent(event);
+}
+
+void ResourcesPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    refresh();
+    m_timer->start(SettingManager::instance()->updateIntervalMs());
+}
+
+void ResourcesPage::hideEvent(QHideEvent *event)
+{
+    QWidget::hideEvent(event);
+    m_timer->stop();   // stop charting/sampling while on another page
 }

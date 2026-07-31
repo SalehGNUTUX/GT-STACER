@@ -10,6 +10,8 @@
 #include <QMenu>
 #include <QAction>
 #include <QApplication>
+#include <QPainter>
+#include <QPixmap>
 #include <QDir>
 #include <QProcess>
 #include <QLocale>
@@ -166,10 +168,37 @@ void AppManager::updateTrayTooltip()
     if (!m_tray || !m_tray->isVisible()) return;
     auto cpu = CpuInfo::usage();
     auto mem = MemoryInfo::memory();
-    m_tray->setToolTip(
-        QString("GT-STACER\nCPU: %1%  |  RAM: %2%")
-            .arg(static_cast<int>(cpu.total))
-            .arg(static_cast<int>(mem.ramPercent())));
+    QString tip = QString("GT-STACER\nCPU: %1%  |  RAM: %2%")
+        .arg(static_cast<int>(cpu.total))
+        .arg(static_cast<int>(mem.ramPercent()));
+    if (m_keepAwake)
+        tip += '\n' + tr("Keeping awake (sleep & screen locking blocked)");
+    m_tray->setToolTip(tip);
+}
+
+void AppManager::setKeepAwake(bool on)
+{
+    if (m_keepAwake == on && m_tray) return;
+    m_keepAwake = on;
+    if (!m_tray) return;
+
+    QPixmap base = QIcon(":/static/icons/gt-stacer.png").pixmap(64, 64);
+    if (on) {
+        // Badge the icon with a small filled circle so the panel clearly shows a
+        // feature is active — the keep-awake indicator the user asked for.
+        QPixmap pm = base;
+        QPainter p(&pm);
+        p.setRenderHint(QPainter::Antialiasing);
+        const int d = 26, m = pm.width() - d - 2;
+        p.setPen(QPen(Qt::white, 3));
+        p.setBrush(QColor("#f9a825"));            // amber "active" dot
+        p.drawEllipse(m, m, d, d);
+        p.end();
+        m_tray->setIcon(QIcon(pm));
+    } else {
+        m_tray->setIcon(QIcon(base));
+    }
+    updateTrayTooltip();
 }
 
 void AppManager::showTray() { if (m_tray) m_tray->show(); }

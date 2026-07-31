@@ -14,8 +14,10 @@ report it before disclosing.
 
 | Version       | Supported                |
 |---------------|--------------------------|
-| 26.06 stable  | ✅ current (recommended)  |
-| 26.05 beta    | ⚠️ security fixes only    |
+| 26.08 stable  | ✅ current (recommended)  |
+| 26.07 stable  | ⚠️ security fixes only    |
+| 26.06 stable  | ❌ unsupported            |
+| 26.05 beta    | ❌ unsupported            |
 | 26.04 alpha   | ❌ unsupported            |
 | older         | ❌ unsupported            |
 
@@ -101,7 +103,7 @@ These are the surfaces we consider security-relevant:
 
 ## Flatpak distribution
 
-GT-STACER 26.06 also ships as a Flatpak (`org.gnutux.gt-stacer` on
+GT-STACER 26.08 also ships as a Flatpak (`org.gnutux.gt-stacer` on
 `org.kde.Platform//6.9`). The Flatpak does **not** change the privilege
 model — it adds a transparent wrapper:
 

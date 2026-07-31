@@ -11,8 +11,10 @@ public:
     QString theme() const;
     void    setTheme(const QString &theme);
 
-    // Language
-    QString language() const;
+    // Language — the stored value may be "auto" (follow the system locale) or a
+    // concrete UI code (e.g. "ar", "fr"). Default on first run is "auto".
+    QString language() const;                 // raw stored value ("auto" or code)
+    QString effectiveLanguage() const;        // "auto" resolved to a real code
     void    setLanguage(const QString &lang);
 
     // Window
@@ -45,6 +47,35 @@ public:
 
     int  batteryThresholdPercent() const;
     void setBatteryThresholdPercent(int v);
+
+    // ── System Relief ───────────────────────────────────────────────────
+    bool reliefAutoMode() const;            // watch thresholds and auto-freeze
+    void setReliefAutoMode(bool v);
+
+    int  reliefCpuThreshold() const;        // %; 0 = ignore CPU
+    void setReliefCpuThreshold(int v);
+
+    int  reliefRamThreshold() const;        // %; 0 = ignore RAM
+    void setReliefRamThreshold(int v);
+
+    int  reliefHoldSeconds() const;         // sustained seconds before acting
+    void setReliefHoldSeconds(int v);
+
+    bool reliefDropCaches() const;          // also drop file caches on freeze
+    void setReliefDropCaches(bool v);
+
+    bool reliefAutoRefresh() const;         // periodically refresh the list
+    void setReliefAutoRefresh(bool v);
+
+    int  reliefRefreshSeconds() const;      // auto-refresh cadence
+    void setReliefRefreshSeconds(int v);
+
+    // ── Network connections page ────────────────────────────────────────
+    bool connAutoRefresh() const;
+    void setConnAutoRefresh(bool v);
+
+    int  connRefreshSeconds() const;
+    void setConnRefreshSeconds(int v);
 
 private:
     explicit SettingManager(QObject *parent = nullptr);

@@ -233,7 +233,7 @@ currently at 18-38 % coverage. The way to help:
 
 ### Add or improve a translation
 
-As of v26.06, every `.ts` file ships with **all 417 entries marked finished**.
+As of v26.08, every `.ts` file ships with **all 578 entries marked finished**.
 For languages without a complete native dictionary (everything except Arabic
 and English) the missing entries fall back to the English source text rather
 than staying blank. The job for contributors is to **replace those fallbacks
@@ -260,16 +260,22 @@ with real translations**, not to fix `unfinished` flags.
    /usr/lib/qt6/bin/lrelease translations/gt-stacer_fr.ts
    ```
 
-   Expect to see something like `Generated 417 translation(s) (417 finished and 0 unfinished)`.
+   Expect to see something like `Generated 578 translation(s) (578 finished and 0 unfinished)`.
 
 5. Submit a PR with the `.ts` change. Don't commit the `.qm` — CMake
    regenerates it at build time.
 
-> **Coverage report for v26.06.** Native-translation rates per language:
-> AR 100 %, EN 100 %, FR 83 %, DE 43 %, RU 37 %, IT 35 %, PT 35 %, TR 34 %,
-> NL 27 %, PL 27 %, ZH-CN 25 %, SV 25 %, VI 25 %, UK 23 %, ZH-TW 23 %, HI 20 %,
-> OC 15 %, KN 11 %, ML 11 %. The English-fallback share for each language is
-> 100 % − native %.
+> **Coverage report (v26.06 baseline, 417 strings).** Native-translation rates
+> per language: AR 100 %, EN 100 %, FR 83 %, DE 43 %, RU 37 %, IT 35 %, PT 35 %,
+> TR 34 %, NL 27 %, PL 27 %, ZH-CN 25 %, SV 25 %, VI 25 %, UK 23 %, ZH-TW 23 %,
+> HI 20 %, OC 15 %, KN 11 %, ML 11 %. The English-fallback share for each
+> language is 100 % − native %.
+>
+> **v26.08 note.** The UI has grown from that 417-string baseline to **578**
+> strings (new Relief/language work in 26.07, then the Connections, Power and
+> Firewall pages in 26.08), all native in Arabic and English only. Every other
+> language's native share is therefore now lower against the 578-string total
+> until contributors translate the new entries — a great place to start.
 
 ### Translation conventions
 

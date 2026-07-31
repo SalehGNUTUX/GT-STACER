@@ -20,7 +20,7 @@ bool runningInFlatpak()
 // Wrap an argv array with `flatpak-spawn --host` when we're sandboxed, so the
 // command runs on the host system rather than inside the sandbox (which has
 // no pkexec, no apt, no systemctl). Outside Flatpak this is a no-op.
-void wrapForHost(QString &program, QStringList &args)
+void wrapForHostImpl(QString &program, QStringList &args)
 {
     if (!runningInFlatpak()) return;
     args.prepend(program);
@@ -28,6 +28,11 @@ void wrapForHost(QString &program, QStringList &args)
     program = "flatpak-spawn";
 }
 } // namespace
+
+void CommandUtil::wrapForHost(QString &program, QStringList &args)
+{
+    wrapForHostImpl(program, args);
+}
 
 QString CommandUtil::exec(const QString &command)
 {
@@ -76,7 +81,7 @@ int CommandUtil::execProgram(const QString &program, const QStringList &args, in
 {
     QString prog = program;
     QStringList a = args;
-    wrapForHost(prog, a);     // no-op outside Flatpak
+    wrapForHostImpl(prog, a);     // no-op outside Flatpak
     QProcess p;
     p.start(prog, a);
     if (!p.waitForStarted(timeoutMs)) return -1;
@@ -88,7 +93,7 @@ QString CommandUtil::execProgramOutput(const QString &program, const QStringList
 {
     QString prog = program;
     QStringList a = args;
-    wrapForHost(prog, a);
+    wrapForHostImpl(prog, a);
     QProcess p;
     p.start(prog, a);
     if (!p.waitForStarted(timeoutMs)) return {};

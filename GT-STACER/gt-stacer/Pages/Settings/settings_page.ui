@@ -81,7 +81,7 @@
      <layout class="QVBoxLayout">
       <item>
        <layout class="QHBoxLayout">
-        <item><widget class="QLabel" name="versionLabel"><property name="text"><string>GT-STACER v26.04  —  GNUTUX</string></property></widget></item>
+        <item><widget class="QLabel" name="versionLabel"><property name="text"><string>GT-STACER v26.08  —  GNUTUX</string></property></widget></item>
         <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
        </layout>
       </item>

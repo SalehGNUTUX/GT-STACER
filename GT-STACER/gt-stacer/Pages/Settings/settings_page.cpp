@@ -7,8 +7,14 @@
 #include "../../../gt-stacer-core/Tools/power_tool.h"
 #include <QCoreApplication>
 #include <QFile>
+#include <QFont>
+#include <QFontDatabase>
+#include <QIcon>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPixmap>
 #include <QShowEvent>
+#include <QSignalBlocker>
 #include <QTimer>
 
 struct LangEntry {
@@ -40,6 +46,45 @@ static const QVector<LangEntry> LANGUAGES = {
 };
 
 namespace {
+// Pick an installed colour-emoji font. Flag emoji (regional-indicator pairs)
+// only render as flags through such a font; KDE's default UI font draws them as
+// bare letter boxes, which is why the picker looked wrong there. Cached.
+QString pickEmojiFont()
+{
+    static const QString chosen = [] {
+        const QStringList prefer = {"Noto Color Emoji", "Twemoji", "EmojiOne Color",
+                                    "Segoe UI Emoji", "Apple Color Emoji"};
+        const QStringList fams = QFontDatabase::families();
+        for (const QString &p : prefer)
+            if (fams.contains(p)) return p;
+        for (const QString &f : fams)
+            if (f.contains("Emoji", Qt::CaseInsensitive)) return f;
+        return QString();
+    }();
+    return chosen;
+}
+
+// Render a flag emoji into an icon using the colour-emoji font, so it looks the
+// same on every desktop. Returns a null icon when no emoji font exists, letting
+// the caller fall back to text.
+QIcon flagIcon(const QString &emoji)
+{
+    const QString font = pickEmojiFont();
+    if (font.isEmpty()) return QIcon();
+    const int w = 24, h = 18, scale = 2;   // 2× for crispness
+    QPixmap pm(w * scale, h * scale);
+    pm.setDevicePixelRatio(scale);
+    pm.fill(Qt::transparent);
+    QPainter p(&pm);
+    p.setRenderHint(QPainter::Antialiasing);
+    QFont f(font);
+    f.setPixelSize(h);
+    p.setFont(f);
+    p.drawText(QRect(0, 0, w, h), Qt::AlignCenter, emoji);
+    p.end();
+    return QIcon(pm);
+}
+
 // The autostart .desktop we manage for GT-STACER itself.
 QString selfAutostartPath()
 {
@@ -69,12 +114,10 @@ SettingsPage::SettingsPage(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Fill language ComboBox
-    for (const auto &lang : LANGUAGES)
-        ui->languageCombo->addItem(lang.flag + "  " + lang.label, lang.code);
+    populateLanguageCombo();
 
     // Set version label
-    ui->versionLabel->setText(APP_VERSION);
+    ui->versionLabel->setText(QStringLiteral("GT-STACER v%1  —  GNUTUX").arg(APP_VERSION));
 
     loadSettings();
     connect(ui->applyButton, &QPushButton::clicked, this, &SettingsPage::applySettings);
@@ -84,6 +127,9 @@ SettingsPage::SettingsPage(QWidget *parent)
     // that GT-STACER must stay running (it can sit in the tray).
     m_powerTimer = new QTimer(this);
     m_powerTimer->setInterval(1000);
+    // Keep counting down when minimized to the tray — a scheduled shutdown must
+    // still fire on time instead of freezing until the window is restored.
+    m_powerTimer->setProperty("keepAlive", true);
     connect(m_powerTimer, &QTimer::timeout, this, &SettingsPage::tickPowerTimer);
     ui->powerCancelButton->setEnabled(false);
     connect(ui->powerStartButton,  &QPushButton::clicked, this, &SettingsPage::startPowerTimer);
@@ -163,14 +209,10 @@ void SettingsPage::loadSettings()
     else if (s->theme() == "light") ui->themeCombo->setCurrentIndex(1);
     else                            ui->themeCombo->setCurrentIndex(2); // auto
 
-    // Language
-    QString currentLang = s->language();
-    for (int i = 0; i < LANGUAGES.size(); ++i) {
-        if (LANGUAGES[i].code == currentLang) {
-            ui->languageCombo->setCurrentIndex(i);
-            break;
-        }
-    }
+    // Language — match by item data ("auto" or a code), not row index, since the
+    // combo has an extra "Auto" entry ahead of the LANGUAGES list.
+    const int langIdx = ui->languageCombo->findData(s->language());
+    ui->languageCombo->setCurrentIndex(langIdx >= 0 ? langIdx : 0);
 
     ui->autoStartCheck->setChecked(selfAutostartActive());
     ui->startMinimizedCheck->setChecked(s->startMinimized());
@@ -199,9 +241,9 @@ void SettingsPage::applySettings()
     }
     s->setTheme(theme);
 
-    // Language
-    int li = ui->languageCombo->currentIndex();
-    QString lang = (li >= 0 && li < LANGUAGES.size()) ? LANGUAGES[li].code : "en";
+    // Language — read the selected item's data ("auto" or a concrete code).
+    QString lang = ui->languageCombo->currentData().toString();
+    if (lang.isEmpty()) lang = "auto";
     bool langChanged = (lang != s->language());
     s->setLanguage(lang);
 
@@ -243,10 +285,42 @@ void SettingsPage::applySettings()
     else AppManager::instance()->hideTray();
 }
 
+void SettingsPage::populateLanguageCombo()
+{
+    // Preserve the current choice across a rebuild (called again on language
+    // change so the "Auto" label follows the new UI language).
+    const QString keep = ui->languageCombo->count()
+        ? ui->languageCombo->currentData().toString()
+        : SettingManager::instance()->language();
+
+    QSignalBlocker block(ui->languageCombo);
+    ui->languageCombo->clear();
+
+    // Draw the flag as an icon (renders identically on GNOME/KDE); if no emoji
+    // font is present, fall back to the emoji in text.
+    ui->languageCombo->setIconSize(QSize(24, 18));
+    // "Auto" first — the default; follows the system locale (English if that
+    // locale has no translation). Its label is translatable, so it is refreshed
+    // here on every language change; the native language names are not.
+    const QIcon globe = flagIcon(QString::fromUtf8("\xF0\x9F\x8C\x90")); // 🌐
+    if (globe.isNull()) ui->languageCombo->addItem(tr("Auto (system language)"), "auto");
+    else                ui->languageCombo->addItem(globe, tr("Auto (system language)"), "auto");
+    for (const auto &lang : LANGUAGES) {
+        const QIcon ic = flagIcon(lang.flag);
+        if (ic.isNull()) ui->languageCombo->addItem(lang.flag + "  " + lang.label, lang.code);
+        else             ui->languageCombo->addItem(ic, lang.label, lang.code);
+    }
+
+    const int idx = ui->languageCombo->findData(keep);
+    ui->languageCombo->setCurrentIndex(idx >= 0 ? idx : 0);
+}
+
 void SettingsPage::changeEvent(QEvent *event)
 {
-    if (event->type() == QEvent::LanguageChange && ui)
+    if (event->type() == QEvent::LanguageChange && ui) {
         ui->retranslateUi(this);
+        populateLanguageCombo();   // retranslate the programmatic "Auto" item too
+    }
     QWidget::changeEvent(event);
 }
 

@@ -7,9 +7,11 @@
 #include <QAction>
 #include <QHash>
 #include <QHeaderView>
+#include <QHideEvent>
 #include <QInputDialog>
 #include <QMenu>
 #include <QMessageBox>
+#include <QShowEvent>
 
 namespace {
 // Custom proxy: searches across PID + name + cmdline + user simultaneously,
@@ -251,4 +253,17 @@ void ProcessesPage::changeEvent(QEvent *event)
     if (event->type() == QEvent::LanguageChange && ui)
         ui->retranslateUi(this);
     QWidget::changeEvent(event);
+}
+
+void ProcessesPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    refresh();   // fresh data immediately, then poll while visible
+    m_timer->start(SettingManager::instance()->updateIntervalMs());
+}
+
+void ProcessesPage::hideEvent(QHideEvent *event)
+{
+    QWidget::hideEvent(event);
+    m_timer->stop();   // don't scan /proc while the user is on another page
 }

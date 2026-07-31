@@ -26,4 +26,10 @@ public:
     // Validate a shell-safe identifier (package, service, source name).
     // Rejects any string containing characters outside [A-Za-z0-9._@:+-/].
     static bool       isSafeIdentifier(const QString &s);
+
+    // Rewrite (program, args) to run on the host via `flatpak-spawn --host` when
+    // inside the Flatpak sandbox; a no-op otherwise. Use this when you must start
+    // a long-lived process yourself (e.g. a QProcess held open for the app's
+    // lifetime) that execProgram's blocking model can't manage.
+    static void       wrapForHost(QString &program, QStringList &args);
 };

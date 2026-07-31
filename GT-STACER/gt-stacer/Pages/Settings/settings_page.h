@@ -22,6 +22,7 @@ private slots:
     void applySettings();
 
 private:
+    void populateLanguageCombo();   // (re)fill with flag icons; call on lang change
     void loadSettings();
     void startPowerTimer();
     void cancelPowerTimer();

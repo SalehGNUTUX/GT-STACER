@@ -14,6 +14,9 @@
 #include "Pages/Settings/settings_page.h"
 #include "Pages/Helpers/helpers_page.h"
 #include "Pages/Relief/relief_page.h"
+#include "Pages/Connections/connections_page.h"
+#include "Pages/Power/power_page.h"
+#include "Pages/Firewall/firewall_page.h"
 #include "Dialogs/about_dialog.h"
 
 #include <QHBoxLayout>
@@ -23,8 +26,17 @@
 #include <QKeySequence>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include <QDir>
+#include <QThread>
+#include <QElapsedTimer>
+#include <QTimer>
+#include <QImage>
+#include <QPixmap>
+#include <QDebug>
+#include <QScreen>
+#include <QGuiApplication>
 
-static constexpr int kNumPages = 11;
+static constexpr int kNumPages = 14;
 
 App::App(QWidget *parent) : QMainWindow(parent)
 {
@@ -32,7 +44,7 @@ App::App(QWidget *parent) : QMainWindow(parent)
     // Apply language BEFORE building any widgets so tr() resolves to the
     // correct strings on first construction (avoids the previous workaround of
     // calling setupSidebar() twice and broadcasting LanguageChange events).
-    AppManager::instance()->applyLanguage(s->language());
+    AppManager::instance()->applyLanguage(s->effectiveLanguage());
     AppManager::instance()->applyTheme(s->theme());
 
     setupUi();
@@ -74,6 +86,13 @@ App::App(QWidget *parent) : QMainWindow(parent)
     }
 
     navigateTo(0);
+
+    // If System Relief's automatic mode is enabled, build its page now (without
+    // showing it) so its background watchdog starts with the app instead of only
+    // once the user first opens the page. Its monitor is tagged keepAlive while
+    // watching, so it keeps running when minimized to the tray.
+    if (s->reliefAutoMode())
+        materializePage(10);
 
     setWindowTitle("GT-STACER");
     setWindowIcon(QIcon(":/static/icons/gt-stacer.png"));
@@ -137,6 +156,9 @@ QWidget *App::materializePage(int index)
     case 8: page = new SettingsPage;      break;
     case 9: page = new HelpersPage;       break;
     case 10: page = new ReliefPage;       break;
+    case 11: page = new ConnectionsPage;  break;
+    case 12: page = new PowerPage;        break;
+    case 13: page = new FirewallPage;     break;
     default: return nullptr;
     }
 
@@ -167,6 +189,9 @@ void App::setupSidebar()
         {SidebarIcons::settings(),    tr("Settings"),         tr("Application settings")},
         {SidebarIcons::helpers(),     tr("Helpers"),          tr("System utilities")},
         {SidebarIcons::relief(),      tr("System Relief"),    tr("Relieve RAM/CPU pressure")},
+        {SidebarIcons::connections(), tr("Connections"),      tr("Live network connections")},
+        {SidebarIcons::power(),       tr("Power"),            tr("Power profile & battery")},
+        {SidebarIcons::firewall(),    tr("Firewall"),         tr("Manage firewall rules")},
     };
     for (const auto &item : items)
         m_sidebar->addItem(item);
@@ -186,8 +211,10 @@ void App::setupSettingsConnections()
     });
 
     connect(settings, &SettingsPage::languageChanged, this, [this](const QString &lang){
+        // `lang` is the raw selection ("auto" or a code); store it verbatim and
+        // apply the resolved language so "auto" follows the system locale.
         SettingManager::instance()->setLanguage(lang);
-        AppManager::instance()->applyLanguage(lang);
+        AppManager::instance()->applyLanguage(SettingManager::instance()->effectiveLanguage());
         // Rebuild sidebar with translated strings.
         m_sidebar->clearItems();
         setupSidebar();
@@ -228,6 +255,63 @@ void App::navigateTo(int index)
         page->setGraphicsEffect(nullptr);
     });
     anim->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void App::captureAllPages(const QString &dir, int onlyPage)
+{
+    QDir().mkpath(dir);
+    // Two constraints:
+    //  1. Quality — render big and crisp. We keep the on-screen window inside
+    //     the available work area (a window sized == screen hangs on show()
+    //     under Wayland while the compositor negotiates fullscreen/maximize),
+    //     then render each page at SS× supersampling for a high-res image.
+    //  2. Aspect — lock the mockup's exact 993:610 so object-fit:fill on the
+    //     site introduces zero distortion.
+    // The on-screen window stays at the mockup's exact 993:610 size — a large or
+    // near-fullscreen window is unreliable to realize/grab on Wayland (it hangs
+    // while the compositor negotiates maximize/fullscreen). Quality comes from
+    // rendering each page at SS× supersampling onto a high-DPR pixmap, which is
+    // crisper than a native fullscreen grab would be.
+    const int W = 993, H = 610;
+    const double SS = 3.0;                  // 993×610 → 2979×1830 output
+    resize(W, H);
+    show();
+    raise();
+
+    // Pump events for `ms` while letting timers, gauge animations and page
+    // fade-ins run — a grab would otherwise catch a half-populated page.
+    auto settle = [](int ms) {
+        QElapsedTimer t; t.start();
+        while (t.elapsed() < ms) {
+            QApplication::processEvents(QEventLoop::AllEvents, 30);
+            QThread::msleep(15);
+        }
+    };
+    settle(700);   // first layout + Info/Setting managers warm up
+
+    for (int i = 0; i < kNumPages; ++i) {
+        if (onlyPage >= 0 && i != onlyPage) continue;
+        navigateTo(i);
+        // Base 5s lets most pages settle; the two that load a big list off-thread
+        // get much longer so nothing is captured mid-"Loading…". The Uninstaller
+        // scans 4000+ packages on a cold cache (>5s first-run), so give it 30s.
+        int waitMs = 5000;
+        if      (i == 6) waitMs = 30000;  // Uninstaller
+        else if (i == 5) waitMs = 10000;  // System Cleaner
+        settle(waitMs);
+        // Render at SS× onto a high-DPR pixmap — text/gauges stay vector-crisp
+        // (true supersampling, not an upscale of a small grab).
+        QPixmap pm(int(W * SS), int(H * SS));
+        pm.setDevicePixelRatio(SS);
+        pm.fill(Qt::transparent);
+        render(&pm);
+        QImage img = pm.toImage();
+        img.setDevicePixelRatio(1.0);
+        const QString out = QString("%1/%2.png").arg(dir).arg(i);
+        if (!img.save(out))
+            qWarning() << "capture: failed to write" << out;
+    }
+    QTimer::singleShot(0, qApp, &QCoreApplication::quit);
 }
 
 void App::closeEvent(QCloseEvent *event)

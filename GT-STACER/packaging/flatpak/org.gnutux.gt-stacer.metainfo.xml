@@ -86,6 +86,18 @@
   </provides>
 
   <releases>
+    <release version="26.08" date="2026-07-31">
+      <description>
+        <p>Network &amp; power tools, plus cross-desktop power integration. Highlights:</p>
+        <ul>
+          <li>Connections (new): live TCP/UDP sockets from ss with their owning process, a filter, and auto-refresh</li>
+          <li>Power (new): switch the power profile (power-profiles-daemon, or cpufreq governors), a laptop battery charge-limit, and a cross-desktop "keep awake" that blocks automatic sleep and screen locking</li>
+          <li>Firewall (new): enable/disable ufw or firewalld and add or remove port rules, with a single authorization per action</li>
+          <li>Keep-awake integrates with the desktop's own power UI over D-Bus and detects a block set elsewhere (e.g. KDE); a tray badge and a desktop notification signal the state</li>
+          <li>Refresh timers now pause when a page is not shown; per-page settings persisted</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.07" date="2026-07-11">
       <description>
         <p>Field-test follow-up to 26.06. Highlights:</p>

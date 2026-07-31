@@ -11,7 +11,9 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFrame>
+#include <QHideEvent>
 #include <QScrollArea>
+#include <QShowEvent>
 
 static QFrame *makeSep()
 {
@@ -39,6 +41,21 @@ DashboardPage::DashboardPage(QWidget *parent) : QWidget(parent)
 
     refreshSystemInfo();
     refresh();
+}
+
+void DashboardPage::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    refresh();
+    m_refreshTimer->start(SettingManager::instance()->updateIntervalMs());
+    m_uptimeTimer->start();
+}
+
+void DashboardPage::hideEvent(QHideEvent *event)
+{
+    QWidget::hideEvent(event);
+    m_refreshTimer->stop();   // stop gauges/network sampling when off-screen
+    m_uptimeTimer->stop();
 }
 
 void DashboardPage::buildUi()

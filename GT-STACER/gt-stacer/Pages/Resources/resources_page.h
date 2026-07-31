@@ -13,6 +13,8 @@ public:
 
 protected:
     void changeEvent(QEvent *event) override;
+    void showEvent(QShowEvent *event) override;   // resume polling only when shown
+    void hideEvent(QHideEvent *event) override;    // stop polling when navigated away
 
 private slots:
     void refresh();

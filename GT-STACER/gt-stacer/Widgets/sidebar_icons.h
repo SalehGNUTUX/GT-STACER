@@ -95,4 +95,25 @@ inline QString relief() { return R"svg(
   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
 </svg>)svg"; }
 
+inline QString connections() { return R"svg(
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+</svg>)svg"; }
+
+inline QString power() { return R"svg(
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+  <line x1="12" y1="2" x2="12" y2="12"/>
+</svg>)svg"; }
+
+inline QString firewall() { return R"svg(
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+</svg>)svg"; }
+
 } // namespace SidebarIcons

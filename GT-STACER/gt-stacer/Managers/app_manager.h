@@ -18,6 +18,12 @@ public:
     void showTray();
     void hideTray();
 
+    // Reflect the "keep awake" (sleep/lock inhibitor) state in the panel: badges
+    // the tray icon and adds a tooltip line, so the active feature is visible
+    // even when the window is closed.
+    void setKeepAwake(bool on);
+    bool keepAwake() const { return m_keepAwake; }
+
     QSystemTrayIcon *trayIcon() const { return m_tray; }
     QString currentTheme() const { return m_theme; }
 
@@ -38,6 +44,7 @@ private:
     QTranslator     *m_translator = nullptr;
     QTimer          *m_trayTimer  = nullptr;
     QString          m_theme;
+    bool             m_keepAwake  = false;
 
     QString loadStylesheet(const QString &theme);
 };

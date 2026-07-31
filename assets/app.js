@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.07 STABLE',
+                    download_title: 'Get GT-STACER 26.08 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.07 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.08 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -56,7 +56,7 @@
                     pkg_flatpak_desc: 'Sandboxed — runs on any distro with Flatpak',
                     table_header_aspect: 'Aspect',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.07 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.08 (2026)',
                 },
                 ar: {
                     nav_features: 'المزايا',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.07 STABLE',
+                    download_title: 'حمّل GT-STACER 26.08 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.07 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.08 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -108,7 +108,7 @@
                     pkg_flatpak_desc: 'معزولة في sandbox — تعمل في أي توزيعة فيها Flatpak',
                     table_header_aspect: 'الجانب',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.07 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.08 (2026)',
                 }
             };
 
@@ -152,14 +152,15 @@
                         'Light theme rebuilt — modern Catppuccin Latte at full parity with dark',
                         'Autostart fixes + Arabic UI at 100% (486/486)',
                       ] },
-                    { ver: 'v26.08', status: 'planned',
+                    { ver: 'v26.08 stable', status: 'shipped',
                       title: 'Network & power tools',
                       bullets: [
-                        'Live network connections (ss -tunap)',
-                        'TLP / power profiles UI',
-                        'Per-app firewall rules (ufw / firewalld)',
+                        'Connections — live TCP/UDP sockets (ss) with owning process, filter & auto-refresh',
+                        'Power — profile switching (power-profiles-daemon / cpufreq) + laptop battery charge-limit',
+                        'Cross-desktop keep-awake (D-Bus) that detects the desktop\'s own block',
+                        'Firewall — ufw / firewalld enable + port rules, one authorization per action',
                       ] },
-                    { ver: 'v26.09', status: 'future',
+                    { ver: 'v26.09', status: 'planned',
                       title: 'Backup & snapshots',
                       bullets: [
                         'Btrfs/ZFS snapshot manager',
@@ -211,14 +212,15 @@
                         'إعادة بناء الوضع الفاتح — مظهر Latte عصريّ مكافئ للداكن',
                         'إصلاحات بدء التشغيل + الواجهة العربيّة 100% (486/486)',
                       ] },
-                    { ver: 'إصدار 26.08', status: 'planned',
+                    { ver: 'إصدار 26.08 مستقر', status: 'shipped',
                       title: 'أدوات الشبكة والطاقة',
                       bullets: [
-                        'اتصالات الشبكة الحية (ss -tunap)',
-                        'واجهة TLP / ملفات الطاقة',
-                        'قواعد جدار حماية لكل تطبيق',
+                        'الاتصالات — مقابس TCP/UDP حيّة (ss) بالعمليّة المالكة، مع مرشِّح وتحديث تلقائيّ',
+                        'الطاقة — تبديل ملفّ الطاقة (power-profiles-daemon / cpufreq) + حدّ شحن البطاريّة للمحمول',
+                        'إبقاء اليقظة المتوافق مع الواجهات (D-Bus) يكشف منع سطح المكتب نفسه',
+                        'جدار الحماية — تفعيل ufw / firewalld وقواعد المنافذ، استيثاق مرّة لكل إجراء',
                       ] },
-                    { ver: 'إصدار 26.09', status: 'future',
+                    { ver: 'إصدار 26.09', status: 'planned',
                       title: 'النسخ الاحتياطية واللقطات',
                       bullets: [
                         'مدير لقطات Btrfs/ZFS',
@@ -238,6 +240,16 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.08 stable', date: '2026-07-31', headline: 'Network & power tools · Connections, Power & Firewall pages · cross-desktop keep-awake',
+                      items: [
+                        'Connections (new) — live TCP/UDP sockets from ss with the owning process, a text filter, sortable columns, and an auto-refresh that only runs while shown',
+                        'Power (new) — switch the power profile (power-profiles-daemon, or cpufreq governors as a fallback; works on desktops); on laptops, a battery charge-limit to extend lifespan',
+                        'Keep awake — block automatic sleep and screen locking via the freedesktop D-Bus interfaces (PowerManagement/ScreenSaver), with a systemd-inhibit fallback and a single inhibitor',
+                        'Two-way desktop integration — our block shows in the desktop\'s power UI, and HasInhibit() detects a block set elsewhere (e.g. KDE\'s) that systemd-inhibit can\'t see; tray badge + desktop notification',
+                        'Firewall (new) — enable/disable ufw or firewalld and add/remove port rules; state read without root, and each change authorizes once (mutate + re-list in one pkexec)',
+                        'Background efficiency — pages pause their refresh timers when not shown; the Settings power timer keeps counting down while minimised',
+                        'Auto language default (follows the system locale, English if unsupported) + flag emoji rendered as icons so they show on KDE; new Qt6::DBus dependency (inside qt6-base)',
+                      ] },
                     { ver: '26.07 stable', date: '2026-07-12', headline: 'System Relief · Power timer · light theme rebuilt · external-app uninstall',
                       items: [
                         'System Relief (new) — temporarily freeze idle apps (SIGSTOP) to relieve RAM/CPU, fully reversible; never freezes the terminal/shell/agent that launched it',
@@ -289,6 +301,16 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.08 stable', date: '2026-07-31', headline: 'أدوات الشبكة والطاقة · صفحات الاتصالات والطاقة وجدار الحماية · إبقاء اليقظة المتوافق مع الواجهات',
+                      items: [
+                        'الاتصالات (جديد) — مقابس TCP/UDP حيّة من ss بالعمليّة المالكة، مع مرشِّح نصّيّ وأعمدة قابلة للفرز وتحديث تلقائيّ يعمل عند ظهور الصفحة فقط',
+                        'الطاقة (جديد) — تبديل ملفّ الطاقة (power-profiles-daemon أو حاكمات cpufreq بديلاً؛ يعمل على المكتبيّ)؛ وعلى المحمول حدّ شحن البطاريّة لإطالة عمرها',
+                        'إبقاء اليقظة — منع النوم وقفل الشاشة التلقائيّين عبر واجهات D-Bus القياسيّة (PowerManagement/ScreenSaver) مع بديل systemd-inhibit ومُثبِّط واحد',
+                        'تكامل ثنائيّ مع سطح المكتب — منعُنا يظهر في أداة طاقة السطح، وHasInhibit() يكشف منعاً مضبوطاً من مكان آخر (مثل KDE) لا يراه systemd-inhibit؛ شارة في الشريط وإشعار نظام',
+                        'جدار الحماية (جديد) — تفعيل/تعطيل ufw أو firewalld وإدارة قواعد المنافذ؛ الحالة تُقرأ بلا كلمة مرور، وكل تغيير يستوثق مرّة (تعديل + إعادة سرد في pkexec واحد)',
+                        'كفاءة الخلفية — الصفحات توقف مؤقّتاتها عند التنقّل بعيداً؛ ومؤقّت الطاقة يواصل العدّ عند التصغير',
+                        'لغة «تلقائيّ» مبدئيّة (تتبع لغة النظام، إنجليزيّة إن لم تُدعم) + أعلام كأيقونات تظهر على KDE؛ اعتماديّة Qt6::DBus جديدة (ضمن qt6-base)',
+                      ] },
                     { ver: '26.07 stable', date: '2026-07-12', headline: 'إنعاش النظام · مؤقّت الطاقة · إعادة بناء الوضع الفاتح · كشف البرامج الخارجيّة',
                       items: [
                         'إنعاش النظام (جديد) — تجميد مؤقّت للتطبيقات الخاملة (SIGSTOP) لتخفيف الذاكرة/المعالج، قابل للعكس تماماً؛ لا يجمّد أبداً الطرفية أو الصدفة التي أطلقته',
@@ -355,6 +377,9 @@
                     { file: 'Helpers.png', title: 'Helpers' },
                     { file: 'Settings.png', title: 'Settings' },
                     { file: 'System_Relief.png', title: 'System Relief' },
+                    { file: 'Connections.png', title: 'Connections' },
+                    { file: 'Power.png', title: 'Power' },
+                    { file: 'Firewall.png', title: 'Firewall' },
                 ],
                 ar: [
                     { file: 'لوحة_التحكم.png', title: 'لوحة التحكم' },
@@ -368,6 +393,9 @@
                     { file: 'الإعدادات.png', title: 'الإعدادات' },
                     { file: 'مصادر_الحزم.png', title: 'مصادر الحزم' },
                     { file: 'إنعاش_النظام.png', title: 'إنعاش النظام' },
+                    { file: 'الاتصالات.png', title: 'الاتصالات' },
+                    { file: 'الطاقة.png', title: 'الطاقة' },
+                    { file: 'جدار_الحماية.png', title: 'جدار الحماية' },
                 ]
             };
 
@@ -465,44 +493,45 @@
             ];
 
             // ── Download data ──
-            // GT-STACER 26.07 STABLE — published 2026-07-12 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.07_STABLE
+            // GT-STACER 26.08 STABLE — published 2026-07-31 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE
+            // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
                 icon: `<i class=\"fa-brands fa-linux\" style=\"font-size:3.5rem;color:#d29922;\"></i>`,
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
-                size: '54 MB',
-                sha256: '7a47118a3319208ed0600d053bc63056f215e6e463f5e0bb0bfbfc9a07e30ac4',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/GT-STACER-26.07-x86_64.AppImage',
-                filename: 'GT-STACER-26.07-x86_64.AppImage',
+                size: '52 MB',
+                sha256: 'd0ca2311dbfaf86fe5748b607f53cb94d01c9c621039c7df4e062d289a75f87b',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/GT-STACER-26.08-x86_64.AppImage',
+                filename: 'GT-STACER-26.08-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
-                size: '1.8 MB',
-                sha256: '89e885d9bfbf1ff7d05856b6a39fb02c34e22c0e36b7693b768d1219be75553b',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/GT-STACER_26.07_amd64.deb',
-                filename: 'GT-STACER_26.07_amd64.deb',
+                size: '2.0 MB',
+                sha256: 'c0f014e744bccacbd7281c27b50aa1514b39a6dbd384cd49e685a07ef8a74de7',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/GT-STACER_26.08_amd64.deb',
+                filename: 'GT-STACER_26.08_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
-                size: '8.2 MB',
-                sha256: '5304e80737c8f9e2587adfab67a5e691779d6b2708fd6088d44192cb21d880b2',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/gt-stacer-26.07-2.x86_64.rpm',
-                filename: 'gt-stacer-26.07-2.x86_64.rpm',
+                size: '2.3 MB',
+                sha256: '1839bba453b2b8efeb478d08b28a81f1413603f4e55c17498f76b5068c9871b7',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/gt-stacer-26.08-2.x86_64.rpm',
+                filename: 'gt-stacer-26.08-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
-                size: '2.0 MB',
-                sha256: '7322326e4bd3f1022e6c5a8ab99be991880b95f6c7bfdb5a60210a00650341bc',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.07_STABLE/GT-STACER-26.07-x86_64.flatpak',
-                filename: 'GT-STACER-26.07-x86_64.flatpak',
+                size: '2.1 MB',
+                sha256: 'de31c9f9989c76ef62c8e9c181c81d30425180cc853ac1342a66f2a69d6e2446',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/GT-STACER-26.08-x86_64.flatpak',
+                filename: 'GT-STACER-26.08-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

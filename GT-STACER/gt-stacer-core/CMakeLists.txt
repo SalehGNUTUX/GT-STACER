@@ -3,6 +3,7 @@ add_library(gt-stacer-core STATIC
     Info/memory_info.cpp
     Info/disk_info.cpp
     Info/network_info.cpp
+    Info/connection_info.cpp
     Info/process_info.cpp
     Info/system_info.cpp
     Info/gpu_info.cpp
@@ -14,6 +15,9 @@ add_library(gt-stacer-core STATIC
     Tools/apt_source_tool.cpp
     Tools/notification_tool.cpp
     Tools/power_tool.cpp
+    Tools/power_profile_tool.cpp
+    Tools/battery_tool.cpp
+    Tools/firewall_tool.cpp
     Tools/relief_tool.cpp
     Utils/command_util.cpp
     Utils/file_util.cpp

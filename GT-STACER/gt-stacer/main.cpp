@@ -8,6 +8,7 @@
 #include <QStandardPaths>
 #include "app.h"
 #include "Managers/alert_manager.h"
+#include "Managers/setting_manager.h"
 #include "Dialogs/welcome_dialog.h"
 
 static void messageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
@@ -66,8 +67,29 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(messageHandler);
 
+    // Screenshot capture mode (website assets):
+    //   gt-stacer --capture <dir> [--theme dark|light] [--lang en|ar]
+    // Set theme/language BEFORE constructing App so its startup sequence renders
+    // in the requested combination, then grab every page and quit.
+    QString captureDir, capTheme, capLang;
+    int capPage = -1;
+    for (int i = 1; i < argc; ++i) {
+        const QString a = QString::fromLocal8Bit(argv[i]);
+        if      (a == "--capture" && i + 1 < argc) captureDir = QString::fromLocal8Bit(argv[++i]);
+        else if (a == "--theme"   && i + 1 < argc) capTheme   = QString::fromLocal8Bit(argv[++i]);
+        else if (a == "--lang"    && i + 1 < argc) capLang    = QString::fromLocal8Bit(argv[++i]);
+        else if (a == "--page"    && i + 1 < argc) capPage    = QString::fromLocal8Bit(argv[++i]).toInt();
+    }
+    if (!capTheme.isEmpty()) SettingManager::instance()->setTheme(capTheme);
+    if (!capLang.isEmpty())  SettingManager::instance()->setLanguage(capLang);
+
     App window;
     AlertManager::instance(); // starts polling once SettingManager is ready
+
+    if (!captureDir.isEmpty()) {
+        window.captureAllPages(captureDir, capPage);
+        return app.exec();
+    }
 
     bool startHidden = (argc >= 2 && QString(argv[1]) == "--hide");
     if (!startHidden) {

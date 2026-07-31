@@ -6,6 +6,67 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.08-stable] — 2026-07-31
+
+The "network & power tools" release. Three new pages — Connections, Power and
+Firewall — plus a cross-desktop power-integration layer and a program-wide
+timer-efficiency pass. New runtime dependency: `Qt6::DBus` (ships inside
+`qt6-base`, so no new distro package).
+
+### Connections (new page)
+- Lists every active TCP/UDP socket by parsing `ss -tunaHp`, with the owning
+  process/PID, a live text filter (address / port / process / state), sortable
+  columns, and an optional auto-refresh that only runs while the page is shown.
+- A "show processes of all users" toggle runs `ss` through `pkexec` to reveal
+  sockets owned by other users.
+
+### Power (new page)
+- **Power profile** switching via `power-profiles-daemon` (Power Saver /
+  Balanced / Performance), falling back to raw **cpufreq governors** (written to
+  every CPU via `pkexec`) where the daemon is absent. Works on desktops too — it
+  drives the CPU governor, not the battery.
+- **Battery charge limit** (laptops): reads/writes
+  `charge_control_{start,end}_threshold` to cap charging (e.g. 80 %) and extend
+  battery lifespan. The whole battery section hides on machines without one.
+- **Keep awake** — block automatic sleep and screen locking, the cross-desktop
+  way. Uses the freedesktop D-Bus interfaces every major desktop implements
+  (`org.freedesktop.PowerManagement.Inhibit` and, as a fallback, `ScreenSaver`),
+  with `systemd-inhibit` (logind) as a last resort. A **single** inhibitor is
+  held to avoid duplicate entries in the desktop's power UI.
+- **Two-way desktop integration.** Our block appears in the desktop's own power
+  applet, and `PowerManagement.Inhibit.HasInhibit()` lets us detect a block set
+  from elsewhere (e.g. KDE's own "Manually block") — which never shows up in
+  `systemd-inhibit`. A tray-icon badge and a desktop notification signal the
+  keep-awake state even when the window is closed.
+
+### Firewall (new page)
+- Enable/disable **ufw** or **firewalld**, list rules, and add or remove port
+  rules (port + tcp/udp + allow/deny). The enabled state is read without root
+  from `ufw.conf`; each rule change runs its mutation **and** re-lists in one
+  `pkexec` call, so the user authorizes **once** per action instead of twice.
+
+### Performance
+- Dashboard, Resources, Processes (and the new Connections / Power pages) now
+  pause their refresh timers when the page isn't the current view — previously a
+  visited page kept polling `/proc` in the background. The Settings **power
+  timer** is `keepAlive` so a scheduled shutdown still fires while minimised.
+
+### Earlier in the cycle (folded into 26.08)
+- **System Relief**: settings persisted; automatic mode can start with the app
+  (materialised at launch); an in-place, flicker-free candidate table with a
+  memory bar, a colored status badge, and a select-all button.
+- **Language**: an "Auto (system language)" default that follows the system
+  locale (English when unsupported) and is remembered once changed; flag emoji
+  are rendered as icons so they show correctly on KDE, not just GNOME.
+- **Appearance/UI**: GPU memory label corrected to "ذاكرة البطاقة"; the About
+  version line is generated from `APP_VERSION`.
+
+### Build / packaging
+- Version bumped to **26.08** (CMake 26.8.0, `APP_VERSION="26.08"`).
+- `Qt6::DBus` added to `find_package` and the link line.
+
+---
+
 ## [26.07-stable] — 2026-07-11
 
 Field-test follow-up to 26.06. Focus: making long operations visibly
@@ -311,6 +372,8 @@ safety.
 
 ---
 
+[26.08-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.08-stable
+[26.07-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.07-stable
 [26.06-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.06-stable
 [26.05-beta]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.05-beta
 [26.04-alpha]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.04-alpha

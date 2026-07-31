@@ -11,6 +11,10 @@ class DashboardPage : public QWidget {
 public:
     explicit DashboardPage(QWidget *parent = nullptr);
 
+protected:
+    void showEvent(QShowEvent *event) override;   // resume polling only when shown
+    void hideEvent(QHideEvent *event) override;    // stop polling when navigated away
+
 private slots:
     void refresh();
     void tickUptime();

@@ -17,7 +17,7 @@ BUILD_DIR="$ROOT_DIR/build"
 RELEASE_DIR="$ROOT_DIR/release"
 APP_NAME="gt-stacer"
 APP_DISPLAY="GT-STACER"
-VERSION="26.07"
+VERSION="26.08"
 CHANNEL="stable"
 ARCH="$(uname -m)"
 BUILD_TOOL="Unix Makefiles"
@@ -460,7 +460,7 @@ build_deb() {
 
     # تحديد الاعتماديات حسب التوزيعة
     # Qt6 — نستخدم OR للتوافق مع Debian 12 (libqt6core6) و Debian 13+ (libqt6core6t64)
-    local qt_deps="libqt6core6t64 (>= 6.2) | libqt6core6 (>= 6.2), libqt6gui6t64 (>= 6.2) | libqt6gui6 (>= 6.2), libqt6widgets6t64 (>= 6.2) | libqt6widgets6 (>= 6.2), libqt6svg6 (>= 6.2)"
+    local qt_deps="libqt6core6t64 (>= 6.2) | libqt6core6 (>= 6.2), libqt6gui6t64 (>= 6.2) | libqt6gui6 (>= 6.2), libqt6widgets6t64 (>= 6.2) | libqt6widgets6 (>= 6.2), libqt6svg6 (>= 6.2), libqt6dbus6 (>= 6.2), libqt6network6 (>= 6.2)"
 
     cat > "$pkgdir/DEBIAN/control" <<EOF
 Package: ${APP_NAME}
@@ -469,7 +469,7 @@ Architecture: $(dpkg --print-architecture 2>/dev/null || echo "$ARCH")
 Maintainer: GNUTUX <gnutux.arabic@gmail.com>
 Installed-Size: ${installed_size}
 Depends: ${qt_deps}
-Recommends: flatpak, polkitd | policykit-1 | polkit
+Recommends: flatpak, polkitd | policykit-1 | polkit, libnotify-bin, ufw, power-profiles-daemon
 Section: utils
 Priority: optional
 Homepage: https://github.com/SalehGNUTUX/GT-STACER
