@@ -1,7 +1,13 @@
 # Pre-publish checklist — GT-STACER 26.08 stable
 
-Before pushing the v26.08-stable tag and creating the release, run through
-this list. Every item should be a ✅ before clicking publish.
+> **✅ 26.08 published 2026-07-31** — <https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE>
+> (commit `23e8706`). The published DEB was verified: installs cleanly on
+> Debian 13 and launches. See **[`PUBLISHING.md`](PUBLISHING.md)** for the full
+> procedure and the packaging pitfalls this release hit (internal `build_deb`,
+> stale `release/`, RPM `-2`, tag scheme).
+
+Before pushing the tag and creating the release, run through this list. Every
+item should be a ✅ before clicking publish.
 
 ## Code
 - [x] `CMakeLists.txt` → `VERSION 26.8.0`, `APP_VERSION="26.08"`,
@@ -9,7 +15,7 @@ this list. Every item should be a ✅ before clicking publish.
 - [x] Packaging scripts (`build-deb.sh`, `build-rpm.sh`, `build-appimage.sh`,
       `build-all.sh`) use `VERSION="26.08"`
 - [x] `Qt6::DBus` added to `find_package` + link line
-- [ ] Strict build (`-Wall -Wextra -Wpedantic`) passes with **0 warnings**
+- [x] Strict build (`-Wall -Wextra -Wpedantic`) passes with **0 warnings**
 - [ ] `security_test` reports **27/27 PASS**
 - [ ] `core_test` reports **21/21 PASS**
 
@@ -19,12 +25,12 @@ this list. Every item should be a ✅ before clicking publish.
 - [x] Other 17 languages compiled with English fallback (no `unfinished`)
 
 ## Artifacts (in `release/`)
-- [ ] `GT-STACER-26.08-x86_64.AppImage` — includes Wayland plugin
-- [ ] `GT-STACER_26.08_amd64.deb` — Depends includes `libqt6dbus6`, no `libqt6charts6`
-- [ ] `gt-stacer-26.08-2.x86_64.rpm` — built via alien from DEB
-- [ ] `GT-STACER-26.08-x86_64.flatpak` — `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`
-- [ ] `SHA256SUMS.txt` — covers all four
-- [ ] `RELEASE_NOTES_26.08.md` Downloads table filled with real sizes + SHA-256
+- [x] `GT-STACER-26.08-x86_64.AppImage` — includes Wayland plugin
+- [x] `GT-STACER_26.08_amd64.deb` — Depends includes `libqt6dbus6` + `libqt6network6`, no `libqt6charts6`
+- [x] `gt-stacer-26.08-2.x86_64.rpm` — built via alien from DEB
+- [x] `GT-STACER-26.08-x86_64.flatpak` — `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`
+- [x] `SHA256SUMS.txt` — covers all four
+- [x] `RELEASE_NOTES_26.08.md` Downloads table filled with real sizes + SHA-256
 
 Verify the checksums one more time:
 ```bash
@@ -33,8 +39,8 @@ sha256sum -c SHA256SUMS.txt
 ```
 
 ## Smoke test on a clean install
-- [ ] DEB installs without `apt-get install -f` fixups on Debian 13
-- [ ] App launches from the application menu (icon resolves correctly)
+- [x] DEB installs without `apt-get install -f` fixups on Debian 13 (verified: upgraded 26.07→26.08 cleanly)
+- [x] App launches (verified: `/usr/bin/gt-stacer` from the installed DEB runs, clean log)
 - [ ] All **14** pages open without crashing (… System Relief, **Connections,
       Power, Firewall**)
 - [ ] **Connections** — sockets list with owning process; filter + auto-refresh
@@ -63,24 +69,31 @@ sha256sum -c SHA256SUMS.txt
 - [x] `CONTRIBUTING.md` updated to the 578-string baseline
 - [x] `CLAUDE.md` documents the new pages/tools, `Qt6::DBus`, `SleepInhibitor`, and the D-Bus/keep-awake lessons
 - [x] `packaging/flatpak/org.gnutux.gt-stacer.metainfo.xml` has a `<release version="26.08">` entry
-- [ ] Website (`GT-STACER-WEB/`) version refs all show 26.08, with screenshots for the 3 new pages
+- [x] Website (`GT-STACER-WEB/`) version refs all show 26.08, with screenshots for the 3 new pages
 
-## Publish
+## Publish — follow [`PUBLISHING.md`](PUBLISHING.md)
 
-When everything above is ✅:
+There is **no local `.git`** — publish by cloning the repo and rsync-ing the app
+into `GT-STACER/` and the website into the root (no `--delete` at root), then:
 
 ```bash
-gh auth login                       # one-off
-./scripts/publish-release.sh --dry-run
-./scripts/publish-release.sh
+gh release create GT-STACER_26.08_STABLE --repo SalehGNUTUX/GT-STACER \
+  --title "GT-STACER 26.08 STABLE" --notes-file RELEASE_NOTES_26.08.md \
+  --latest --target main \
+  release/GT-STACER-26.08-x86_64.AppImage release/GT-STACER_26.08_amd64.deb \
+  release/gt-stacer-26.08-2.x86_64.rpm release/GT-STACER-26.08-x86_64.flatpak \
+  release/SHA256SUMS.txt
 ```
 
-The script creates the tag `v26.08-stable`, pushes it, and creates the GitHub
-release with `RELEASE_NOTES_26.08.md` as the body and every file in `release/`
-attached. Release page:
-<https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.08-stable>
+> Tag is **`GT-STACER_26.08_STABLE`** (matches the website's download URLs), NOT
+> `v26.08-stable`. Do **not** use `scripts/publish-release.sh` — it uses the
+> wrong tag scheme and needs a local `.git`.
+
+Release page:
+<https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE>
 
 ## After publishing
-- [ ] Push the website (`GT-STACER-WEB/` → repo root on `main`).
+- [x] Push the website (`GT-STACER-WEB/` → repo root on `main`) — done in the same commit.
+- [x] Verify the published DEB installs and launches (see [`PUBLISHING.md`](PUBLISHING.md) §6).
 - [ ] Announce (r/linux, LWN, Phoronix, Mastodon).
 - [ ] Open the next milestone (`v26.09 — backup & snapshots`).
