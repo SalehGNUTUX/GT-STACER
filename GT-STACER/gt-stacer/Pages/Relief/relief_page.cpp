@@ -4,6 +4,7 @@
 #include "../../../gt-stacer-core/Info/cpu_info.h"
 #include "../../Managers/setting_manager.h"
 #include "../../Managers/theme.h"
+#include "../../Widgets/status_pill.h"
 #include <QBrush>
 #include <QCheckBox>
 #include <QGroupBox>
@@ -450,12 +451,7 @@ void ReliefPage::updateStatusBadge()
         text  = tr("Idle");
         color = Theme::green();
     }
-    QColor bg = color; bg.setAlpha(40);
-    m_badge->setText(text);
-    m_badge->setStyleSheet(QString(
-        "padding:2px 10px;border-radius:9px;font-weight:bold;color:%1;background:%2;")
-        .arg(color.name(), QString("rgba(%1,%2,%3,%4)")
-             .arg(bg.red()).arg(bg.green()).arg(bg.blue()).arg(bg.alpha())));
+    setStatusPill(m_badge, text, color);
 }
 
 void ReliefPage::updateBanner()

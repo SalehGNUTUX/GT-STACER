@@ -18,6 +18,9 @@ add_library(gt-stacer-core STATIC
     Tools/power_profile_tool.cpp
     Tools/battery_tool.cpp
     Tools/firewall_tool.cpp
+    Tools/snapshot_tool.cpp
+    Tools/backup_tool.cpp
+    Tools/recovery_tool.cpp
     Tools/relief_tool.cpp
     Utils/command_util.cpp
     Utils/file_util.cpp

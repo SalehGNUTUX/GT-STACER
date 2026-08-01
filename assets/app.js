@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.08 STABLE',
+                    download_title: 'Get GT-STACER 26.09 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.08 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.09 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -56,7 +56,7 @@
                     pkg_flatpak_desc: 'Sandboxed — runs on any distro with Flatpak',
                     table_header_aspect: 'Aspect',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.08 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.09 (2026)',
                 },
                 ar: {
                     nav_features: 'المزايا',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.08 STABLE',
+                    download_title: 'حمّل GT-STACER 26.09 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.08 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.09 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -108,7 +108,7 @@
                     pkg_flatpak_desc: 'معزولة في sandbox — تعمل في أي توزيعة فيها Flatpak',
                     table_header_aspect: 'الجانب',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.08 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.09 (2026)',
                 }
             };
 
@@ -160,19 +160,27 @@
                         'Cross-desktop keep-awake (D-Bus) that detects the desktop\'s own block',
                         'Firewall — ufw / firewalld enable + port rules, one authorization per action',
                       ] },
-                    { ver: 'v26.09', status: 'planned',
-                      title: 'Backup & snapshots',
+                    { ver: 'v26.09 stable', status: 'shipped',
+                      title: 'Backup, snapshots & recovery',
                       bullets: [
-                        'Btrfs/ZFS snapshot manager',
-                        'rsync-based home backup',
-                        'Restore points before risky cleans',
+                        'Backup — Timeshift / Snapper / ZFS snapshots with the ideal engine auto-selected for your filesystem',
+                        'Home backup — rsync mirror to another disk with live progress',
+                        'Recovery — PhotoRec front-end that carves deleted files, with per-type sorting',
+                        'Restore point offered before irreversible System Cleaner cleanups',
                       ] },
-                    { ver: 'v26.10', status: 'future',
+                    { ver: 'v26.10', status: 'planned',
                       title: 'Plugin system',
                       bullets: [
                         'Lua/Python plugin API',
                         'Community plugin registry',
                         'Sandboxed execution',
+                      ] },
+                    { ver: 'v26.11', status: 'future',
+                      title: 'Scheduling & automation',
+                      bullets: [
+                        'Scheduled snapshots & home backups (systemd timers)',
+                        'Rules engine for automatic maintenance',
+                        'Health report & notifications',
                       ] },
                 ],
                 ar: [
@@ -220,19 +228,27 @@
                         'إبقاء اليقظة المتوافق مع الواجهات (D-Bus) يكشف منع سطح المكتب نفسه',
                         'جدار الحماية — تفعيل ufw / firewalld وقواعد المنافذ، استيثاق مرّة لكل إجراء',
                       ] },
-                    { ver: 'إصدار 26.09', status: 'planned',
-                      title: 'النسخ الاحتياطية واللقطات',
+                    { ver: 'إصدار 26.09 مستقر', status: 'shipped',
+                      title: 'النسخ الاحتياطية واللقطات والاستعادة',
                       bullets: [
-                        'مدير لقطات Btrfs/ZFS',
-                        'نسخ احتياطي بـ rsync',
-                        'نقاط استعادة قبل عمليات التنظيف الخطرة',
+                        'النسخ — لقطات Timeshift / Snapper / ZFS مع اختيار المحرّك المثاليّ لنظام ملفّاتك تلقائيّاً',
+                        'نسخ المنزل — مرآة rsync إلى قرص آخر بتقدّم حيّ',
+                        'الاستعادة — واجهة PhotoRec تستخرج الملفّات المحذوفة مع فرزها حسب النوع',
+                        'عرض نقطة استعادة قبل عمليات تنظيف النظام غير القابلة للتراجع',
                       ] },
-                    { ver: 'إصدار 26.10', status: 'future',
+                    { ver: 'إصدار 26.10', status: 'planned',
                       title: 'نظام إضافات',
                       bullets: [
                         'واجهة برمجة إضافات بـ Lua/Python',
                         'سجلّ إضافات مجتمعي',
                         'تنفيذ معزول (sandbox)',
+                      ] },
+                    { ver: 'إصدار 26.11', status: 'future',
+                      title: 'الجدولة والأتمتة',
+                      bullets: [
+                        'جدولة اللقطات والنسخ الاحتياطيّ (مؤقّتات systemd)',
+                        'محرّك قواعد للصيانة التلقائيّة',
+                        'تقرير صحّة النظام وإشعارات',
                       ] },
                 ],
             };
@@ -240,6 +256,15 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.09 stable', date: '2026-08-01', headline: 'Backup, snapshots & recovery · new Backup and Recovery pages · restore point before risky cleans',
+                      items: [
+                        'Backup (new) — system snapshots via Timeshift, Snapper or ZFS with the ideal engine auto-detected for your filesystem (and a tagged choice when more than one is available)',
+                        'Home backup — mirror your home directory to another disk with rsync, showing live progress and skipping caches/trash (no root — your own files)',
+                        'Recovery (new) — a PhotoRec front-end that carves lost/deleted files from a disk, partition or image; pick file types and sort each into its own folder; refuses a destination on the source disk',
+                        'System Cleaner offers a Timeshift restore point before irreversible root-level cleanups (old kernels, logs, crash dumps); if it fails, nothing is cleaned',
+                        'Sidebar reorganized by workflow with distinct icons; status pills on Firewall and Backup',
+                        'Settings scrolls on short windows and aligns its form fields in LTR/RTL; every page re-translates after a runtime language switch',
+                      ] },
                     { ver: '26.08 stable', date: '2026-07-31', headline: 'Network & power tools · Connections, Power & Firewall pages · cross-desktop keep-awake',
                       items: [
                         'Connections (new) — live TCP/UDP sockets from ss with the owning process, a text filter, sortable columns, and an auto-refresh that only runs while shown',
@@ -301,6 +326,15 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.09 stable', date: '2026-08-01', headline: 'النسخ الاحتياطية واللقطات والاستعادة · صفحتا النسخ والاستعادة · نقطة استعادة قبل التنظيف الخطر',
+                      items: [
+                        'النسخ (جديد) — لقطات نظام عبر Timeshift أو Snapper أو ZFS مع كشف المحرّك المثاليّ لنظام ملفّاتك تلقائيّاً (ووسم للاختيار عند تعدّد المحرّكات)',
+                        'نسخ المنزل — مرآة لمجلّد المنزل إلى قرص آخر بـ rsync مع تقدّم حيّ وتخطّي الكاش والمهملات (بلا كلمة مرور — ملفّاتك أنت)',
+                        'الاستعادة (جديد) — واجهة PhotoRec تستخرج الملفّات المفقودة/المحذوفة من قرص أو قسم أو صورة؛ اختر الأنواع وافرزها في مجلّدات؛ وترفض وجهةً على قرص المصدر',
+                        'يعرض «منظّف النظام» إنشاء نقطة استعادة Timeshift قبل عمليات التنظيف الجذريّة غير القابلة للتراجع (النوى القديمة، السجلّات)؛ وإن فشلت لا يُنظَّف شيء',
+                        'إعادة ترتيب الشريط الجانبيّ حسب المهمّة بأيقونات مميّزة؛ وشارات حالة على «جدار الحماية» و«النسخ»',
+                        'صفحة الإعدادات تُمرَّر على النوافذ الصغيرة وتُحاذي حقولها في RTL/LTR؛ وكلّ الصفحات تُترجَم بعد تبديل اللغة أثناء التشغيل',
+                      ] },
                     { ver: '26.08 stable', date: '2026-07-31', headline: 'أدوات الشبكة والطاقة · صفحات الاتصالات والطاقة وجدار الحماية · إبقاء اليقظة المتوافق مع الواجهات',
                       items: [
                         'الاتصالات (جديد) — مقابس TCP/UDP حيّة من ss بالعمليّة المالكة، مع مرشِّح نصّيّ وأعمدة قابلة للفرز وتحديث تلقائيّ يعمل عند ظهور الصفحة فقط',
@@ -380,6 +414,8 @@
                     { file: 'Connections.png', title: 'Connections' },
                     { file: 'Power.png', title: 'Power' },
                     { file: 'Firewall.png', title: 'Firewall' },
+                    { file: 'Backup.png', title: 'Backup & Snapshots' },
+                    { file: 'Recovery.png', title: 'File Recovery' },
                 ],
                 ar: [
                     { file: 'لوحة_التحكم.png', title: 'لوحة التحكم' },
@@ -396,6 +432,8 @@
                     { file: 'الاتصالات.png', title: 'الاتصالات' },
                     { file: 'الطاقة.png', title: 'الطاقة' },
                     { file: 'جدار_الحماية.png', title: 'جدار الحماية' },
+                    { file: 'النسخ_الاحتياطيّة.png', title: 'النسخ الاحتياطيّة' },
+                    { file: 'الاستعادة.png', title: 'الاستعادة' },
                 ]
             };
 
@@ -493,8 +531,8 @@
             ];
 
             // ── Download data ──
-            // GT-STACER 26.08 STABLE — published 2026-07-31 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE
+            // GT-STACER 26.09 STABLE — published 2026-08-01 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
@@ -502,36 +540,36 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: 'd0ca2311dbfaf86fe5748b607f53cb94d01c9c621039c7df4e062d289a75f87b',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/GT-STACER-26.08-x86_64.AppImage',
-                filename: 'GT-STACER-26.08-x86_64.AppImage',
+                sha256: 'fa24fb2b82995a4bd277b487ec0d9c8098054900301f795ccb7b9568c64aaf94',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/GT-STACER-26.09-x86_64.AppImage',
+                filename: 'GT-STACER-26.09-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
-                size: '2.0 MB',
-                sha256: 'c0f014e744bccacbd7281c27b50aa1514b39a6dbd384cd49e685a07ef8a74de7',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/GT-STACER_26.08_amd64.deb',
-                filename: 'GT-STACER_26.08_amd64.deb',
+                size: '2.1 MB',
+                sha256: 'ef3e60e9ac2056d46755d6d7d2db75cc4e29dfb31490ef381a1c2c397d0e6000',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/GT-STACER_26.09_amd64.deb',
+                filename: 'GT-STACER_26.09_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
-                size: '2.3 MB',
-                sha256: '1839bba453b2b8efeb478d08b28a81f1413603f4e55c17498f76b5068c9871b7',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/gt-stacer-26.08-2.x86_64.rpm',
-                filename: 'gt-stacer-26.08-2.x86_64.rpm',
+                size: '2.4 MB',
+                sha256: '7bb15478891b819ea852cb3d187e15fd8707a0832e2476865160d6aa13ba7ffb',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/gt-stacer-26.09-2.x86_64.rpm',
+                filename: 'gt-stacer-26.09-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
                 size: '2.1 MB',
-                sha256: 'de31c9f9989c76ef62c8e9c181c81d30425180cc853ac1342a66f2a69d6e2446',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.08_STABLE/GT-STACER-26.08-x86_64.flatpak',
-                filename: 'GT-STACER-26.08-x86_64.flatpak',
+                sha256: '85c0a86b6df0fde685718212b2bfe3c06992b2ce61d178c0c3a97ca36ffc050a',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/GT-STACER-26.09-x86_64.flatpak',
+                filename: 'GT-STACER-26.09-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

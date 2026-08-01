@@ -37,6 +37,8 @@ set(APP_SOURCES
     Pages/Connections/connections_page.cpp
     Pages/Power/power_page.cpp
     Pages/Firewall/firewall_page.cpp
+    Pages/Backup/backup_page.cpp
+    Pages/Recovery/recovery_page.cpp
     Pages/Relief/relief_page.cpp
 )
 

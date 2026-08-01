@@ -6,6 +6,54 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.09-stable] — 2026-08-01
+
+The "backup, snapshots & recovery" release. Two new pages — Backup and Recovery —
+turn GT-STACER into a data-safety tool. No new hard dependency; the new pages use
+tools detected at runtime (`timeshift`/`snapper`/`zfs`, `rsync`, `photorec`).
+
+### Backup (new page)
+- **System snapshots** through **Timeshift**, **Snapper** or **ZFS**. The ideal
+  engine for the root filesystem is detected (`findmnt`) and pre-selected —
+  Timeshift's rsync mode on ext4/xfs, ZFS where a pool exists — and when the
+  filesystem supports more than one engine the user can choose, with the
+  recommended engine tagged and listed first.
+- List / create / delete run through `pkexec`; restore is wired for Timeshift
+  (reboots to finish) and ZFS. Long operations run off the UI thread behind a
+  loading overlay.
+- **Home backup** mirrors the home directory to another disk with
+  `rsync -a --info=progress2` (optional `--delete` mirror mode), showing a live
+  percentage and a cancel button. Caches and the trash are excluded. No root — the
+  files are the user's own.
+
+### Recovery (new page)
+- A graphical front-end for **PhotoRec** (the `testdisk` suite, wrapped — not
+  bundled). Enumerates partitions and whole disks via `lsblk`, marks mounted
+  ones, and carves lost/deleted files by signature via `photorec … /cmd … search`
+  through `pkexec`.
+- **File-type selection** — recover everything, or pick from ~26 common families;
+  and an option to **sort every recovered file into a per-type folder**.
+- Safety: refuses a destination on the same disk being carved, warns on a mounted
+  source, and shows a live recovered-file count with cancel.
+
+### Safer cleaning
+- System Cleaner offers to create a **Timeshift restore point** before an
+  irreversible root-level cleanup (old kernels, rotated logs, crash dumps); if the
+  snapshot fails, nothing is cleaned.
+
+### UI
+- **Sidebar reorganized by workflow** (Monitor → Maintenance → Backup & Recovery →
+  Control → Config → App); the visual order is decoupled from the fixed page
+  indices. Distinct icons throughout (Backup, Power no longer duplicate others).
+- **Status pills** on Firewall (Active / Inactive) and Backup (active engine),
+  sharing one helper with System Relief.
+- **`EmptyState`** placeholder when PhotoRec is not installed.
+- **Settings fixes:** the page now scrolls on short windows instead of squeezing
+  its rows; its `QFormLayout` groups align correctly (label/field) in LTR and RTL;
+  the "Apply" button is pinned at the bottom.
+- **Runtime language switch** now re-translates the code-built pages (Relief,
+  Connections, Power, Firewall, Backup, Recovery), not only the `.ui` pages.
+
 ## [26.08-stable] — 2026-07-31
 
 The "network & power tools" release. Three new pages — Connections, Power and

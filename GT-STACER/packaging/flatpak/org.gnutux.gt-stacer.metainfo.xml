@@ -86,6 +86,17 @@
   </provides>
 
   <releases>
+    <release version="26.09" date="2026-08-01">
+      <description>
+        <p>Backup, snapshots and file recovery — a data-safety release. Highlights:</p>
+        <ul>
+          <li>Backup (new): system restore points via Timeshift, Snapper or ZFS, with the ideal engine for your filesystem auto-selected (and a choice when more than one is available), plus an rsync mirror of your home directory to another disk with live progress</li>
+          <li>Recovery (new): a graphical front-end for PhotoRec that carves lost or deleted files from a disk, partition or image — pick specific file types and have each type sorted into its own folder</li>
+          <li>System Cleaner can create a restore point before irreversible root-level cleanups (e.g. removing old kernels)</li>
+          <li>Sidebar reorganized by workflow; status pills on Firewall and Backup; assorted layout and translation fixes (Settings now scrolls on small windows)</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.08" date="2026-07-31">
       <description>
         <p>Network &amp; power tools, plus cross-desktop power integration. Highlights:</p>

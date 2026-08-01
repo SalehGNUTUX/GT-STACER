@@ -9,6 +9,9 @@ struct SidebarItem {
     QString iconSvg;   // SVG data as string
     QString label;
     QString tooltip;
+    int     pageIndex = -1;   // target page in the QStackedWidget (fixed; decoupled
+                              // from the sidebar's visual order so items can be
+                              // reordered without disturbing the page indices)
 };
 
 class SidebarButton : public QWidget {
@@ -19,6 +22,7 @@ public:
     void setActive(bool active);
     void setCollapsed(bool collapsed);
     bool isActive() const { return m_active; }
+    int  pageIndex() const { return m_index; }   // fixed page it navigates to
 
 signals:
     void clicked(int index);

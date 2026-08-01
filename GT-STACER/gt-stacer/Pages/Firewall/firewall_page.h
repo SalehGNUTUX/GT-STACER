@@ -33,6 +33,7 @@ private:
     void populateTable();    // fill the table from m_rules
 
     QLabel       *m_status    = nullptr;
+    QLabel       *m_badge     = nullptr;
     QPushButton  *m_toggleBtn = nullptr;
     QPushButton  *m_refreshBtn= nullptr;
     QTableWidget *m_table     = nullptr;

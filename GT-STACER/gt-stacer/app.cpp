@@ -17,11 +17,14 @@
 #include "Pages/Connections/connections_page.h"
 #include "Pages/Power/power_page.h"
 #include "Pages/Firewall/firewall_page.h"
+#include "Pages/Backup/backup_page.h"
+#include "Pages/Recovery/recovery_page.h"
 #include "Dialogs/about_dialog.h"
 
 #include <QHBoxLayout>
 #include <QCloseEvent>
 #include <QApplication>
+#include <QSet>
 #include <QShortcut>
 #include <QKeySequence>
 #include <QGraphicsOpacityEffect>
@@ -36,7 +39,7 @@
 #include <QScreen>
 #include <QGuiApplication>
 
-static constexpr int kNumPages = 14;
+static constexpr int kNumPages = 16;
 
 App::App(QWidget *parent) : QMainWindow(parent)
 {
@@ -159,6 +162,8 @@ QWidget *App::materializePage(int index)
     case 11: page = new ConnectionsPage;  break;
     case 12: page = new PowerPage;        break;
     case 13: page = new FirewallPage;     break;
+    case 14: page = new BackupPage;       break;
+    case 15: page = new RecoveryPage;     break;
     default: return nullptr;
     }
 
@@ -177,21 +182,33 @@ QWidget *App::materializePage(int index)
 void App::setupSidebar()
 {
     using SI = SidebarItem;
+    // Visual order is grouped by workflow (Monitor → Maintenance → Backup/
+    // Recovery → Control → Config → App). The trailing number is the FIXED page
+    // index in the QStackedWidget — it must not change (Settings stays 8, etc.);
+    // only the display order here changes.
     const QVector<SI> items = {
-        {SidebarIcons::dashboard(),   tr("Dashboard"),        tr("System overview")},
-        {SidebarIcons::resources(),   tr("Resources"),        tr("CPU, RAM, GPU, Network")},
-        {SidebarIcons::processes(),   tr("Processes"),        tr("Running processes")},
-        {SidebarIcons::services(),    tr("Services"),         tr("System services")},
-        {SidebarIcons::startup(),     tr("Startup Apps"),     tr("Autostart applications")},
-        {SidebarIcons::cleaner(),     tr("System Cleaner"),   tr("Free up disk space")},
-        {SidebarIcons::uninstaller(), tr("Uninstaller"),      tr("Remove packages")},
-        {SidebarIcons::aptSources(),  tr("APT Sources"),      tr("Package repositories")},
-        {SidebarIcons::settings(),    tr("Settings"),         tr("Application settings")},
-        {SidebarIcons::helpers(),     tr("Helpers"),          tr("System utilities")},
-        {SidebarIcons::relief(),      tr("System Relief"),    tr("Relieve RAM/CPU pressure")},
-        {SidebarIcons::connections(), tr("Connections"),      tr("Live network connections")},
-        {SidebarIcons::power(),       tr("Power"),            tr("Power profile & battery")},
-        {SidebarIcons::firewall(),    tr("Firewall"),         tr("Manage firewall rules")},
+        // Monitor
+        {SidebarIcons::dashboard(),   tr("Dashboard"),      tr("System overview"),            0},
+        {SidebarIcons::resources(),   tr("Resources"),      tr("CPU, RAM, GPU, Network"),     1},
+        {SidebarIcons::processes(),   tr("Processes"),      tr("Running processes"),          2},
+        {SidebarIcons::connections(), tr("Connections"),    tr("Live network connections"),  11},
+        // Maintenance
+        {SidebarIcons::cleaner(),     tr("System Cleaner"), tr("Free up disk space"),         5},
+        {SidebarIcons::uninstaller(), tr("Uninstaller"),    tr("Remove packages"),            6},
+        {SidebarIcons::relief(),      tr("System Relief"),  tr("Relieve RAM/CPU pressure"),  10},
+        // Backup & recovery
+        {SidebarIcons::backup(),      tr("Backup"),         tr("Snapshots & home backup"),   14},
+        {SidebarIcons::recovery(),    tr("Recovery"),       tr("Recover deleted files"),     15},
+        // Control
+        {SidebarIcons::services(),    tr("Services"),       tr("System services"),            3},
+        {SidebarIcons::startup(),     tr("Startup Apps"),   tr("Autostart applications"),     4},
+        {SidebarIcons::power(),       tr("Power"),          tr("Power profile & battery"),   12},
+        // Config
+        {SidebarIcons::aptSources(),  tr("APT Sources"),    tr("Package repositories"),       7},
+        {SidebarIcons::firewall(),    tr("Firewall"),       tr("Manage firewall rules"),     13},
+        // App
+        {SidebarIcons::helpers(),     tr("Helpers"),        tr("System utilities"),           9},
+        {SidebarIcons::settings(),    tr("Settings"),       tr("Application settings"),       8},
     };
     for (const auto &item : items)
         m_sidebar->addItem(item);
@@ -220,10 +237,40 @@ void App::setupSettingsConnections()
         setupSidebar();
         m_sidebar->setActiveIndex(m_currentPage);
         // Retranslate every page that has actually been materialized.
+        // .ui-backed pages catch LanguageChange and call ui->retranslateUi().
         QEvent langEvent(QEvent::LanguageChange);
         for (QWidget *page : m_pages)
             if (page) QApplication::sendEvent(page, &langEvent);
+        // Programmatic pages build their static text with tr() in the ctor and
+        // have no retranslateUi(), so LanguageChange leaves them in the old
+        // language — rebuild those fresh in the new language.
+        rebuildProgrammaticPages();
     });
+}
+
+void App::rebuildProgrammaticPages()
+{
+    // Pages built entirely in code (no .ui, so no ui->retranslateUi()) don't
+    // pick up a runtime language switch. They always construct in the *current*
+    // language, so the robust fix is to recreate them rather than hand-maintain
+    // a retranslate list. .ui-backed pages are excluded — they retranslate fine.
+    static const QSet<int> programmatic = {0, 10, 11, 12, 13, 14, 15};
+    for (int i : programmatic) {
+        if (!m_pages[i]) continue;             // not materialized → builds fresh on first visit
+        QWidget *old = m_pages[i];
+        auto *ph = new QWidget;                // fresh placeholder to hold the stack slot
+        m_pageStack->insertWidget(i, ph);
+        m_pageStack->removeWidget(old);
+        old->deleteLater();
+        m_placeholders[i] = ph;
+        m_pages[i] = nullptr;
+    }
+    // Rebuild the page on screen now so the switch is visible immediately.
+    materializePage(m_currentPage);
+    m_pageStack->setCurrentIndex(m_currentPage);
+    // Keep System Relief's background watchdog alive across the switch.
+    if (SettingManager::instance()->reliefAutoMode())
+        materializePage(10);
 }
 
 void App::navigateTo(int index)

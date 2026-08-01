@@ -42,6 +42,7 @@ private:
     void setupSidebar();
     void setupSettingsConnections();
     QWidget *materializePage(int index);
+    void rebuildProgrammaticPages();   // re-create pages that lack retranslateUi() on language change
 
     QWidget        *m_centralWidget = nullptr;
     Sidebar        *m_sidebar       = nullptr;

@@ -1,4 +1,6 @@
 #include "firewall_page.h"
+#include "../../Managers/theme.h"
+#include "../../Widgets/status_pill.h"
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -30,9 +32,12 @@ FirewallPage::FirewallPage(QWidget *parent) : QWidget(parent)
     auto *statusRow = new QHBoxLayout;
     m_status = new QLabel;
     m_status->setObjectName("infoValue");
+    m_badge  = new QLabel;
     m_toggleBtn  = new QPushButton;
     m_refreshBtn = new QPushButton(tr("Load rules"));
     statusRow->addWidget(m_status);
+    statusRow->addSpacing(10);
+    statusRow->addWidget(m_badge);
     statusRow->addStretch();
     statusRow->addWidget(m_toggleBtn);
     statusRow->addWidget(m_refreshBtn);
@@ -78,6 +83,7 @@ FirewallPage::FirewallPage(QWidget *parent) : QWidget(parent)
 
     if (FirewallTool::backend() == FirewallTool::None) {
         m_status->setText(tr("No supported firewall found. Install ufw or firewalld."));
+        setStatusPill(m_badge, tr("Unavailable"), Theme::subtext());
         m_toggleBtn->setEnabled(false);
         m_refreshBtn->setEnabled(false);
         m_addBtn->setEnabled(false);
@@ -91,8 +97,9 @@ void FirewallPage::updateStatus()
 {
     if (FirewallTool::backend() == FirewallTool::None) return;
     const bool on = FirewallTool::isEnabled();
-    m_status->setText(tr("Firewall: %1 — %2")
-        .arg(FirewallTool::backendName(), on ? tr("Enabled") : tr("Disabled")));
+    m_status->setText(tr("Firewall: %1").arg(FirewallTool::backendName()));
+    setStatusPill(m_badge, on ? tr("Active") : tr("Inactive"),
+                  on ? Theme::green() : Theme::red());
     m_toggleBtn->setText(on ? tr("Disable") : tr("Enable"));
     // Adding/deleting only makes sense once the firewall is on.
     m_addBtn->setEnabled(on);

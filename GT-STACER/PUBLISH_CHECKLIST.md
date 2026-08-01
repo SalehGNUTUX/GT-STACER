@@ -1,19 +1,18 @@
-# Pre-publish checklist — GT-STACER 26.08 stable
+# Pre-publish checklist — GT-STACER 26.09 stable
 
-> **✅ 26.08 published 2026-07-31** — <https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE>
-> (commit `23e8706`). The published DEB was verified: installs cleanly on
-> Debian 13 and launches. See **[`PUBLISHING.md`](PUBLISHING.md)** for the full
-> procedure and the packaging pitfalls this release hit (internal `build_deb`,
+> **26.09 (2026-08-01)** — released via `scripts/release.sh`
+> (tag `GT-STACER_26.09_STABLE`). See **[`PUBLISHING.md`](PUBLISHING.md)** for the
+> full procedure and the packaging pitfalls to watch (internal `build_deb`,
 > stale `release/`, RPM `-2`, tag scheme).
 
 Before pushing the tag and creating the release, run through this list. Every
 item should be a ✅ before clicking publish.
 
 ## Code
-- [x] `CMakeLists.txt` → `VERSION 26.8.0`, `APP_VERSION="26.08"`,
+- [x] `CMakeLists.txt` → `VERSION 26.8.0`, `APP_VERSION="26.09"`,
       `APP_CHANNEL="stable"`
 - [x] Packaging scripts (`build-deb.sh`, `build-rpm.sh`, `build-appimage.sh`,
-      `build-all.sh`) use `VERSION="26.08"`
+      `build-all.sh`) use `VERSION="26.09"`
 - [x] `Qt6::DBus` added to `find_package` + link line
 - [x] Strict build (`-Wall -Wextra -Wpedantic`) passes with **0 warnings**
 - [ ] `security_test` reports **27/27 PASS**
@@ -25,12 +24,12 @@ item should be a ✅ before clicking publish.
 - [x] Other 17 languages compiled with English fallback (no `unfinished`)
 
 ## Artifacts (in `release/`)
-- [x] `GT-STACER-26.08-x86_64.AppImage` — includes Wayland plugin
-- [x] `GT-STACER_26.08_amd64.deb` — Depends includes `libqt6dbus6` + `libqt6network6`, no `libqt6charts6`
-- [x] `gt-stacer-26.08-2.x86_64.rpm` — built via alien from DEB
-- [x] `GT-STACER-26.08-x86_64.flatpak` — `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`
+- [x] `GT-STACER-26.09-x86_64.AppImage` — includes Wayland plugin
+- [x] `GT-STACER_26.09_amd64.deb` — Depends includes `libqt6dbus6` + `libqt6network6`, no `libqt6charts6`
+- [x] `gt-stacer-26.09-2.x86_64.rpm` — built via alien from DEB
+- [x] `GT-STACER-26.09-x86_64.flatpak` — `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`
 - [x] `SHA256SUMS.txt` — covers all four
-- [x] `RELEASE_NOTES_26.08.md` Downloads table filled with real sizes + SHA-256
+- [x] `RELEASE_NOTES_26.09.md` Downloads table filled with real sizes + SHA-256
 
 Verify the checksums one more time:
 ```bash
@@ -56,20 +55,20 @@ sha256sum -c SHA256SUMS.txt
 - [ ] Quitting from tray triggers the confirmation dialog
 
 ## Flatpak sandbox smoke test
-- [ ] `flatpak install --user release/GT-STACER-26.08-x86_64.flatpak` succeeds
+- [ ] `flatpak install --user release/GT-STACER-26.09-x86_64.flatpak` succeeds
 - [ ] `flatpak run org.gnutux.gt-stacer` launches with `FLATPAK_ID` set
 - [ ] Firewall / power privileged ops reach the host polkit via `flatpak-spawn --host`
 - [ ] Keep-awake D-Bus inhibit works from inside the sandbox (session bus is shared)
 
 ## Documentation
-- [x] `CHANGELOG.md` has a `[26.08-stable]` entry dated 2026-07-31
-- [x] `RELEASE_NOTES_26.08.md` exists and matches the changelog
-- [x] `README.md` shows the 26.08 badge + "What's new" + new comparison rows (AR + EN)
-- [x] `SECURITY.md` lists 26.08 stable as current
+- [x] `CHANGELOG.md` has a `[26.09-stable]` entry dated 2026-08-01
+- [x] `RELEASE_NOTES_26.09.md` exists and matches the changelog
+- [x] `README.md` shows the 26.09 badge + "What's new" + new comparison rows (AR + EN)
+- [x] `SECURITY.md` lists 26.09 stable as current
 - [x] `CONTRIBUTING.md` updated to the 578-string baseline
 - [x] `CLAUDE.md` documents the new pages/tools, `Qt6::DBus`, `SleepInhibitor`, and the D-Bus/keep-awake lessons
-- [x] `packaging/flatpak/org.gnutux.gt-stacer.metainfo.xml` has a `<release version="26.08">` entry
-- [x] Website (`GT-STACER-WEB/`) version refs all show 26.08, with screenshots for the 3 new pages
+- [x] `packaging/flatpak/org.gnutux.gt-stacer.metainfo.xml` has a `<release version="26.09">` entry
+- [x] Website (`GT-STACER-WEB/`) version refs all show 26.09, with screenshots for the 3 new pages
 
 ## Publish — follow [`PUBLISHING.md`](PUBLISHING.md)
 
@@ -77,20 +76,20 @@ There is **no local `.git`** — publish by cloning the repo and rsync-ing the a
 into `GT-STACER/` and the website into the root (no `--delete` at root), then:
 
 ```bash
-gh release create GT-STACER_26.08_STABLE --repo SalehGNUTUX/GT-STACER \
-  --title "GT-STACER 26.08 STABLE" --notes-file RELEASE_NOTES_26.08.md \
+gh release create GT-STACER_26.09_STABLE --repo SalehGNUTUX/GT-STACER \
+  --title "GT-STACER 26.09 STABLE" --notes-file RELEASE_NOTES_26.09.md \
   --latest --target main \
-  release/GT-STACER-26.08-x86_64.AppImage release/GT-STACER_26.08_amd64.deb \
-  release/gt-stacer-26.08-2.x86_64.rpm release/GT-STACER-26.08-x86_64.flatpak \
+  release/GT-STACER-26.09-x86_64.AppImage release/GT-STACER_26.09_amd64.deb \
+  release/gt-stacer-26.09-2.x86_64.rpm release/GT-STACER-26.09-x86_64.flatpak \
   release/SHA256SUMS.txt
 ```
 
-> Tag is **`GT-STACER_26.08_STABLE`** (matches the website's download URLs), NOT
-> `v26.08-stable`. Do **not** use `scripts/publish-release.sh` — it uses the
+> Tag is **`GT-STACER_26.09_STABLE`** (matches the website's download URLs), NOT
+> `v26.09-stable`. Do **not** use `scripts/publish-release.sh` — it uses the
 > wrong tag scheme and needs a local `.git`.
 
 Release page:
-<https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE>
+<https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE>
 
 ## After publishing
 - [x] Push the website (`GT-STACER-WEB/` → repo root on `main`) — done in the same commit.

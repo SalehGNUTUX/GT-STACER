@@ -242,7 +242,10 @@ Sidebar::Sidebar(QWidget *parent) : QWidget(parent)
 
 void Sidebar::addItem(const SidebarItem &item)
 {
-    auto *btn = new SidebarButton(item, m_buttons.size(), this);
+    // The button carries the *page* index (fixed), not its visual position, so
+    // the sidebar can be reordered without touching the QStackedWidget indices.
+    const int pageIdx = item.pageIndex >= 0 ? item.pageIndex : m_buttons.size();
+    auto *btn = new SidebarButton(item, pageIdx, this);
     connect(btn, &SidebarButton::clicked, this, &Sidebar::onButtonClicked);
     m_buttons << btn;
 
@@ -267,8 +270,10 @@ void Sidebar::clearItems()
 void Sidebar::setActiveIndex(int index)
 {
     m_activeIndex = index;
-    for (int i = 0; i < m_buttons.size(); ++i)
-        m_buttons[i]->setActive(i == index);
+    // `index` is a page index; highlight the button that targets that page
+    // (visual position and page index are no longer the same).
+    for (SidebarButton *btn : m_buttons)
+        btn->setActive(btn->pageIndex() == index);
 }
 
 void Sidebar::setSidebarWidth(int w)

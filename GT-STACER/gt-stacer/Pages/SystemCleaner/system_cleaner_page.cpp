@@ -6,6 +6,7 @@
 #include "../../Widgets/cleaner_icons.h"
 #include "../../Widgets/loading_overlay.h"
 #include "../../../gt-stacer-core/Tools/package_tool.h"
+#include "../../../gt-stacer-core/Tools/snapshot_tool.h"
 #include "../../../gt-stacer-core/Utils/file_util.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
@@ -426,23 +427,47 @@ void SystemCleanerPage::clean()
     box.setTextFormat(Qt::RichText);
     box.setIcon(QMessageBox::Warning);
     box.setText(summary);
+
+    // Offer a system restore point before irreversible root-level cleanups
+    // (Old Kernels removes packages; log/crash deletions can't be undone). Only
+    // when a restore engine is present and can actually roll back.
+    QCheckBox *snapCheck = nullptr;
+    if (needsRoot && SnapshotTool::available() && SnapshotTool::canRestore()) {
+        snapCheck = new QCheckBox(
+            tr("Create a system restore point first (%1)").arg(SnapshotTool::backendName()));
+        snapCheck->setChecked(true);
+        box.setCheckBox(snapCheck);
+    }
+
     auto *cleanBtn = box.addButton(tr("Clean now"), QMessageBox::AcceptRole);
     cleanBtn->setObjectName("dangerButton");
     box.addButton(tr("Cancel"), QMessageBox::RejectRole);
     box.exec();
     if (box.clickedButton() != cleanBtn) return;
+    const bool makeSnapshot = snapCheck && snapCheck->isChecked();
 
     m_scanButton->setEnabled(false);
     m_cleanButton->setEnabled(false);
     m_statusLabel->setText(tr("Cleaning…"));
-    m_overlay->start(tr("Cleaning selected categories…"));
+    m_overlay->start(makeSnapshot ? tr("Creating a restore point, then cleaning…")
+                                  : tr("Cleaning selected categories…"));
 
     auto *watcher = new QFutureWatcher<QVector<QPair<QString, bool>>>(this);
     connect(watcher, &QFutureWatcher<QVector<QPair<QString, bool>>>::finished, this,
-            [this, watcher]() {
+            [this, watcher, makeSnapshot]() {
         watcher->deleteLater();
         m_overlay->stop();
         const auto results = watcher->result();
+
+        // If a requested restore point failed, we aborted before cleaning.
+        if (makeSnapshot && !results.isEmpty() && !results.first().second) {
+            m_statusLabel->setText(tr("Could not create a restore point — nothing was "
+                                      "cleaned. Authorization may have been denied."));
+            m_scanButton->setEnabled(true);
+            refreshSelectionUi();
+            return;
+        }
+
         int ok = 0, failed = 0;
         QStringList failedNames;
         for (const auto &r : results) {
@@ -462,9 +487,16 @@ void SystemCleanerPage::clean()
         refreshSelectionUi();
     });
 
-    watcher->setFuture(QtConcurrent::run([this, toClean]() {
+    const QString snapLabel = tr("Restore point");
+    watcher->setFuture(QtConcurrent::run([this, toClean, makeSnapshot, snapLabel]() {
         QVector<QPair<QString, bool>> out;
-        out.reserve(toClean.size());
+        out.reserve(toClean.size() + 1);
+        if (makeSnapshot) {
+            const bool snapOk = SnapshotTool::create(
+                QStringLiteral("GT-STACER: before System Cleaner"));
+            out.append({snapLabel, snapOk});
+            if (!snapOk) return out;   // abort — never clean without the safety net
+        }
         for (const auto &c : toClean)
             out.append({c.name, cleanCategory(c)});
         return out;
