@@ -304,6 +304,7 @@ GT-STACER/
 - **الترجمات** — افتح `translations/gt-stacer_XX.ts` بـ Qt Linguist وأكمله، ثم أرسل PR (العربية مرجعية 100%، باقي اللغات بحاجة للمساعدة)
 - **دعم توزيعات جديدة** — أضف كشف المدير في `gt-stacer-core/Tools/package_tool.cpp`
 - **تقارير الأخطاء** — افتح Issue مع اسم التوزيعة ونسخة Qt + سجل `~/.config/GNUTUX/gt-stacer/gt-stacer.log`
+- **التحزيم والإصدار** — الطريقة الكاملة ومزالقها في **[PUBLISHING.md](PUBLISHING.md)**
 - **ثغرة أمنية** — لا تفتح Issue عام، اقرأ **[SECURITY.md](SECURITY.md)** أولاً
 - **قواعد سلوك المجتمع** — **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)**
 
@@ -456,6 +457,7 @@ QtCharts is **no longer required** as of 26.06 — we ship our own `LineChart` w
 
 - [CHANGELOG.md](CHANGELOG.md) — every release, every change
 - [CONTRIBUTING.md](CONTRIBUTING.md) — build, test, translate, submit a PR
+- [PUBLISHING.md](PUBLISHING.md) — packaging & release procedure (and its pitfalls)
 - [SECURITY.md](SECURITY.md) — how to report vulnerabilities
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community rules
 
