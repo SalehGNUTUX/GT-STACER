@@ -1,13 +1,13 @@
 <div align="center">
 
-<img src="GT-STACER.png" width="140" alt="GT-STACER Logo"/>
+<img src="gt-stacer/static/icons/gt-stacer.png" width="140" alt="GT-STACER Logo"/>
 
 # GT-STACER
 
 ### Linux System Optimizer and Monitor
 **محسّن ومراقب نظام لينكس**
 
-[![Version](https://img.shields.io/badge/version-26.06--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
+[![Version](https://img.shields.io/badge/version-26.09--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green?style=flat-square)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-6.2+-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.qt.io)
 [![C++](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)](https://isocpp.org)
@@ -18,16 +18,14 @@
 
 </div>
 
-> ## 🎉 ما الجديد في 26.06 stable
+> ## 🎉 ما الجديد في 26.09 stable
 >
-> - 🔍 **بحث Processes متعدد الحقول** — PID + اسم + cmdline + مستخدم (لا توجد عمليات مخفية بعد الآن)
-> - 🛑 **عمليات متقدمة** — Terminate / Force-kill / Suspend / Resume / Priority + قائمة سياق + تحذير العمليات الحرجة
-> - 🧹 **بطاقات Flatpak و Snap** في منظف النظام مع drill-down لكل تطبيق
-> - 📦 **منظف ديناميكي** — بطاقة "ذاكرة APT/DNF/Pacman…" حسب توزيعتك، يدعم 13+ مدير حزم
-> - 🗑️ **إزالة متعددة الحزم** في Uninstaller (Ctrl/Shift-click) مع progress تتابعي
-> - 🔔 **إعدادات التنبيهات** قابلة للضبط الكامل من Settings (4 عتبات + checkbox تعطيل)
-> - ⚡ **توقف المؤقتات** عند الإخفاء إلى tray (استهلاك CPU ≈ 0)
-> - 🌍 **19 لغة بـ 100% ملفات .qm** — العربية والإنجليزية أصلية، الفرنسية 83% أصلية، الباقي fallback إنجليزي للسلاسل الناقصة
+> - 💾 **صفحة «النسخ الاحتياطيّة» جديدة** — أداتان: **لقطات النظام** عبر Timeshift أو Snapper أو ZFS، مع **كشف المحرّك المثاليّ** لنظام ملفّاتك واختياره مسبقاً (ووسم «موصى به» عند تعدّد المحرّكات مع وضعه أوّلاً)؛ و**نسخ المنزل** مرآةً إلى قرص آخر بـ `rsync` مع تقدّم حيّ وتخطّي الكاش والمهملات (بلا كلمة مرور — ملفّاتك أنت).
+> - ♻️ **صفحة «الاستعادة» جديدة** — واجهة رسوميّة لـ **PhotoRec** تستخرج الملفّات المفقودة أو المحذوفة من قرص أو قسم أو صورة بالتوقيع. اختر المصدر ووجهةً على **قرص مختلف** (يرفض الاستعادة على قرص المصدر)، وحدّد أنواع الملفّات، ويُفرَز كلّ نوع في مجلّده. PhotoRec ملفّ `testdisk` الأصليّ مُغلَّفاً لا مُضمَّناً.
+> - 🛟 **نقطة استعادة قبل التنظيف الخطر** — قبل حذف نوى قديمة أو سجلّات في «منظّف النظام» يعرض إنشاء لقطة Timeshift أوّلاً، وإن فشلت لا يُنظَّف شيء.
+> - 🧭 **إعادة ترتيب الشريط الجانبيّ** حسب المهمّة (مراقبة ← صيانة ← نسخ واستعادة ← تحكّم ← إعداد ← تطبيق)، بأيقونات مميّزة (لا تكرار).
+> - 🏷️ **شارات حالة** على «جدار الحماية» (نشط/غير نشط) و«النسخ» (المحرّك النشط)، كشارة «إنعاش النظام».
+> - 🪟 **إصلاحات تنسيق وترجمة** — صفحة الإعدادات تُمرَّر على النوافذ الصغيرة بدل ضغط صفوفها، وحقول نماذجها تُحاذى صحيحاً في RTL/LTR، وكلّ الصفحات تُترجَم صحيحاً بعد تبديل اللغة أثناء التشغيل.
 > - 🔒 **أمن** — كل العمليات الحساسة عبر pkexec بـ execProgram (لا shell). انظر [CHANGELOG.md](CHANGELOG.md) للقائمة الكاملة.
 
 ---
@@ -47,7 +45,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 ### ✨ ما الجديد في GT-STACER مقارنةً بالأصل
 
-| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.06 (2026) |
+| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.09 (2026) |
 |---|---|---|
 | إطار العمل | Qt5 (EOL) | **Qt6 ≥ 6.2** |
 | معيار C++ | C++11 | **C++17** |
@@ -72,7 +70,16 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | تنبيهات | ✗ | **libnotify + UI كامل في Settings** (4 عتبات + تعطيل) |
 | اختصارات لوحة المفاتيح | ✗ | **Ctrl+1..0** للتنقل · F1 · Ctrl+R · Ctrl+Q |
 | أيقونة Wayland | ✗ | **app_id صحيح** + ملف .desktop |
-| Uninstaller | حزمة واحدة | **متعدد التحديد** + progress تتابعي |
+| Uninstaller | حزمة واحدة | **متعدد التحديد** + progress تتابعي + **كشف البرامج الخارجيّة** (/opt · AppImage · سكربتات) |
+| إنعاش النظام | ✗ | ✅ **تجميد/استئناف** (SIGSTOP/SIGCONT) للعمليات الخاملة — يدويّ + تلقائيّ |
+| مؤقّت الطاقة | ✗ | ✅ **إطفاء/إعادة/تعليق/سُبات** مجدول بعدّاد حيّ عبر logind |
+| بدء التشغيل | ✗ | ✅ **autostart موثوق** (.desktop نصّي) + تأخير + Flatpak/Snap |
+| الاتصالات الحيّة | ✗ | ✅ **مقابس TCP/UDP** بالعمليّة المالكة (`ss`) + مرشِّح + تحديث تلقائيّ |
+| ملفّات الطاقة | ✗ | ✅ **power-profiles-daemon / cpufreq** + حدّ شحن البطاريّة للمحمول |
+| إبقاء اليقظة | ✗ | ✅ **منع النوم/قفل الشاشة** عبر D-Bus القياسيّة (تكامل مع KDE/غنوم…) |
+| جدار الحماية | ✗ | ✅ **ufw / firewalld** — تفعيل + قواعد منافذ (استيثاق مرّة/إجراء) |
+| النسخ واللقطات | ✗ | ✅ **Timeshift / Snapper / ZFS** باختيار المحرّك المثاليّ + **نسخ rsync للمنزل** |
+| استعادة الملفّات | ✗ | ✅ **واجهة PhotoRec** — نحت الملفّات المحذوفة بتحديد الأنواع وفرزها |
 | استهلاك الذاكرة | 80 MB | **~22 MB PSS** — أقل من Stacer 1.x |
 | ترجمات | 1 لغة كاملة | **19 لغة بـ .qm كامل** (fallback إنجليزي للناقص) |
 
@@ -97,8 +104,20 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 #### 🔧 إدارة النظام
 - **العمليات:** ترتيب · بحث · إنهاء مع تأكيد
 - **الخدمات:** start/stop/enable/disable لـ systemd · OpenRC · runit · s6 · SysV
-- **System Cleaner:** فحص في خلفية منفصلة مع spinner · أعمدة قابلة للتوسيع · ألوان حسب الحجم
+- **System Cleaner:** فحص في خلفية منفصلة مع spinner · أعمدة قابلة للتوسيع · ألوان حسب الحجم · **يعرض إنشاء نقطة استعادة قبل التنظيف الجذريّ الخطر**
 - **مصادر APT:** نقر مزدوج يفتح نافذة تعديل كاملة · Tooltip يعرض URL كامل
+- **بدء التشغيل:** إدارة تطبيقات الإقلاع (autostart موثوق بملفّ `.desktop` نصّيّ) + تأخير + كشف Flatpak/Snap
+- **إنعاش النظام:** تجميد/استئناف العمليّات الخاملة (SIGSTOP/SIGCONT) لتخفيف ضغط الذاكرة/المعالج — يدويّ أو تلقائيّ، قابل للعكس بالكامل
+
+#### 🔌 الشبكة والطاقة والأمان (26.08)
+- **الاتصالات:** كلّ مقبس TCP/UDP نشِط والعمليّة المالكة له (`ss`) + مرشِّح نصّيّ حيّ + أعمدة قابلة للفرز + تحديث تلقائيّ عند العرض فقط
+- **الطاقة:** تبديل ملفّ الطاقة (`power-profiles-daemon` أو حاكمات cpufreq) + **حدّ شحن البطاريّة** للمحمول (يُخفى على المكتبيّ) + **إبقاء اليقظة** (منع النوم وقفل الشاشة عبر D-Bus القياسيّة، تكامل مع KDE/غنوم وشارة شريط)
+- **جدار الحماية:** تفعيل/تعطيل `ufw` أو `firewalld` + إضافة/حذف قواعد المنافذ — استيثاق مرّة واحدة لكلّ إجراء
+
+#### 💾 النسخ الاحتياطيّة والاستعادة (26.09)
+- **اللقطات:** نقاط استعادة عبر **Timeshift / Snapper / ZFS** — يُكتشف المحرّك المثاليّ لنظام ملفّاتك ويُختار مسبقاً، ويمكن الاختيار عند تعدّد المحرّكات (المثاليّ أوّلاً بوسم «موصى به»). الاستعادة موصولة لـTimeshift (تُعيد التشغيل) وZFS
+- **نسخ المنزل:** مرآة `rsync` إلى قرص آخر بتقدّم حيّ، تتخطّى الكاش والمهملات (بلا كلمة مرور — ملفّاتك أنت)
+- **الاستعادة:** واجهة رسوميّة لـ**PhotoRec** تنحت الملفّات المفقودة/المحذوفة من قرص أو قسم أو صورة — تحديد أنواع الملفّات، فرز كلّ نوع في مجلّده، ورفض وجهةٍ على قرص المصدر
 
 #### 📦 دعم مدراء الحزم (28+ مدير)
 
@@ -123,7 +142,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### 🌐 دعم اللغات (19 لغة، كل ملفات .qm تُولَّد 100%)
 
-في v26.06، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
+في v26.09، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
 
 | اللغة | تغطية أصلية | الباقي (إنجليزي fallback) | العلم |
 |---|---|---|---|
@@ -155,13 +174,13 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### ⚡ AppImage — لا تثبيت مطلوب
 ```bash
-chmod +x GT-STACER-26.06-x86_64.AppImage
-./GT-STACER-26.06-x86_64.AppImage
+chmod +x GT-STACER-26.09-x86_64.AppImage
+./GT-STACER-26.09-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.06_amd64.deb
+sudo dpkg -i GT-STACER_26.09_amd64.deb
 sudo apt-get install -f          # إصلاح الاعتماديات إن وُجد نقص
 ```
 
@@ -169,7 +188,7 @@ sudo apt-get install -f          # إصلاح الاعتماديات إن وُج
 
 #### Fedora / RHEL / AlmaLinux / Rocky
 ```bash
-sudo dnf install gt-stacer-26.06-1.x86_64.rpm
+sudo dnf install gt-stacer-26.09-2.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -180,7 +199,7 @@ yay -S gt-stacer
 
 #### Flatpak (معزول داخل sandbox)
 ```bash
-flatpak install --user GT-STACER-26.06-x86_64.flatpak
+flatpak install --user GT-STACER-26.09-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 
@@ -196,7 +215,7 @@ flatpak run org.gnutux.gt-stacer
 |---|---|
 | CMake | 3.24 |
 | g++ أو clang++ | C++17 |
-| Qt6 | 6.2+ (Base · Charts · Svg · Network · Concurrent) |
+| Qt6 | 6.2+ (Base · Svg · Network · Concurrent · DBus) |
 | ninja أو make | أي إصدار |
 | lrelease (qt6-l10n-tools) | للترجمات (اختياري) |
 
@@ -220,7 +239,7 @@ cd GT-STACER
 
 **Debian/Ubuntu:**
 ```bash
-sudo apt install build-essential cmake qt6-base-dev qt6-charts-dev \
+sudo apt install build-essential cmake qt6-base-dev \
                  qt6-svg-dev qt6-tools-dev qt6-l10n-tools
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel $(nproc)
@@ -258,8 +277,9 @@ GT-STACER/
 │   ├── Widgets/             # CircularGauge · LoadingOverlay · Sidebar · sidebar_icons.h
 │   ├── Dialogs/             # WelcomeDialog (onboarding) · EditSourceDialog (APT)
 │   ├── Pages/               # Dashboard (programmatic) · Resources · Processes · Services
-│   │                        # StartupApps · SystemCleaner · Uninstaller
-│   │                        # AptSourceManager · Settings · Helpers
+│   │                        # StartupApps · SystemCleaner · Uninstaller · AptSourceManager
+│   │                        # Settings · Helpers · Relief · Connections · Power
+│   │                        # Firewall · Backup · Recovery  (16 pages)
 │   └── static/
 │       ├── icons/gt-stacer.png
 │       └── themes/dark/style.qss · light/style.qss
@@ -299,6 +319,7 @@ GT-STACER/
 - **الترجمات** — افتح `translations/gt-stacer_XX.ts` بـ Qt Linguist وأكمله، ثم أرسل PR (العربية مرجعية 100%، باقي اللغات بحاجة للمساعدة)
 - **دعم توزيعات جديدة** — أضف كشف المدير في `gt-stacer-core/Tools/package_tool.cpp`
 - **تقارير الأخطاء** — افتح Issue مع اسم التوزيعة ونسخة Qt + سجل `~/.config/GNUTUX/gt-stacer/gt-stacer.log`
+- **التحزيم والإصدار** — الطريقة الكاملة ومزالقها في **[PUBLISHING.md](PUBLISHING.md)**
 - **ثغرة أمنية** — لا تفتح Issue عام، اقرأ **[SECURITY.md](SECURITY.md)** أولاً
 - **قواعد سلوك المجتمع** — **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)**
 
@@ -358,16 +379,14 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 > 🙏 **Attribution:** Inspired by [Stacer](https://github.com/oguzhaninan/Stacer) — thank you Oguzhan INAN.  
 > 🌐 [salehgnutux.github.io/GT-STACER](https://salehgnutux.github.io/GT-STACER)
 
-### 🎉 What's new in 26.06 stable
+### 🎉 What's new in 26.09 stable
 
-- 🔍 **Multi-field process search** — name + PID + cmdline + user (no more "hidden" processes)
-- 🛑 **Six process actions** + right-click context menu + critical-process guard
-- 🧹 **Flatpak / Snap drill-down** in System Cleaner — pick which apps to remove
-- 📦 **Dynamic package-cache card** — "APT/DNF/Pacman/Zypper… Cache" follows the host's manager
-- 🗑️ **Multi-package uninstall** (Ctrl/Shift-click) with sequential progress
-- 🔔 **Configurable notifications** — full Settings UI for 4 thresholds + master toggle
-- ⚡ **Timer pause on hide** — ~0 % CPU when minimised to the tray
-- 🌍 **19 languages, 100 % QM coverage** — Arabic / English native; French 83 % native; rest use English fallback for missing strings (contributors welcome)
+- 💾 **New "Backup" page** — **system snapshots** via Timeshift, Snapper or ZFS with the **ideal engine auto-detected** for your filesystem (and a tagged choice when more than one is available), plus a **home-directory mirror** to another disk with `rsync` and live progress (no root — your own files).
+- ♻️ **New "Recovery" page** — a graphical front-end for **PhotoRec** that carves lost/deleted files from a disk, partition or image. Pick a destination on a *different* disk (guarded), choose which file types to recover, and have each type sorted into its own folder.
+- 🛟 **Restore point before a risky clean** — System Cleaner offers a Timeshift restore point before irreversible root-level cleanups (old kernels, logs, crash dumps); if it fails, nothing is cleaned.
+- 🧭 **Sidebar reorganized by workflow** (Monitor → Maintenance → Backup & Recovery → Control → Config → App), with distinct icons throughout.
+- 🏷️ **Status pills** on Firewall (Active/Inactive) and Backup (active snapshot engine), matching System Relief.
+- 🪟 **Layout & translation fixes** — Settings scrolls on short windows instead of squeezing its rows, its form fields align in both LTR and RTL, and every page re-translates after a runtime language switch.
 - 🔒 **Defence in depth** — every privileged op goes through `execProgram` (no shell); see [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md)
 
 ### Key Features
@@ -382,9 +401,16 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **28+ package managers** auto-detected (APT, DNF, Pacman, Zypper, Flatpak, Snap, XBPS, APK, Portage, Nix, …)
 - **Service manager** — systemd · OpenRC · runit · s6 · SysV
 - **System Cleaner** — icon-card UI, per-category selection, drill-down for app caches, root-aware cleaning via `pkexec`
-- **Startup Apps** — icons + toggle + add-from-system dialog
+- **Startup Apps** — icons + toggle + add-from-system dialog + per-entry delay (Flatpak/Snap aware)
 - **APT Source Manager** — double-click to edit, full-URL tooltips
 - **Helpers** — `/etc/hosts` editor, DNS cache flush, vm.swappiness, `/proc/cmdline` viewer
+- **System Relief** — freeze/thaw idle apps (SIGSTOP/SIGCONT) to relieve RAM/CPU pressure, manual or automatic, fully reversible
+- **Connections** — live TCP/UDP sockets (`ss`) with the owning process, a filter, sortable columns, page-scoped auto-refresh
+- **Power** — switch the power profile (`power-profiles-daemon` / cpufreq), a laptop battery charge-limit, and a cross-desktop keep-awake (block sleep/screen-lock via D-Bus)
+- **Firewall** — enable/disable `ufw` or `firewalld` and add/remove port rules, one authorization per action
+- **Backup & Snapshots** — Timeshift / Snapper / ZFS restore points with the ideal engine auto-selected for your filesystem, plus an rsync home mirror with live progress
+- **Recovery** — a PhotoRec front-end that carves lost/deleted files by signature, with file-type selection and per-type sorting
+- **Restore point before risky cleans** — System Cleaner can snapshot before irreversible root-level cleanups
 - **Collapsible sidebar** — SVG icons, logo stays visible when collapsed
 - **System tray** — CPU%/RAM% tooltip · quit-confirm dialog (with remember-my-choice)
 - **About dialog** (F1) with version, license, links
@@ -393,17 +419,17 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 
 ### Install
 
-Pick the format that fits your distro. All 26.06 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
+Pick the format that fits your distro. All 26.09 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
 
 #### ⚡ AppImage — no install, run anywhere
 ```bash
-chmod +x GT-STACER-26.06-x86_64.AppImage
-./GT-STACER-26.06-x86_64.AppImage
+chmod +x GT-STACER-26.09-x86_64.AppImage
+./GT-STACER-26.09-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Pop!_OS / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.06_amd64.deb
+sudo dpkg -i GT-STACER_26.09_amd64.deb
 sudo apt-get install -f          # fix any missing deps
 ```
 
@@ -411,9 +437,9 @@ sudo apt-get install -f          # fix any missing deps
 
 #### Fedora / RHEL / AlmaLinux / Rocky / openSUSE
 ```bash
-sudo dnf install ./gt-stacer-26.06-2.x86_64.rpm
+sudo dnf install ./gt-stacer-26.09-2.x86_64.rpm
 # or
-sudo rpm -i ./gt-stacer-26.06-2.x86_64.rpm
+sudo rpm -i ./gt-stacer-26.09-2.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -424,7 +450,7 @@ yay -S gt-stacer
 
 #### Flatpak (sandboxed)
 ```bash
-flatpak install --user GT-STACER-26.06-x86_64.flatpak
+flatpak install --user GT-STACER-26.09-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 
@@ -447,12 +473,13 @@ QtCharts is **no longer required** as of 26.06 — we ship our own `LineChart` w
 | Build | `build-essential cmake ninja-build` | `gcc-c++ cmake ninja-build` | `base-devel cmake ninja` |
 | Qt6 | `qt6-base-dev qt6-svg-dev qt6-tools-dev` | `qt6-qtbase-devel qt6-qtsvg-devel` | `qt6-base qt6-svg qt6-tools` |
 | Translations | `qt6-l10n-tools` | `qt6-linguist` | `qt6-tools` |
-| Runtime (optional) | `libnotify-bin polkitd` | `libnotify polkit` | `libnotify polkit` |
+| Runtime (optional) | `libnotify-bin polkitd ufw power-profiles-daemon` | `libnotify polkit ufw power-profiles-daemon` | `libnotify polkit ufw power-profiles-daemon` |
 
 ### Documentation
 
 - [CHANGELOG.md](CHANGELOG.md) — every release, every change
 - [CONTRIBUTING.md](CONTRIBUTING.md) — build, test, translate, submit a PR
+- [PUBLISHING.md](PUBLISHING.md) — packaging & release procedure (and its pitfalls)
 - [SECURITY.md](SECURITY.md) — how to report vulnerabilities
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community rules
 
