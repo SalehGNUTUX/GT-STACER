@@ -492,6 +492,42 @@
                 descKey: 'CPU% and RAM% displayed in the tray tooltip, updated every 3 seconds.',
                 titleAr: 'شريط المهام',
                 descAr: 'يعرض CPU% و RAM% في Tooltip الشريط ويُحدَّث كل 3 ثوانٍ.',
+            }, {
+                icon: '💾',
+                titleKey: 'Backup & Snapshots',
+                descKey: 'System restore points via Timeshift, Snapper or ZFS — the ideal engine is auto-selected for your filesystem — plus an rsync mirror of your home folder to another disk.',
+                titleAr: 'النسخ الاحتياطيّة واللقطات',
+                descAr: 'نقاط استعادة عبر Timeshift أو Snapper أو ZFS — يُختار المحرّك المثاليّ لنظام ملفّاتك تلقائيّاً — إضافةً إلى نسخ مجلّد المنزل مرآةً بـ rsync إلى قرص آخر.',
+            }, {
+                icon: '♻️',
+                titleKey: 'File Recovery',
+                descKey: 'A PhotoRec front-end that carves lost or deleted files from a disk, partition or image — pick file types and sort each into its own folder.',
+                titleAr: 'استعادة الملفّات',
+                descAr: 'واجهة رسوميّة لـ PhotoRec تستخرج الملفّات المفقودة أو المحذوفة من قرص أو قسم أو صورة — حدّد الأنواع ويُفرَز كلّ نوع في مجلّده.',
+            }, {
+                icon: '🛡️',
+                titleKey: 'Firewall',
+                descKey: 'Enable or disable ufw / firewalld and add or remove port rules — one authorization per action.',
+                titleAr: 'جدار الحماية',
+                descAr: 'فعّل أو عطّل ufw / firewalld وأضِف أو احذف قواعد المنافذ — استيثاق مرّة واحدة لكلّ إجراء.',
+            }, {
+                icon: '⏻',
+                titleKey: 'Power & Keep-Awake',
+                descKey: 'Switch the power profile (power-profiles-daemon / cpufreq), cap the laptop battery charge, and block automatic sleep or screen-locking across desktops via D-Bus.',
+                titleAr: 'الطاقة وإبقاء اليقظة',
+                descAr: 'بدّل ملفّ الطاقة (power-profiles-daemon / cpufreq)، وحُدّ شحن بطاريّة المحمول، وامنع النوم أو قفل الشاشة تلقائيّاً عبر D-Bus على مختلف الواجهات.',
+            }, {
+                icon: '🔌',
+                titleKey: 'Live Connections',
+                descKey: 'Every active TCP/UDP socket and the process that owns it (from ss), with a live filter, sortable columns and page-scoped auto-refresh.',
+                titleAr: 'الاتصالات الحيّة',
+                descAr: 'كلّ مقبس TCP/UDP نشِط والعمليّة المالكة له (من ss)، مع مرشِّح حيّ وأعمدة قابلة للفرز وتحديث تلقائيّ عند العرض.',
+            }, {
+                icon: '⚡',
+                titleKey: 'System Relief',
+                descKey: 'Freeze idle background apps (SIGSTOP) to relieve RAM/CPU pressure and thaw them when it clears — manual or automatic, fully reversible.',
+                titleAr: 'إنعاش النظام',
+                descAr: 'جمّد التطبيقات الخاملة (SIGSTOP) لتخفيف ضغط الذاكرة/المعالج ثمّ أذِبها عند زواله — يدويّ أو تلقائيّ، قابل للعكس بالكامل.',
             }, ];
             const comparisonRows = [
                 { aspect: 'Framework', aspectAr: 'إطار العمل',
@@ -528,6 +564,22 @@
                   stacer: 'Tray / quit', stacerAr: 'شريط / إنهاء', gtstacer: 'Tray / quit + confirm dialog', gtstacerAr: 'شريط / إنهاء + حوار تأكيد', stacerIcon: '✅', gtstacerIcon: '✅' },
                 { aspect: 'Theme', aspectAr: 'السمة',
                   stacer: 'Simple QSS', stacerAr: 'QSS بسيط', gtstacer: 'Catppuccin dark/light', gtstacerAr: 'Catppuccin داكن/فاتح', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'System Relief', aspectAr: 'إنعاش النظام',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Freeze/thaw idle apps (SIGSTOP) — manual + auto', gtstacerAr: 'تجميد/استئناف الخاملة (SIGSTOP) — يدويّ + تلقائيّ', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Power timer', aspectAr: 'مؤقّت الطاقة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Scheduled shutdown / restart / suspend / hibernate', gtstacerAr: 'إطفاء/إعادة/تعليق/سُبات مجدول', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Live Connections', aspectAr: 'الاتصالات الحيّة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'TCP/UDP sockets + owning process (ss)', gtstacerAr: 'مقابس TCP/UDP + العمليّة المالكة (ss)', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Power profiles', aspectAr: 'ملفّات الطاقة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'power-profiles-daemon / cpufreq + battery charge-limit', gtstacerAr: 'power-profiles-daemon / cpufreq + حدّ شحن البطاريّة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Keep-awake', aspectAr: 'إبقاء اليقظة',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Block sleep / screen-lock via D-Bus (KDE/GNOME…)', gtstacerAr: 'منع النوم/قفل الشاشة عبر D-Bus (KDE/غنوم…)', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Firewall', aspectAr: 'جدار الحماية',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'ufw / firewalld — enable + port rules', gtstacerAr: 'ufw / firewalld — تفعيل + قواعد منافذ', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Backup & snapshots', aspectAr: 'النسخ واللقطات',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Timeshift / Snapper / ZFS + rsync home mirror', gtstacerAr: 'Timeshift / Snapper / ZFS + مرآة rsync للمنزل', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'File recovery', aspectAr: 'استعادة الملفّات',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'PhotoRec front-end — type-select + per-type sort', gtstacerAr: 'واجهة PhotoRec — تحديد الأنواع + فرز لكلّ نوع', stacerIcon: '❌', gtstacerIcon: '✅' },
             ];
 
             // ── Download data ──
