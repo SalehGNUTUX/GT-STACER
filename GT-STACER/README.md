@@ -78,6 +78,8 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | ملفّات الطاقة | ✗ | ✅ **power-profiles-daemon / cpufreq** + حدّ شحن البطاريّة للمحمول |
 | إبقاء اليقظة | ✗ | ✅ **منع النوم/قفل الشاشة** عبر D-Bus القياسيّة (تكامل مع KDE/غنوم…) |
 | جدار الحماية | ✗ | ✅ **ufw / firewalld** — تفعيل + قواعد منافذ (استيثاق مرّة/إجراء) |
+| النسخ واللقطات | ✗ | ✅ **Timeshift / Snapper / ZFS** باختيار المحرّك المثاليّ + **نسخ rsync للمنزل** |
+| استعادة الملفّات | ✗ | ✅ **واجهة PhotoRec** — نحت الملفّات المحذوفة بتحديد الأنواع وفرزها |
 | استهلاك الذاكرة | 80 MB | **~22 MB PSS** — أقل من Stacer 1.x |
 | ترجمات | 1 لغة كاملة | **19 لغة بـ .qm كامل** (fallback إنجليزي للناقص) |
 
@@ -102,8 +104,20 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 #### 🔧 إدارة النظام
 - **العمليات:** ترتيب · بحث · إنهاء مع تأكيد
 - **الخدمات:** start/stop/enable/disable لـ systemd · OpenRC · runit · s6 · SysV
-- **System Cleaner:** فحص في خلفية منفصلة مع spinner · أعمدة قابلة للتوسيع · ألوان حسب الحجم
+- **System Cleaner:** فحص في خلفية منفصلة مع spinner · أعمدة قابلة للتوسيع · ألوان حسب الحجم · **يعرض إنشاء نقطة استعادة قبل التنظيف الجذريّ الخطر**
 - **مصادر APT:** نقر مزدوج يفتح نافذة تعديل كاملة · Tooltip يعرض URL كامل
+- **بدء التشغيل:** إدارة تطبيقات الإقلاع (autostart موثوق بملفّ `.desktop` نصّيّ) + تأخير + كشف Flatpak/Snap
+- **إنعاش النظام:** تجميد/استئناف العمليّات الخاملة (SIGSTOP/SIGCONT) لتخفيف ضغط الذاكرة/المعالج — يدويّ أو تلقائيّ، قابل للعكس بالكامل
+
+#### 🔌 الشبكة والطاقة والأمان (26.08)
+- **الاتصالات:** كلّ مقبس TCP/UDP نشِط والعمليّة المالكة له (`ss`) + مرشِّح نصّيّ حيّ + أعمدة قابلة للفرز + تحديث تلقائيّ عند العرض فقط
+- **الطاقة:** تبديل ملفّ الطاقة (`power-profiles-daemon` أو حاكمات cpufreq) + **حدّ شحن البطاريّة** للمحمول (يُخفى على المكتبيّ) + **إبقاء اليقظة** (منع النوم وقفل الشاشة عبر D-Bus القياسيّة، تكامل مع KDE/غنوم وشارة شريط)
+- **جدار الحماية:** تفعيل/تعطيل `ufw` أو `firewalld` + إضافة/حذف قواعد المنافذ — استيثاق مرّة واحدة لكلّ إجراء
+
+#### 💾 النسخ الاحتياطيّة والاستعادة (26.09)
+- **اللقطات:** نقاط استعادة عبر **Timeshift / Snapper / ZFS** — يُكتشف المحرّك المثاليّ لنظام ملفّاتك ويُختار مسبقاً، ويمكن الاختيار عند تعدّد المحرّكات (المثاليّ أوّلاً بوسم «موصى به»). الاستعادة موصولة لـTimeshift (تُعيد التشغيل) وZFS
+- **نسخ المنزل:** مرآة `rsync` إلى قرص آخر بتقدّم حيّ، تتخطّى الكاش والمهملات (بلا كلمة مرور — ملفّاتك أنت)
+- **الاستعادة:** واجهة رسوميّة لـ**PhotoRec** تنحت الملفّات المفقودة/المحذوفة من قرص أو قسم أو صورة — تحديد أنواع الملفّات، فرز كلّ نوع في مجلّده، ورفض وجهةٍ على قرص المصدر
 
 #### 📦 دعم مدراء الحزم (28+ مدير)
 
@@ -263,8 +277,9 @@ GT-STACER/
 │   ├── Widgets/             # CircularGauge · LoadingOverlay · Sidebar · sidebar_icons.h
 │   ├── Dialogs/             # WelcomeDialog (onboarding) · EditSourceDialog (APT)
 │   ├── Pages/               # Dashboard (programmatic) · Resources · Processes · Services
-│   │                        # StartupApps · SystemCleaner · Uninstaller
-│   │                        # AptSourceManager · Settings · Helpers
+│   │                        # StartupApps · SystemCleaner · Uninstaller · AptSourceManager
+│   │                        # Settings · Helpers · Relief · Connections · Power
+│   │                        # Firewall · Backup · Recovery  (16 pages)
 │   └── static/
 │       ├── icons/gt-stacer.png
 │       └── themes/dark/style.qss · light/style.qss
@@ -386,9 +401,16 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **28+ package managers** auto-detected (APT, DNF, Pacman, Zypper, Flatpak, Snap, XBPS, APK, Portage, Nix, …)
 - **Service manager** — systemd · OpenRC · runit · s6 · SysV
 - **System Cleaner** — icon-card UI, per-category selection, drill-down for app caches, root-aware cleaning via `pkexec`
-- **Startup Apps** — icons + toggle + add-from-system dialog
+- **Startup Apps** — icons + toggle + add-from-system dialog + per-entry delay (Flatpak/Snap aware)
 - **APT Source Manager** — double-click to edit, full-URL tooltips
 - **Helpers** — `/etc/hosts` editor, DNS cache flush, vm.swappiness, `/proc/cmdline` viewer
+- **System Relief** — freeze/thaw idle apps (SIGSTOP/SIGCONT) to relieve RAM/CPU pressure, manual or automatic, fully reversible
+- **Connections** — live TCP/UDP sockets (`ss`) with the owning process, a filter, sortable columns, page-scoped auto-refresh
+- **Power** — switch the power profile (`power-profiles-daemon` / cpufreq), a laptop battery charge-limit, and a cross-desktop keep-awake (block sleep/screen-lock via D-Bus)
+- **Firewall** — enable/disable `ufw` or `firewalld` and add/remove port rules, one authorization per action
+- **Backup & Snapshots** — Timeshift / Snapper / ZFS restore points with the ideal engine auto-selected for your filesystem, plus an rsync home mirror with live progress
+- **Recovery** — a PhotoRec front-end that carves lost/deleted files by signature, with file-type selection and per-type sorting
+- **Restore point before risky cleans** — System Cleaner can snapshot before irreversible root-level cleanups
 - **Collapsible sidebar** — SVG icons, logo stays visible when collapsed
 - **System tray** — CPU%/RAM% tooltip · quit-confirm dialog (with remember-my-choice)
 - **About dialog** (F1) with version, license, links
