@@ -420,8 +420,9 @@ safety.
 
 ---
 
-[26.08-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.08-stable
-[26.07-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.07-stable
-[26.06-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.06-stable
-[26.05-beta]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.05-beta
-[26.04-alpha]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/v26.04-alpha
+[26.09-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE
+[26.08-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE
+[26.07-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.07_STABLE
+[26.06-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.06_STABLE
+[26.05-beta]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.05_BETA
+[26.04-alpha]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER-26.04-x86_64-ALPHA
