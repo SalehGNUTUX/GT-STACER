@@ -61,11 +61,14 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     auto *live = new QHBoxLayout;
     m_cpuLabel = new QLabel;
     m_ramLabel = new QLabel;
+    m_ioLabel  = new QLabel;   // disk-pressure (PSI); hidden if the kernel lacks PSI
     m_badge    = new QLabel;
     m_badge->setObjectName("reliefStatusBadge");
     live->addWidget(m_cpuLabel);
     live->addSpacing(18);
     live->addWidget(m_ramLabel);
+    live->addSpacing(18);
+    live->addWidget(m_ioLabel);
     live->addSpacing(18);
     live->addWidget(m_badge);
     live->addStretch();
@@ -85,8 +88,8 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     root->addWidget(m_banner);
 
     // Candidate table.
-    m_table = new QTableWidget(0, 4, this);
-    m_table->setHorizontalHeaderLabels({tr("Process"), tr("User"), tr("Memory"), tr("CPU %")});
+    m_table = new QTableWidget(0, 5, this);
+    m_table->setHorizontalHeaderLabels({tr("Process"), tr("User"), tr("Memory"), tr("CPU %"), tr("Disk")});
     m_table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
     m_table->setSelectionMode(QAbstractItemView::NoSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -98,16 +101,41 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     auto *actions = new QHBoxLayout;
     m_suspendBtn = new QPushButton(tr("Relieve now (freeze selected)"));
     m_suspendBtn->setObjectName("primaryButton");
+    m_easeBtn      = new QPushButton(tr("Ease disk I/O (lower priority)"));
+    m_easeBtn->setToolTip(tr("Lower the disk-I/O priority of the ticked processes (ionice idle) "
+                             "so the foreground gets a responsive disk — without freezing them. "
+                             "Works best under the BFQ scheduler."));
     m_resumeBtn    = new QPushButton(tr("Resume all"));
     m_selectAllBtn = new QPushButton(tr("Select all"));
     m_dropCaches   = new QCheckBox(tr("Also drop file caches (frees cached RAM, needs authorization)"));
     actions->addWidget(m_suspendBtn);
+    actions->addWidget(m_easeBtn);
     actions->addWidget(m_resumeBtn);
     actions->addWidget(m_selectAllBtn);
     actions->addSpacing(16);
     actions->addWidget(m_dropCaches);
     actions->addStretch();
     root->addLayout(actions);
+
+    // Disk I/O scheduler — switching an old HDD to BFQ is the biggest single win
+    // for responsiveness under load. Shown only when a scheduler is readable.
+    m_disk = ReliefTool::rootDisk();
+    if (!m_disk.isEmpty() && !ReliefTool::ioScheduler(m_disk).isEmpty()) {
+        auto *schedRow = new QHBoxLayout;
+        m_schedLabel = new QLabel;
+        m_schedLabel->setObjectName("infoValue");
+        m_bfqBtn = new QPushButton(tr("Switch to BFQ (better responsiveness)"));
+        m_bfqBtn->setToolTip(tr("BFQ keeps the desktop responsive while the disk is busy, "
+                                "and makes lowering I/O priority actually take effect. "
+                                "Applies until reboot; needs authorization."));
+        schedRow->addWidget(m_schedLabel);
+        schedRow->addSpacing(12);
+        schedRow->addWidget(m_bfqBtn);
+        schedRow->addStretch();
+        root->addLayout(schedRow);
+        connect(m_bfqBtn, &QPushButton::clicked, this, &ReliefPage::switchToBfq);
+        updateSchedulerUi();
+    }
 
     // Automatic mode — grouped so its purpose (background protection that starts
     // with the app when enabled) reads clearly.
@@ -124,6 +152,12 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     autoRow->addWidget(m_cpuThresh);
     autoRow->addWidget(new QLabel(tr("or")));
     autoRow->addWidget(m_ramThresh);
+    // Disk-pressure trigger — only where the kernel exposes PSI.
+    if (ReliefTool::ioPressure() >= 0) {
+        m_ioThresh = new QSpinBox; m_ioThresh->setRange(0, 100); m_ioThresh->setSuffix(tr(" % disk"));
+        autoRow->addWidget(new QLabel(tr("or")));
+        autoRow->addWidget(m_ioThresh);
+    }
     autoRow->addWidget(new QLabel(tr("for")));
     autoRow->addWidget(m_holdSecs);
     autoRow->addStretch();
@@ -131,6 +165,7 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
 
     connect(m_refreshBtn,   &QPushButton::clicked, this, &ReliefPage::refreshCandidates);
     connect(m_suspendBtn,   &QPushButton::clicked, this, &ReliefPage::suspendSelected);
+    connect(m_easeBtn,      &QPushButton::clicked, this, &ReliefPage::easeSelected);
     connect(m_resumeBtn,    &QPushButton::clicked, this, &ReliefPage::resumeAll);
     connect(m_selectAllBtn, &QPushButton::clicked, this, &ReliefPage::toggleSelectAll);
     connect(m_autoCheck,    &QCheckBox::toggled,   this, &ReliefPage::onAutoToggled);
@@ -141,6 +176,7 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     auto persist = [this](int){ saveSettings(); };
     connect(m_cpuThresh,   QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
     connect(m_ramThresh,   QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
+    if (m_ioThresh) connect(m_ioThresh, QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
     connect(m_holdSecs,    QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
     connect(m_refreshSecs, QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
 
@@ -194,6 +230,7 @@ void ReliefPage::loadSettings()
     m_loading = true;
     m_cpuThresh->setValue(s->reliefCpuThreshold());
     m_ramThresh->setValue(s->reliefRamThreshold());
+    if (m_ioThresh) m_ioThresh->setValue(s->reliefIoThreshold());
     m_holdSecs->setValue(s->reliefHoldSeconds());
     m_dropCaches->setChecked(s->reliefDropCaches());
     m_autoRefresh->setChecked(s->reliefAutoRefresh());
@@ -209,6 +246,7 @@ void ReliefPage::saveSettings()
     s->setReliefAutoMode(m_autoCheck->isChecked());
     s->setReliefCpuThreshold(m_cpuThresh->value());
     s->setReliefRamThreshold(m_ramThresh->value());
+    if (m_ioThresh) s->setReliefIoThreshold(m_ioThresh->value());
     s->setReliefHoldSeconds(m_holdSecs->value());
     s->setReliefDropCaches(m_dropCaches->isChecked());
     s->setReliefAutoRefresh(m_autoRefresh->isChecked());
@@ -294,6 +332,16 @@ void ReliefPage::refreshCandidates()
         auto *cpuItem = ensure(r, 3);
         cpuItem->setText(QString::number(c.cpuPercent, 'f', 1));
         cpuItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+        // Disk I/O rate — the "who is thrashing the disk" column.
+        auto *ioItem = ensure(r, 4);
+        QString ioText = QStringLiteral("—");
+        if (c.ioKBps >= 1024.0)     ioText = QString::number(c.ioKBps / 1024.0, 'f', 1) + " MB/s";
+        else if (c.ioKBps >= 1.0)   ioText = QString::number(c.ioKBps, 'f', 0) + " KB/s";
+        ioItem->setText(ioText);
+        ioItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        if (c.ioKBps >= 1024.0) ioItem->setForeground(Theme::red());     // heavy disk user
+        else if (c.ioKBps >= 200.0) ioItem->setForeground(Theme::yellow());
     }
 
     m_table->setUpdatesEnabled(true);
@@ -353,6 +401,58 @@ void ReliefPage::resumeAll()
     updateStatusBadge();
 }
 
+QVector<int> ReliefPage::checkedPids() const
+{
+    QVector<int> pids;
+    for (int r = 0; r < m_table->rowCount(); ++r) {
+        auto *item = m_table->item(r, 0);
+        if (item && item->checkState() == Qt::Checked)
+            pids << item->data(Qt::UserRole).toInt();
+    }
+    return pids;
+}
+
+void ReliefPage::easeSelected()
+{
+    const QVector<int> pids = checkedPids();
+    if (pids.isEmpty()) {
+        QMessageBox::information(this, tr("Nothing selected"),
+            tr("Tick the processes whose disk usage you want to de-prioritize first."));
+        return;
+    }
+    const int n = ReliefTool::easeIoPids(pids);
+    QString extra;
+    if (m_disk.isEmpty() || ReliefTool::ioScheduler(m_disk) != "bfq")
+        extra = " " + tr("Tip: switch the disk to BFQ below to make this take full effect.");
+    m_banner->setText(tr("Lowered disk-I/O priority of %1 process(es) to idle — they keep "
+                         "running, the foreground gets the disk.%2").arg(n).arg(extra));
+    m_banner->setVisible(true);
+}
+
+void ReliefPage::switchToBfq()
+{
+    if (m_disk.isEmpty()) return;
+    if (ReliefTool::setScheduler(m_disk, "bfq")) {
+        m_banner->setText(tr("Disk %1 switched to the BFQ scheduler — the desktop should stay "
+                             "responsive under disk load. (Resets to the default on reboot.)").arg(m_disk));
+    } else {
+        m_banner->setText(tr("Could not switch to BFQ — the kernel may not provide it "
+                             "(module 'bfq'), or authorization was declined."));
+    }
+    m_banner->setVisible(true);
+    updateSchedulerUi();
+}
+
+void ReliefPage::updateSchedulerUi()
+{
+    if (!m_schedLabel || m_disk.isEmpty()) return;
+    const QString active = ReliefTool::ioScheduler(m_disk);
+    m_schedLabel->setText(tr("Disk %1 scheduler: %2").arg(m_disk, active));
+    // Offer BFQ whenever it is not already active — setScheduler tries to load
+    // the module, so the option must appear even when it is not yet listed.
+    if (m_bfqBtn) m_bfqBtn->setVisible(active != "bfq");
+}
+
 void ReliefPage::onAutoToggled(bool on)
 {
     m_overSeconds = m_underSeconds = 0;
@@ -391,9 +491,12 @@ void ReliefPage::tickMonitor()
     if (!m_autoCheck->isChecked()) return;
 
     const double ram = MemoryInfo::memory().ramPercent();
+    const double io  = ReliefTool::ioPressure();   // fresh even in the background
+    if (io >= 0) m_lastIo = io;
     const bool overCpu = m_cpuThresh->value() > 0 && m_lastCpu >= m_cpuThresh->value();
     const bool overRam = m_ramThresh->value() > 0 && ram        >= m_ramThresh->value();
-    const bool over    = overCpu || overRam;
+    const bool overIo  = m_ioThresh && m_ioThresh->value() > 0 && io >= m_ioThresh->value();
+    const bool over    = overCpu || overRam || overIo;
     const int  hold    = m_holdSecs->value();
 
     if (over) {
@@ -436,6 +539,17 @@ void ReliefPage::updateLiveLabels()
     };
     m_cpuLabel->setStyleSheet(QString("font-weight:bold;color:%1;").arg(colorFor(m_lastCpu)));
     m_ramLabel->setStyleSheet(QString("font-weight:bold;color:%1;").arg(colorFor(ram)));
+
+    // Disk pressure (PSI): the "frozen but CPU/RAM are fine" signal.
+    m_lastIo = ReliefTool::ioPressure();
+    if (m_lastIo >= 0) {
+        auto colorForIo = [](double v){ return (v >= 50 ? Theme::red() : v >= 25 ? Theme::yellow() : Theme::green()).name(); };
+        m_ioLabel->setText(tr("Disk: %1%").arg(QString::number(m_lastIo, 'f', 0)));
+        m_ioLabel->setStyleSheet(QString("font-weight:bold;color:%1;").arg(colorForIo(m_lastIo)));
+        m_ioLabel->setVisible(true);
+    } else {
+        m_ioLabel->setVisible(false);
+    }
 }
 
 void ReliefPage::updateStatusBadge()

@@ -8,6 +8,8 @@ set(APP_SOURCES
     Managers/tool_manager.cpp
     Managers/info_manager.cpp
     Managers/alert_manager.cpp
+    Managers/update_checker.cpp
+    Managers/language_util.cpp
     Widgets/circular_gauge.cpp
     Widgets/cleaner_card.cpp
     Widgets/empty_state.cpp
@@ -17,6 +19,7 @@ set(APP_SOURCES
     Widgets/sidebar.cpp
     Widgets/skeleton_rows.cpp
     Dialogs/welcome_dialog.cpp
+    Dialogs/whats_new_dialog.cpp
     Dialogs/edit_source_dialog.cpp
     Dialogs/about_dialog.cpp
     Dialogs/quit_confirm_dialog.cpp

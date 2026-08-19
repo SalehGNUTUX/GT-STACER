@@ -55,6 +55,11 @@ App::App(QWidget *parent) : QMainWindow(parent)
     setupSidebar();
     AppManager::instance()->initTray(this);
 
+    // Any runtime language change (Settings combo or a dialog's picker) routes
+    // through AppManager and lands here to re-translate the whole UI.
+    connect(AppManager::instance(), &AppManager::languageChanged,
+            this, &App::retranslateApp);
+
     // ── Keyboard shortcuts ─────────────────────────────────────────────
     // Ctrl+1..9,0 jump to the first ten sidebar pages (0 = page 10, Helpers).
     // Pages beyond the tenth (System Relief) have no digit shortcut — mapping
@@ -191,6 +196,7 @@ void App::setupSidebar()
         {SidebarIcons::dashboard(),   tr("Dashboard"),      tr("System overview"),            0},
         {SidebarIcons::resources(),   tr("Resources"),      tr("CPU, RAM, GPU, Network"),     1},
         {SidebarIcons::processes(),   tr("Processes"),      tr("Running processes"),          2},
+        {SidebarIcons::services(),    tr("Services"),       tr("System services"),            3},
         {SidebarIcons::connections(), tr("Connections"),    tr("Live network connections"),  11},
         // Maintenance
         {SidebarIcons::cleaner(),     tr("System Cleaner"), tr("Free up disk space"),         5},
@@ -200,7 +206,6 @@ void App::setupSidebar()
         {SidebarIcons::backup(),      tr("Backup"),         tr("Snapshots & home backup"),   14},
         {SidebarIcons::recovery(),    tr("Recovery"),       tr("Recover deleted files"),     15},
         // Control
-        {SidebarIcons::services(),    tr("Services"),       tr("System services"),            3},
         {SidebarIcons::startup(),     tr("Startup Apps"),   tr("Autostart applications"),     4},
         {SidebarIcons::power(),       tr("Power"),          tr("Power profile & battery"),   12},
         // Config
@@ -227,25 +232,27 @@ void App::setupSettingsConnections()
         AppManager::instance()->applyTheme(t);
     });
 
-    connect(settings, &SettingsPage::languageChanged, this, [this](const QString &lang){
-        // `lang` is the raw selection ("auto" or a code); store it verbatim and
-        // apply the resolved language so "auto" follows the system locale.
-        SettingManager::instance()->setLanguage(lang);
-        AppManager::instance()->applyLanguage(SettingManager::instance()->effectiveLanguage());
-        // Rebuild sidebar with translated strings.
-        m_sidebar->clearItems();
-        setupSidebar();
-        m_sidebar->setActiveIndex(m_currentPage);
-        // Retranslate every page that has actually been materialized.
-        // .ui-backed pages catch LanguageChange and call ui->retranslateUi().
-        QEvent langEvent(QEvent::LanguageChange);
-        for (QWidget *page : m_pages)
-            if (page) QApplication::sendEvent(page, &langEvent);
-        // Programmatic pages build their static text with tr() in the ctor and
-        // have no retranslateUi(), so LanguageChange leaves them in the old
-        // language — rebuild those fresh in the new language.
-        rebuildProgrammaticPages();
+    // Language changes now flow through AppManager::changeLanguage() (from the
+    // Settings combo AND the Welcome / What's-new dialogs), which emits
+    // AppManager::languageChanged — handled centrally by retranslateApp().
+    connect(settings, &SettingsPage::languageChanged, this, [](const QString &lang){
+        AppManager::instance()->changeLanguage(lang);
     });
+}
+
+void App::retranslateApp()
+{
+    if (!m_sidebar) return;   // ignore the constructor-time applyLanguage() (pre-setup)
+    // Rebuild the sidebar with translated strings.
+    m_sidebar->clearItems();
+    setupSidebar();
+    m_sidebar->setActiveIndex(m_currentPage);
+    // .ui-backed pages catch LanguageChange and call ui->retranslateUi().
+    QEvent langEvent(QEvent::LanguageChange);
+    for (QWidget *page : m_pages)
+        if (page) QApplication::sendEvent(page, &langEvent);
+    // Programmatic pages have no retranslateUi() — rebuild them fresh.
+    rebuildProgrammaticPages();
 }
 
 void App::rebuildProgrammaticPages()

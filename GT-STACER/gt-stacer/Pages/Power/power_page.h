@@ -7,6 +7,7 @@ class QLabel;
 class QPushButton;
 class QButtonGroup;
 class QSpinBox;
+class QComboBox;
 class QGroupBox;
 class QTimer;
 
@@ -29,11 +30,15 @@ private slots:
     void refreshState();
     void applyChargeLimit();
     void toggleSleepBlock();                  // keep-awake inhibitor on/off
+    void startPowerTimer();                   // scheduled power action (mirror of Settings)
+    void cancelPowerTimer();
+    void tickPowerTimer();
 
 private:
     void buildProfileSection(QWidget *parent);
     void buildBatterySection(QWidget *parent);
     void buildSleepSection(QWidget *parent);
+    void buildPowerTimerSection(QWidget *parent);
     void updateSleepUi();
     void selectProfile(const QString &id);   // user clicked a profile/governor
 
@@ -53,6 +58,18 @@ private:
     QLabel       *m_sleepStatus = nullptr;
     QPushButton  *m_blockBtn    = nullptr;
     SleepInhibitor m_inhibitor;             // cross-desktop keep-awake (D-Bus/logind)
+
+    // Power timer — an in-app countdown to a scheduled power action. Identical to
+    // the one on the Settings page; kept independent so either page can drive it.
+    QGroupBox   *m_ptBox         = nullptr;
+    QComboBox   *m_ptActionCombo = nullptr;
+    QSpinBox    *m_ptMinutesSpin = nullptr;
+    QPushButton *m_ptStartBtn    = nullptr;
+    QPushButton *m_ptCancelBtn   = nullptr;
+    QLabel      *m_ptCountdown   = nullptr;
+    QTimer      *m_ptTimer       = nullptr;
+    int          m_ptAction      = 0;
+    int          m_ptRemaining   = 0;
 
     QTimer      *m_timer = nullptr;   // visible-only live readout
 };

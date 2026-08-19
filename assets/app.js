@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.09 STABLE',
+                    download_title: 'Get GT-STACER 26.10 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.09 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.10 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -56,7 +56,7 @@
                     pkg_flatpak_desc: 'Sandboxed — runs on any distro with Flatpak',
                     table_header_aspect: 'Aspect',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.09 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.10 (2026)',
                 },
                 ar: {
                     nav_features: 'المزايا',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.09 STABLE',
+                    download_title: 'حمّل GT-STACER 26.10 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.09 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.10 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -108,7 +108,7 @@
                     pkg_flatpak_desc: 'معزولة في sandbox — تعمل في أي توزيعة فيها Flatpak',
                     table_header_aspect: 'الجانب',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.09 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.10 (2026)',
                 }
             };
 
@@ -168,14 +168,22 @@
                         'Recovery — PhotoRec front-end that carves deleted files, with per-type sorting',
                         'Restore point offered before irreversible System Cleaner cleanups',
                       ] },
-                    { ver: 'v26.10', status: 'planned',
+                    { ver: 'v26.10 stable', status: 'shipped',
+                      title: 'Responsiveness & onboarding',
+                      bullets: [
+                        'Disk-aware System Relief — PSI pressure + per-process I/O, ionice easing, one-click BFQ scheduler',
+                        'Power timer on the Power page (not only Settings)',
+                        'Translated welcome tour + after-update "what\'s new", both with a language picker',
+                        'Opt-in update check and a copy-share-text button',
+                      ] },
+                    { ver: 'v26.11', status: 'planned',
                       title: 'Plugin system',
                       bullets: [
                         'Lua/Python plugin API',
                         'Community plugin registry',
                         'Sandboxed execution',
                       ] },
-                    { ver: 'v26.11', status: 'future',
+                    { ver: 'v26.12', status: 'future',
                       title: 'Scheduling & automation',
                       bullets: [
                         'Scheduled snapshots & home backups (systemd timers)',
@@ -236,14 +244,22 @@
                         'الاستعادة — واجهة PhotoRec تستخرج الملفّات المحذوفة مع فرزها حسب النوع',
                         'عرض نقطة استعادة قبل عمليات تنظيف النظام غير القابلة للتراجع',
                       ] },
-                    { ver: 'إصدار 26.10', status: 'planned',
+                    { ver: 'إصدار 26.10 مستقر', status: 'shipped',
+                      title: 'الاستجابة والتعريف',
+                      bullets: [
+                        'إنعاش النظام مُدرِك للقرص — ضغط PSI + دخل/خرج لكلّ عمليّة + ionice + مبدّل BFQ',
+                        'مؤقّت الطاقة في صفحة الطاقة (لا الإعدادات فقط)',
+                        'جولة ترحيب ونشرة «ما الجديد» مترجمتان بمُنتقي لغة',
+                        'فحص تحديثات اختياريّ وزرّ نسخ نصّ المشاركة',
+                      ] },
+                    { ver: 'إصدار 26.11', status: 'planned',
                       title: 'نظام إضافات',
                       bullets: [
                         'واجهة برمجة إضافات بـ Lua/Python',
                         'سجلّ إضافات مجتمعي',
                         'تنفيذ معزول (sandbox)',
                       ] },
-                    { ver: 'إصدار 26.11', status: 'future',
+                    { ver: 'إصدار 26.12', status: 'future',
                       title: 'الجدولة والأتمتة',
                       bullets: [
                         'جدولة اللقطات والنسخ الاحتياطيّ (مؤقّتات systemd)',
@@ -256,6 +272,14 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.10 stable', date: '2026-08-19', headline: 'Responsiveness & onboarding · disk-aware System Relief · Power timer on the Power page · welcome tour & update check',
+                      items: [
+                        'System Relief is disk-aware — disk pressure (PSI), per-process I/O column, ease-with-ionice, and a one-click switch to the BFQ scheduler; auto-mode can trigger on disk pressure',
+                        'Power timer (scheduled shutdown / restart / suspend / hibernate) is now on the Power page as well as in Settings',
+                        'Re-openable welcome tour and an after-update "what\'s new" dialog, both translated and with an in-dialog language picker',
+                        'Opt-in update check via GitHub, a copy-share-text button, and a central language-change hub',
+                        'Services moved under Processes in the sidebar; Arabic language entry simplified',
+                      ] },
                     { ver: '26.09 stable', date: '2026-08-01', headline: 'Backup, snapshots & recovery · new Backup and Recovery pages · restore point before risky cleans',
                       items: [
                         'Backup (new) — system snapshots via Timeshift, Snapper or ZFS with the ideal engine auto-detected for your filesystem (and a tagged choice when more than one is available)',
@@ -326,6 +350,14 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.10 stable', date: '2026-08-19', headline: 'الاستجابة والتعريف · إنعاش النظام مُدرِك للقرص · مؤقّت الطاقة في صفحة الطاقة · جولة ترحيب وفحص تحديثات',
+                      items: [
+                        'إنعاش النظام مُدرِك للقرص — ضغط القرص (PSI) وعمود دخل/خرج لكلّ عمليّة، وتخفيف بـ ionice، وتبديل بنقرة إلى جدولة BFQ؛ والوضع التلقائيّ يمكن أن ينطلق على ضغط القرص',
+                        'مؤقّت الطاقة (إطفاء/إعادة/تعليق/سُبات مجدول) صار في صفحة الطاقة كما في الإعدادات',
+                        'جولة ترحيب قابلة لإعادة العرض ونشرة «ما الجديد» بعد كلّ تحديث، كلتاهما مترجمة وبمُنتقي لغة داخليّ',
+                        'فحص تحديثات اختياريّ عبر GitHub، وزرّ نسخ نصّ المشاركة، ومِحور مركزيّ لتغيير اللغة',
+                        'نقل «الخدمات» تحت «العمليّات» في الشريط الجانبيّ؛ وتبسيط خانة العربيّة',
+                      ] },
                     { ver: '26.09 stable', date: '2026-08-01', headline: 'النسخ الاحتياطية واللقطات والاستعادة · صفحتا النسخ والاستعادة · نقطة استعادة قبل التنظيف الخطر',
                       items: [
                         'النسخ (جديد) — لقطات نظام عبر Timeshift أو Snapper أو ZFS مع كشف المحرّك المثاليّ لنظام ملفّاتك تلقائيّاً (ووسم للاختيار عند تعدّد المحرّكات)',
@@ -401,39 +433,39 @@
             const screenshotsData = {
                 en: [
                     { file: 'Dashboard.png', title: 'Dashboard' },
-                    { file: 'Services.png', title: 'Services' },
-                    { file: 'Processes.png', title: 'Processes' },
                     { file: 'Resources.png', title: 'Resources' },
-                    { file: 'Uninstaller.png', title: 'Uninstaller' },
-                    { file: 'System_Cleaner.png', title: 'System Cleaner' },
-                    { file: 'Startup_Apps.png', title: 'Startup Apps' },
-                    { file: 'APT_Sources0.png', title: 'APT Sources' },
-                    { file: 'Helpers.png', title: 'Helpers' },
-                    { file: 'Settings.png', title: 'Settings' },
-                    { file: 'System_Relief.png', title: 'System Relief' },
+                    { file: 'Processes.png', title: 'Processes' },
+                    { file: 'Services.png', title: 'Services' },
                     { file: 'Connections.png', title: 'Connections' },
-                    { file: 'Power.png', title: 'Power' },
-                    { file: 'Firewall.png', title: 'Firewall' },
+                    { file: 'System_Cleaner.png', title: 'System Cleaner' },
+                    { file: 'Uninstaller.png', title: 'Uninstaller' },
+                    { file: 'System_Relief.png', title: 'System Relief' },
                     { file: 'Backup.png', title: 'Backup & Snapshots' },
                     { file: 'Recovery.png', title: 'File Recovery' },
+                    { file: 'Startup_Apps.png', title: 'Startup Apps' },
+                    { file: 'Power.png', title: 'Power' },
+                    { file: 'APT_Sources0.png', title: 'APT Sources' },
+                    { file: 'Firewall.png', title: 'Firewall' },
+                    { file: 'Helpers.png', title: 'Helpers' },
+                    { file: 'Settings.png', title: 'Settings' },
                 ],
                 ar: [
                     { file: 'لوحة_التحكم.png', title: 'لوحة التحكم' },
-                    { file: 'الخدمات.png', title: 'الخدمات' },
-                    { file: 'العمليات.png', title: 'العمليات' },
                     { file: 'الموارد.png', title: 'الموارد' },
-                    { file: 'إلغاء_التثبيت.png', title: 'إلغاء التثبيت' },
-                    { file: 'منظف_النظام.png', title: 'منظف النظام' },
-                    { file: 'بدء_التشغيل.png', title: 'بدء التشغيل' },
-                    { file: 'أدوات_مساعدة.png', title: 'أدوات مساعدة' },
-                    { file: 'الإعدادات.png', title: 'الإعدادات' },
-                    { file: 'مصادر_الحزم.png', title: 'مصادر الحزم' },
-                    { file: 'إنعاش_النظام.png', title: 'إنعاش النظام' },
+                    { file: 'العمليات.png', title: 'العمليات' },
+                    { file: 'الخدمات.png', title: 'الخدمات' },
                     { file: 'الاتصالات.png', title: 'الاتصالات' },
-                    { file: 'الطاقة.png', title: 'الطاقة' },
-                    { file: 'جدار_الحماية.png', title: 'جدار الحماية' },
+                    { file: 'منظف_النظام.png', title: 'منظف النظام' },
+                    { file: 'إلغاء_التثبيت.png', title: 'إلغاء التثبيت' },
+                    { file: 'إنعاش_النظام.png', title: 'إنعاش النظام' },
                     { file: 'النسخ_الاحتياطيّة.png', title: 'النسخ الاحتياطيّة' },
                     { file: 'الاستعادة.png', title: 'الاستعادة' },
+                    { file: 'بدء_التشغيل.png', title: 'بدء التشغيل' },
+                    { file: 'الطاقة.png', title: 'الطاقة' },
+                    { file: 'مصادر_الحزم.png', title: 'مصادر الحزم' },
+                    { file: 'جدار_الحماية.png', title: 'جدار الحماية' },
+                    { file: 'أدوات_مساعدة.png', title: 'أدوات مساعدة' },
+                    { file: 'الإعدادات.png', title: 'الإعدادات' },
                 ]
             };
 
@@ -524,10 +556,16 @@
                 descAr: 'كلّ مقبس TCP/UDP نشِط والعمليّة المالكة له (من ss)، مع مرشِّح حيّ وأعمدة قابلة للفرز وتحديث تلقائيّ عند العرض.',
             }, {
                 icon: '⚡',
-                titleKey: 'System Relief',
-                descKey: 'Freeze idle background apps (SIGSTOP) to relieve RAM/CPU pressure and thaw them when it clears — manual or automatic, fully reversible.',
-                titleAr: 'إنعاش النظام',
-                descAr: 'جمّد التطبيقات الخاملة (SIGSTOP) لتخفيف ضغط الذاكرة/المعالج ثمّ أذِبها عند زواله — يدويّ أو تلقائيّ، قابل للعكس بالكامل.',
+                titleKey: 'Disk-aware System Relief',
+                descKey: 'Freeze idle apps (SIGSTOP) to relieve RAM/CPU, and tame the disk too: see disk pressure (PSI) and per-process I/O, ease a busy process with ionice, or switch to the BFQ scheduler — the biggest win for an old HDD under load.',
+                titleAr: 'إنعاش النظام مُدرِك للقرص',
+                descAr: 'جمّد التطبيقات الخاملة (SIGSTOP) لتخفيف ضغط الذاكرة/المعالج، وروّض القرص أيضاً: شاهد ضغط القرص (PSI) ودخل/خرج كلّ عمليّة، وخفّف عمليّة مشغولة بـ ionice، أو بدّل إلى جدولة BFQ — أكبر مكسب لقرصٍ قديم تحت الحِمل.',
+            }, {
+                icon: '🎬',
+                titleKey: 'Onboarding, updates & sharing',
+                descKey: 'A translated welcome tour and an after-update "what\'s new" dialog (both with a language picker), an opt-in update check, and a one-click copy-share-text button.',
+                titleAr: 'التعريف والتحديثات والمشاركة',
+                descAr: 'جولة ترحيب مترجمة ونشرة «ما الجديد» بعد كلّ تحديث (كلتاهما بمُنتقي لغة)، وفحص تحديثات اختياريّ، وزرّ نسخ نصّ المشاركة بنقرة.',
             }, ];
             const comparisonRows = [
                 { aspect: 'Framework', aspectAr: 'إطار العمل',
@@ -565,7 +603,9 @@
                 { aspect: 'Theme', aspectAr: 'السمة',
                   stacer: 'Simple QSS', stacerAr: 'QSS بسيط', gtstacer: 'Catppuccin dark/light', gtstacerAr: 'Catppuccin داكن/فاتح', stacerIcon: '⚠️', gtstacerIcon: '✅' },
                 { aspect: 'System Relief', aspectAr: 'إنعاش النظام',
-                  stacer: '✗', stacerAr: '✗', gtstacer: 'Freeze/thaw idle apps (SIGSTOP) — manual + auto', gtstacerAr: 'تجميد/استئناف الخاملة (SIGSTOP) — يدويّ + تلقائيّ', stacerIcon: '❌', gtstacerIcon: '✅' },
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Freeze idle apps + disk-aware (PSI, ionice, BFQ)', gtstacerAr: 'تجميد الخاملة + إدراك القرص (PSI، ionice، BFQ)', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Onboarding & updates', aspectAr: 'التعريف والتحديثات',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Welcome tour + what\'s-new + update check + share', gtstacerAr: 'جولة ترحيب + ما الجديد + فحص تحديثات + مشاركة', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'Power timer', aspectAr: 'مؤقّت الطاقة',
                   stacer: '✗', stacerAr: '✗', gtstacer: 'Scheduled shutdown / restart / suspend / hibernate', gtstacerAr: 'إطفاء/إعادة/تعليق/سُبات مجدول', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'Live Connections', aspectAr: 'الاتصالات الحيّة',
@@ -583,8 +623,8 @@
             ];
 
             // ── Download data ──
-            // GT-STACER 26.09 STABLE — published 2026-08-01 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE
+            // GT-STACER 26.10 STABLE — published 2026-08-19 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.10_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
@@ -592,36 +632,36 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: 'fa24fb2b82995a4bd277b487ec0d9c8098054900301f795ccb7b9568c64aaf94',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/GT-STACER-26.09-x86_64.AppImage',
-                filename: 'GT-STACER-26.09-x86_64.AppImage',
+                sha256: 'f5a9bf09be8268fcdd9cea8953fa16f7059af154a6688e234a0fcf7f2e125592',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/GT-STACER-26.10-x86_64.AppImage',
+                filename: 'GT-STACER-26.10-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
                 size: '2.1 MB',
-                sha256: 'ef3e60e9ac2056d46755d6d7d2db75cc4e29dfb31490ef381a1c2c397d0e6000',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/GT-STACER_26.09_amd64.deb',
-                filename: 'GT-STACER_26.09_amd64.deb',
+                sha256: '5c0e003fbd8c9178737d9826ac7b8451de3fcb6f44b617d57e46d4706f983348',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/GT-STACER_26.10_amd64.deb',
+                filename: 'GT-STACER_26.10_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
                 size: '2.4 MB',
-                sha256: '7bb15478891b819ea852cb3d187e15fd8707a0832e2476865160d6aa13ba7ffb',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/gt-stacer-26.09-2.x86_64.rpm',
-                filename: 'gt-stacer-26.09-2.x86_64.rpm',
+                sha256: '9df4265ea5429abefe70d78da717693968ac06ddc119ffbf0db588b3f3ce6e4b',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/gt-stacer-26.10-2.x86_64.rpm',
+                filename: 'gt-stacer-26.10-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
                 size: '2.1 MB',
-                sha256: '85c0a86b6df0fde685718212b2bfe3c06992b2ce61d178c0c3a97ca36ffc050a',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.09_STABLE/GT-STACER-26.09-x86_64.flatpak',
-                filename: 'GT-STACER-26.09-x86_64.flatpak',
+                sha256: 'a36633cce2dfe411d3b68d9f89937563d0fb7f74cc025a4ad0557e5f61eb80b1',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/GT-STACER-26.10-x86_64.flatpak',
+                filename: 'GT-STACER-26.10-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

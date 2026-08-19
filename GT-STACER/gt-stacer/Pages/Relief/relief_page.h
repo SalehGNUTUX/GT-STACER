@@ -28,6 +28,8 @@ private slots:
     void refreshCandidates();
     void suspendSelected();
     void resumeAll();
+    void easeSelected();                     // ionice idle — gentle disk relief
+    void switchToBfq();                      // change the disk I/O scheduler to BFQ
     void tickMonitor();
     void onAutoToggled(bool on);
     void toggleSelectAll();
@@ -39,24 +41,34 @@ private:
     void updateLiveLabels();
     void updateStatusBadge();
     void updateBanner();
+    void updateSchedulerUi();               // reflect the disk's active I/O scheduler
+    QVector<int> checkedPids() const;       // rows the user has ticked
 
     QTableWidget *m_table        = nullptr;
     QLabel       *m_ramLabel     = nullptr;
     QLabel       *m_cpuLabel     = nullptr;
+    QLabel       *m_ioLabel      = nullptr;  // live disk-pressure (PSI) readout
     QLabel       *m_badge        = nullptr;  // colored status pill
     QLabel       *m_banner       = nullptr;
     QPushButton  *m_suspendBtn   = nullptr;
     QPushButton  *m_resumeBtn    = nullptr;
+    QPushButton  *m_easeBtn      = nullptr;  // ionice idle (gentle disk relief)
     QPushButton  *m_refreshBtn   = nullptr;
     QPushButton  *m_selectAllBtn = nullptr;
     QCheckBox    *m_dropCaches   = nullptr;
     QCheckBox    *m_autoRefresh  = nullptr;
     QSpinBox     *m_refreshSecs  = nullptr;
 
+    QLabel       *m_schedLabel   = nullptr;  // "Disk scheduler: mq-deadline"
+    QPushButton  *m_bfqBtn       = nullptr;  // switch to BFQ
+
     QCheckBox    *m_autoCheck    = nullptr;
     QSpinBox     *m_cpuThresh    = nullptr;
     QSpinBox     *m_ramThresh    = nullptr;
+    QSpinBox     *m_ioThresh     = nullptr;
     QSpinBox     *m_holdSecs     = nullptr;
+    QString       m_disk;                    // disk backing "/", for scheduler control
+    double        m_lastIo       = 0.0;      // last PSI I/O pressure reading
 
     QTimer       *m_monitor      = nullptr;  // live labels + auto-mode watchdog
 

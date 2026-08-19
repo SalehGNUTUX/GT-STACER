@@ -9,6 +9,7 @@ struct ReliefCandidate {
     QString user;
     qint64  memoryKB   = 0;
     double  cpuPercent = 0.0;
+    double  ioKBps     = 0.0;   // real block-layer I/O rate (read+write) since last sample
     QString status;     // single-letter /proc state (R,S,D,T,Z…)
 };
 
@@ -33,6 +34,29 @@ public:
 
     static int  suspendPids(const QVector<int> &pids);  // SIGSTOP; returns # frozen
     static int  resumePids(const QVector<int> &pids);   // SIGCONT; returns # thawed
+
+    // ── Disk-I/O relief (26.10) ────────────────────────────────────────────────
+    // The "frozen but CPU/RAM are fine" case: the disk is the bottleneck. On old
+    // spinning drives one process thrashing the disk stalls the whole desktop.
+
+    // System-wide I/O pressure from PSI (/proc/pressure/io, "some avg10"): the %
+    // of the last 10 s that tasks were stalled waiting on I/O. -1 if PSI is
+    // unavailable (kernel < 4.20 or disabled).
+    static double ioPressure();
+
+    // Lower the I/O priority of these processes to the idle class (ionice -c3):
+    // the foreground keeps a responsive disk while they keep running (just slower
+    // on disk) — a gentler alternative to freezing. Our own processes, no root.
+    // Most effective under the BFQ scheduler. Returns how many were re-niced.
+    static int  easeIoPids(const QVector<int> &pids);
+
+    // I/O scheduler of the disk backing "/". Switching an old HDD to **BFQ** is
+    // the single biggest win for desktop responsiveness under load (and it makes
+    // easeIoPids() actually bite). Applies until reboot.
+    static QString     rootDisk();                       // "sda" / "nvme0n1" / ""
+    static QString     ioScheduler(const QString &disk); // active one, e.g. "mq-deadline"
+    static QStringList schedulers(const QString &disk);  // all available
+    static bool        setScheduler(const QString &disk, const QString &sched); // pkexec
 
     // Ask the kernel to drop clean page/dentry/inode caches (vm.drop_caches=3)
     // after a sync. Root-only, so it goes through pkexec. Harmless — the kernel

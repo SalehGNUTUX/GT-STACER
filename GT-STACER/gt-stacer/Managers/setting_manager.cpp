@@ -99,6 +99,14 @@ void SettingManager::setReliefCpuThreshold(int v)  { cfg().setValue("relief/cpuT
 int  SettingManager::reliefRamThreshold()    const { return cfg().value("relief/ramThresh", 90).toInt(); }
 void SettingManager::setReliefRamThreshold(int v)  { cfg().setValue("relief/ramThresh", v); }
 
+int  SettingManager::reliefIoThreshold()     const { return cfg().value("relief/ioThresh", 40).toInt(); }
+void SettingManager::setReliefIoThreshold(int v)   { cfg().setValue("relief/ioThresh", v); }
+
+QString SettingManager::lastSeenVersion()        const { return cfg().value("app/lastSeenVersion", "").toString(); }
+void    SettingManager::setLastSeenVersion(const QString &v) { cfg().setValue("app/lastSeenVersion", v); }
+bool    SettingManager::checkUpdatesOnStartup()  const { return cfg().value("app/checkUpdates", true).toBool(); }
+void    SettingManager::setCheckUpdatesOnStartup(bool v) { cfg().setValue("app/checkUpdates", v); }
+
 int  SettingManager::reliefHoldSeconds()     const { return cfg().value("relief/holdSecs", 8).toInt(); }
 void SettingManager::setReliefHoldSeconds(int v)   { cfg().setValue("relief/holdSecs", v); }
 

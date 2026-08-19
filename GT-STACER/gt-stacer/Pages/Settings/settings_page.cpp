@@ -3,6 +3,11 @@
 #include "../../Managers/setting_manager.h"
 #include "../../Managers/app_manager.h"
 #include "../../Managers/alert_manager.h"
+#include "../../Managers/update_checker.h"
+#include "../../Dialogs/welcome_dialog.h"
+#include "../../Dialogs/whats_new_dialog.h"
+#include <QClipboard>
+#include <QGuiApplication>
 #include "../../../gt-stacer-core/Tools/startup_tool.h"
 #include "../../../gt-stacer-core/Tools/power_tool.h"
 #include <QCoreApplication>
@@ -25,7 +30,7 @@ struct LangEntry {
 
 static const QVector<LangEntry> LANGUAGES = {
     {"en",    "English",                     "🇬🇧"},
-    {"ar",    "العربية (المغرب)",             "🇲🇦"},  // ar_MA - Moroccan Arabic
+    {"ar",    "العربية",                      "🇲🇦"},  // ar_MA - Moroccan Arabic (Western numerals, RTL)
     {"de",    "Deutsch",                     "🇩🇪"},
     {"fr",    "Français",                    "🇫🇷"},
     {"hi",    "हिन्दी",                      "🇮🇳"},
@@ -134,6 +139,65 @@ SettingsPage::SettingsPage(QWidget *parent)
     ui->powerCancelButton->setEnabled(false);
     connect(ui->powerStartButton,  &QPushButton::clicked, this, &SettingsPage::startPowerTimer);
     connect(ui->powerCancelButton, &QPushButton::clicked, this, &SettingsPage::cancelPowerTimer);
+
+    // Onboarding, updates & sharing.
+    connect(ui->welcomeButton,   &QPushButton::clicked, this, &SettingsPage::showWelcomeTour);
+    connect(ui->whatsNewButton,  &QPushButton::clicked, this, &SettingsPage::showWhatsNew);
+    connect(ui->shareButton,     &QPushButton::clicked, this, &SettingsPage::copyShareText);
+    connect(ui->checkNowButton,  &QPushButton::clicked, this, &SettingsPage::runUpdateCheck);
+    connect(ui->checkUpdatesCheck, &QCheckBox::toggled, this, [](bool v){
+        SettingManager::instance()->setCheckUpdatesOnStartup(v);
+    });
+}
+
+void SettingsPage::showWelcomeTour()
+{
+    WelcomeDialog dlg(this);
+    dlg.exec();
+}
+
+void SettingsPage::showWhatsNew()
+{
+    WhatsNewDialog dlg(this);
+    dlg.exec();
+}
+
+QString SettingsPage::shareText() const
+{
+    // Description + version + site + hashtags — a ready-to-paste social post.
+    return tr("GT-STACER — a free GNU/Linux system optimizer & monitor with a modern Qt6 interface.\n\n"
+              "Monitors CPU, memory, disk, network and temperatures; manages services and startup apps; "
+              "cleans the system; and creates backups & snapshots and recovers deleted files — no ads, no tracking.\n\n"
+              "Version %1 stable\n"
+              "https://salehgnutux.github.io/GT-STACER/\n\n"
+              "#GT_STACER #GNUTUX #GNULinux #FreeSoftware #FOSS #OpenSource #Linux #Qt6").arg(APP_VERSION);
+}
+
+void SettingsPage::copyShareText()
+{
+    QGuiApplication::clipboard()->setText(shareText());
+    ui->updateStatusLabel->setText(tr("✓ Share text copied to the clipboard — paste it anywhere."));
+}
+
+void SettingsPage::runUpdateCheck()
+{
+    if (!m_updateChecker) {
+        m_updateChecker = new UpdateChecker(this);
+        connect(m_updateChecker, &UpdateChecker::updateAvailable, this, [this](const QString &v, const QString &url){
+            ui->updateStatusLabel->setText(
+                tr("A newer version is available: <b>%1</b> — "
+                   "<a href=\"%2\">open the release page</a>.").arg(v, url));
+            ui->updateStatusLabel->setOpenExternalLinks(true);
+        });
+        connect(m_updateChecker, &UpdateChecker::upToDate, this, [this](const QString &v){
+            ui->updateStatusLabel->setText(tr("You're on the latest version (%1).").arg(v));
+        });
+        connect(m_updateChecker, &UpdateChecker::checkFailed, this, [this](const QString &e){
+            ui->updateStatusLabel->setText(tr("Could not check for updates: %1").arg(e));
+        });
+    }
+    ui->updateStatusLabel->setText(tr("Checking for updates…"));
+    m_updateChecker->checkNow();
 }
 
 void SettingsPage::startPowerTimer()
@@ -226,6 +290,8 @@ void SettingsPage::loadSettings()
     ui->memSpin->setValue(s->memThresholdPercent());
     ui->diskSpin->setValue(s->diskThresholdPercent());
     ui->batterySpin->setValue(s->batteryThresholdPercent());
+
+    ui->checkUpdatesCheck->setChecked(s->checkUpdatesOnStartup());
 }
 
 void SettingsPage::applySettings()

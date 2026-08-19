@@ -1,11 +1,13 @@
 #include "power_page.h"
 #include "../../../gt-stacer-core/Tools/power_profile_tool.h"
 #include "../../../gt-stacer-core/Tools/battery_tool.h"
+#include "../../../gt-stacer-core/Tools/power_tool.h"
 #include "../../../gt-stacer-core/Info/battery_info.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
 #include "../../../gt-stacer-core/Tools/notification_tool.h"
 #include "../../Managers/app_manager.h"
 #include <QButtonGroup>
+#include <QComboBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHideEvent>
@@ -61,6 +63,9 @@ PowerPage::PowerPage(QWidget *parent) : QWidget(parent)
 
     buildSleepSection(this);
     if (m_sleepBox) root->addWidget(m_sleepBox);
+
+    buildPowerTimerSection(this);
+    root->addWidget(m_ptBox);
 
     root->addStretch();
 
@@ -302,6 +307,114 @@ void PowerPage::applyChargeLimit()
         m_limitStatus->setText(tr("Could not apply the charge limit (authorization declined?)."));
     }
     refreshState();
+}
+
+// ── Power timer ───────────────────────────────────────────────────────────────
+// A mirror of the Settings power timer, so a scheduled shutdown/suspend can be
+// set right here on the Power page. The countdown lives in-app (so it can be
+// watched and cancelled) and keeps ticking when minimised to the tray.
+void PowerPage::buildPowerTimerSection(QWidget *parent)
+{
+    m_ptBox = new QGroupBox(tr("Power timer"), parent);
+    m_ptBox->setObjectName("reliefGroup");
+    auto *v = new QVBoxLayout(m_ptBox);
+
+    auto *hint = new QLabel(tr("Schedule an automatic power action after a set time. "
+                               "Requires administrator authorization."), m_ptBox);
+    hint->setWordWrap(true);
+    hint->setObjectName("introText");
+    v->addWidget(hint);
+
+    auto *row = new QHBoxLayout;
+    m_ptActionCombo = new QComboBox(m_ptBox);
+    m_ptActionCombo->addItem(tr("Shut down"));
+    m_ptActionCombo->addItem(tr("Restart"));
+    m_ptActionCombo->addItem(tr("Suspend (to RAM)"));
+    m_ptActionCombo->addItem(tr("Hibernate (to disk)"));
+    m_ptMinutesSpin = new QSpinBox(m_ptBox);
+    m_ptMinutesSpin->setRange(1, 1440);
+    m_ptMinutesSpin->setValue(30);
+    m_ptMinutesSpin->setSuffix(tr(" min"));
+    m_ptStartBtn  = new QPushButton(tr("Start timer"), m_ptBox);
+    m_ptStartBtn->setObjectName("primaryButton");
+    m_ptCancelBtn = new QPushButton(tr("Cancel"), m_ptBox);
+    m_ptCancelBtn->setObjectName("dangerButton");
+    m_ptCancelBtn->setEnabled(false);
+    row->addWidget(m_ptActionCombo);
+    row->addWidget(new QLabel(tr("after"), m_ptBox));
+    row->addWidget(m_ptMinutesSpin);
+    row->addWidget(m_ptStartBtn);
+    row->addWidget(m_ptCancelBtn);
+    row->addStretch();
+    v->addLayout(row);
+
+    m_ptCountdown = new QLabel(m_ptBox);
+    m_ptCountdown->setStyleSheet("color:#f9e2af;font-weight:bold;");
+    v->addWidget(m_ptCountdown);
+
+    m_ptTimer = new QTimer(this);
+    m_ptTimer->setInterval(1000);
+    // Keep counting while minimised so a scheduled action still fires on time.
+    m_ptTimer->setProperty("keepAlive", true);
+    connect(m_ptTimer, &QTimer::timeout, this, &PowerPage::tickPowerTimer);
+    connect(m_ptStartBtn,  &QPushButton::clicked, this, &PowerPage::startPowerTimer);
+    connect(m_ptCancelBtn, &QPushButton::clicked, this, &PowerPage::cancelPowerTimer);
+}
+
+void PowerPage::startPowerTimer()
+{
+    const int action = m_ptActionCombo->currentIndex();
+    if (!PowerTool::isAvailable(static_cast<PowerTool::Action>(action))) {
+        QMessageBox::warning(this, tr("Unavailable"),
+            tr("This power mode is not supported on this system "
+               "(hibernate needs a swap area at least as large as your RAM)."));
+        return;
+    }
+    const QString label = m_ptActionCombo->currentText();
+    const int mins = m_ptMinutesSpin->value();
+    if (QMessageBox::question(this, tr("Schedule power action"),
+            tr("Schedule <b>%1</b> in <b>%2 minutes</b>?<br><br>"
+               "You may be asked to authorize the action when the timer fires.")
+                .arg(label).arg(mins)) != QMessageBox::Yes)
+        return;
+
+    m_ptAction    = action;
+    m_ptRemaining = mins * 60;
+    m_ptTimer->start();
+    m_ptStartBtn->setEnabled(false);
+    m_ptActionCombo->setEnabled(false);
+    m_ptMinutesSpin->setEnabled(false);
+    m_ptCancelBtn->setEnabled(true);
+    tickPowerTimer();   // paint the initial countdown immediately
+}
+
+void PowerPage::cancelPowerTimer()
+{
+    m_ptTimer->stop();
+    m_ptRemaining = 0;
+    m_ptCountdown->setText(tr("Timer cancelled."));
+    m_ptStartBtn->setEnabled(true);
+    m_ptActionCombo->setEnabled(true);
+    m_ptMinutesSpin->setEnabled(true);
+    m_ptCancelBtn->setEnabled(false);
+}
+
+void PowerPage::tickPowerTimer()
+{
+    if (m_ptRemaining <= 0) {
+        m_ptTimer->stop();
+        m_ptCountdown->setText(tr("Running the scheduled action now…"));
+        PowerTool::perform(static_cast<PowerTool::Action>(m_ptAction));
+        cancelPowerTimer();
+        m_ptCountdown->setText(QString());
+        return;
+    }
+    const int h = m_ptRemaining / 3600;
+    const int m = (m_ptRemaining % 3600) / 60;
+    const int s = m_ptRemaining % 60;
+    m_ptCountdown->setText(tr("%1 in %2").arg(m_ptActionCombo->currentText(),
+                           QString::asprintf("%02d:%02d:%02d", h, m, s)));
+    --m_ptRemaining;
 }
 
 void PowerPage::changeEvent(QEvent *event)

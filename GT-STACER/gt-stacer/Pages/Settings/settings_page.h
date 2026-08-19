@@ -3,6 +3,7 @@
 
 namespace Ui { class SettingsPage; }
 class QTimer;
+class UpdateChecker;
 
 class SettingsPage : public QWidget {
     Q_OBJECT
@@ -27,9 +28,15 @@ private:
     void startPowerTimer();
     void cancelPowerTimer();
     void tickPowerTimer();
+    void showWelcomeTour();
+    void showWhatsNew();
+    void copyShareText();
+    void runUpdateCheck();          // manual "Check now"
+    QString shareText() const;      // description + link + hashtags for sharing
 
     Ui::SettingsPage *ui;
     QTimer *m_powerTimer   = nullptr;
     int     m_powerRemaining = 0;   // seconds left until the scheduled action
     int     m_powerAction    = 0;   // PowerTool::Action index
+    UpdateChecker *m_updateChecker = nullptr;
 };

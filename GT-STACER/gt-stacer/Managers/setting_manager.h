@@ -58,6 +58,15 @@ public:
     int  reliefRamThreshold() const;        // %; 0 = ignore RAM
     void setReliefRamThreshold(int v);
 
+    int  reliefIoThreshold() const;         // PSI I/O pressure %; 0 = ignore disk
+    void setReliefIoThreshold(int v);
+
+    // ── Onboarding & updates ────────────────────────────────────────────────
+    QString lastSeenVersion() const;        // last APP_VERSION the user has seen "what's new" for
+    void    setLastSeenVersion(const QString &v);
+    bool    checkUpdatesOnStartup() const;  // contact GitHub on launch to see if a newer release exists
+    void    setCheckUpdatesOnStartup(bool v);
+
     int  reliefHoldSeconds() const;         // sustained seconds before acting
     void setReliefHoldSeconds(int v);
 

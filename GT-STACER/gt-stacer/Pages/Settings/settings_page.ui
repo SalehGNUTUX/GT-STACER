@@ -75,6 +75,28 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox"><property name="title"><string>Onboarding, updates &amp;&amp; sharing</string></property>
+         <layout class="QVBoxLayout">
+          <item>
+           <layout class="QHBoxLayout">
+            <item><widget class="QPushButton" name="welcomeButton"><property name="text"><string>Show welcome tour</string></property></widget></item>
+            <item><widget class="QPushButton" name="whatsNewButton"><property name="text"><string>What's new</string></property></widget></item>
+            <item><widget class="QPushButton" name="shareButton"><property name="text"><string>Copy share text</string></property></widget></item>
+            <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout">
+            <item><widget class="QCheckBox" name="checkUpdatesCheck"><property name="text"><string>Check for updates on startup (contacts GitHub)</string></property></widget></item>
+            <item><widget class="QPushButton" name="checkNowButton"><property name="text"><string>Check now</string></property></widget></item>
+            <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+           </layout>
+          </item>
+          <item><widget class="QLabel" name="updateStatusLabel"><property name="text"><string/></property><property name="wordWrap"><bool>true</bool></property><property name="styleSheet"><string>color:#6c7086;</string></property></widget></item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox"><property name="title"><string>About GT-STACER</string></property>
          <layout class="QVBoxLayout">
           <item>

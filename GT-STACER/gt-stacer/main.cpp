@@ -9,7 +9,10 @@
 #include "app.h"
 #include "Managers/alert_manager.h"
 #include "Managers/setting_manager.h"
+#include "Managers/update_checker.h"
 #include "Dialogs/welcome_dialog.h"
+#include "Dialogs/whats_new_dialog.h"
+#include "../gt-stacer-core/Tools/notification_tool.h"
 
 static void messageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
 {
@@ -92,13 +95,35 @@ int main(int argc, char *argv[])
     }
 
     bool startHidden = (argc >= 2 && QString(argv[1]) == "--hide");
+    auto *settings = SettingManager::instance();
     if (!startHidden) {
         window.show();
-        // Show onboarding on first run
         if (WelcomeDialog::shouldShow()) {
+            // First run — the onboarding tour (it marks itself shown). Record the
+            // version so we don't also pop the "what's new" dialog this launch.
             WelcomeDialog welcome(&window);
             welcome.exec();
+            settings->setLastSeenVersion(APP_VERSION);
+        } else if (settings->lastSeenVersion() != QString(APP_VERSION)) {
+            // Updated since the last run — show what changed, once.
+            WhatsNewDialog whatsNew(&window);
+            whatsNew.exec();
+            settings->setLastSeenVersion(APP_VERSION);
         }
+    }
+
+    // Opt-in background update check: ask GitHub's public API whether a newer
+    // stable release exists, and notify if so. Nothing is downloaded.
+    if (settings->checkUpdatesOnStartup()) {
+        auto *uc = new UpdateChecker(&window);
+        QObject::connect(uc, &UpdateChecker::updateAvailable, &window,
+                         [](const QString &v, const QString &url) {
+            NotificationTool::notify(
+                QObject::tr("GT-STACER %1 is available").arg(v),
+                QObject::tr("A newer version is out. Open Settings → Check now, or visit:\n%1").arg(url),
+                NotificationTool::Urgency::Normal, "gt-stacer");
+        });
+        uc->checkNow();
     }
 
     return app.exec();

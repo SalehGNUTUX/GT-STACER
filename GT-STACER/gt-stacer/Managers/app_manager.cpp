@@ -115,6 +115,15 @@ void AppManager::applyLanguage(const QString &lang)
     emit languageChanged();
 }
 
+void AppManager::changeLanguage(const QString &lang)
+{
+    // Persist the raw choice ("auto" or a code), then apply the resolved language.
+    // applyLanguage() installs the translator and emits languageChanged(), which
+    // the App uses to re-translate the sidebar, pages and any open dialog.
+    SettingManager::instance()->setLanguage(lang);
+    applyLanguage(SettingManager::instance()->effectiveLanguage());
+}
+
 void AppManager::initTray(QWidget *mainWindow)
 {
     if (!QSystemTrayIcon::isSystemTrayAvailable()) return;

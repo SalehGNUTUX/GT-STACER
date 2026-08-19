@@ -86,6 +86,18 @@
   </provides>
 
   <releases>
+    <release version="26.10" date="2026-08-19">
+      <description>
+        <p>Responsiveness &amp; onboarding. Highlights:</p>
+        <ul>
+          <li>System Relief is now disk-aware: it shows I/O pressure (PSI) and per-process disk usage, can lower a busy process's I/O priority (ionice) instead of freezing it, and offers a one-click switch to the BFQ scheduler for a responsive old HDD under load</li>
+          <li>The Power timer (scheduled shutdown / restart / suspend / hibernate) is now available on the Power page as well as in Settings</li>
+          <li>A re-openable welcome tour and a "what's new" dialog shown after each update — both translated and with an in-dialog language picker</li>
+          <li>Optional update check that notifies when a newer release is out, and a "copy share text" button</li>
+          <li>Services moved under Processes in the sidebar; the Arabic language label simplified</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.09" date="2026-08-01">
       <description>
         <p>Backup, snapshots and file recovery — a data-safety release. Highlights:</p>

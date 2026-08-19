@@ -14,6 +14,11 @@ public:
 
     void applyTheme(const QString &theme);
     void applyLanguage(const QString &lang);
+    // Central hub for a runtime language switch: persist the choice, install the
+    // translator, and emit languageChanged() so the whole app (sidebar, pages,
+    // any open dialog) re-translates. Called from the Settings combo and the
+    // Welcome / What's-new dialogs alike. `lang` is the raw choice ("auto" or a code).
+    void changeLanguage(const QString &lang);
     void initTray(QWidget *mainWindow);
     void showTray();
     void hideTray();

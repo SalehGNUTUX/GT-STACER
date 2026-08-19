@@ -4,7 +4,7 @@
  * background refresh. Versioned cache key — bumping CACHE_VERSION evicts
  * the previous build on next visit.
  */
-const CACHE_VERSION = "gtstacer-v26.09-stable-2";
+const CACHE_VERSION = "gtstacer-v26.10-stable";
 const PRECACHE = [
   "./",
   "./index.html",
