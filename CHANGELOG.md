@@ -6,6 +6,44 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.10-stable] — 2026-08-19
+
+The "responsiveness & onboarding" release. System Relief learns about disk I/O,
+the Power timer reaches the Power page, and a translated onboarding/update/share
+layer is added. No new hard dependency.
+
+### System Relief — disk-aware
+- Reads **disk pressure** from PSI (`/proc/pressure/io`, "some avg10") — the "frozen
+  but CPU/RAM are fine" signal — shown as a live readout and usable as an automatic
+  trigger alongside CPU/RAM.
+- New **Disk** column showing each candidate's block-layer I/O rate (from
+  `/proc/<pid>/io`), so the process thrashing the disk is visible.
+- **Ease disk I/O** — lowers the I/O priority of the ticked processes to the idle
+  class (`ionice -c3`, no root) so the foreground keeps a responsive disk without
+  freezing them.
+- **Switch to BFQ** — changes the root disk's I/O scheduler (loads the `bfq`
+  module via `pkexec` if needed); the biggest single win for an old HDD under load,
+  and it makes the ionice hint effective. Applies until reboot.
+
+### Power
+- The **Power timer** (scheduled shutdown / restart / suspend / hibernate, with a
+  live countdown that keeps running while minimized) is now on the **Power page**,
+  mirroring the one in Settings.
+
+### Onboarding, updates & sharing
+- The **welcome tour** is re-openable from Settings, its slides are now translated
+  (they were hard-coded English), and it — like the new **"what's new"** dialog
+  shown once after each update — carries an **in-dialog language picker**.
+- An **opt-in update check** (Settings) queries GitHub's public Releases API and
+  notifies when a newer stable release exists; nothing is downloaded.
+- A **Copy share text** button places a description + link + hashtags on the clipboard.
+- Language changes now flow through a single hub (`AppManager::changeLanguage`) so
+  the Settings combo and both dialogs re-translate the whole UI consistently.
+
+### UI
+- **Services** moved directly under **Processes** in the sidebar.
+- The Arabic language entry is simplified to "العربية" (flag + name, no region).
+
 ## [26.09-stable] — 2026-08-01
 
 The "backup, snapshots & recovery" release. Two new pages — Backup and Recovery —
@@ -420,6 +458,7 @@ safety.
 
 ---
 
+[26.10-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.10_STABLE
 [26.09-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE
 [26.08-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE
 [26.07-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.07_STABLE
