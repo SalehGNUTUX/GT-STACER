@@ -15,15 +15,16 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 bool UpdateChecker::isNewer(const QString &candidate, const QString &current)
 {
-    auto ym = [](const QString &v, int &yy, int &mm) {
-        const QStringList p = v.split('.');
-        yy = p.value(0).toInt();
-        mm = p.value(1).toInt();
-    };
-    int cy = 0, cm = 0, uy = 0, um = 0;
-    ym(candidate, cy, cm);
-    ym(current, uy, um);
-    return cy > uy || (cy == uy && cm > um);
+    // Compare YY.MM.PATCH numerically, component by component. A missing patch
+    // (e.g. "26.11") counts as 0, so "26.11.1" is correctly newer than "26.11".
+    const QStringList c = candidate.split('.');
+    const QStringList u = current.split('.');
+    for (int i = 0; i < 3; ++i) {
+        const int cv = c.value(i).toInt();
+        const int uv = u.value(i).toInt();
+        if (cv != uv) return cv > uv;
+    }
+    return false;
 }
 
 void UpdateChecker::checkNow()
@@ -43,7 +44,9 @@ void UpdateChecker::checkNow()
         const QString tag = obj.value("tag_name").toString();     // e.g. GT-STACER_26.10_STABLE
         QString url = obj.value("html_url").toString();
         if (url.isEmpty()) url = "https://github.com/SalehGNUTUX/GT-STACER/releases";
-        static const QRegularExpression re("(\\d{2}\\.\\d{2})");
+        // Capture YY.MM plus an optional .PATCH (e.g. 26.11 or 26.11.1) from the
+        // tag GT-STACER_<ver>_STABLE, so point releases are read in full.
+        static const QRegularExpression re("(\\d{2}\\.\\d{2}(?:\\.\\d+)?)");
         const auto m = re.match(tag);
         if (!m.hasMatch()) {
             emit checkFailed(tr("Could not read the latest release version."));

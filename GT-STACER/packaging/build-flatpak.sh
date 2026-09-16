@@ -20,8 +20,8 @@ ARCH="$(uname -m)"
 
 # Pull version from CMakeLists so the bundle is named consistently with the
 # other release artifacts.
-VERSION="$(grep -E '^\s*APP_VERSION="[0-9]+\.[0-9]+"' "$ROOT_DIR/CMakeLists.txt" \
-            | head -1 | sed -E 's/.*"([0-9]+\.[0-9]+)".*/\1/')"
+VERSION="$(grep -E '^\s*APP_VERSION="[0-9]+\.[0-9]+(\.[0-9]+)?"' "$ROOT_DIR/CMakeLists.txt" \
+            | head -1 | sed -E 's/.*"([0-9]+\.[0-9]+(\.[0-9]+)?)".*/\1/')"
 OUT_BUNDLE="$ROOT_DIR/release/GT-STACER-${VERSION}-${ARCH}.flatpak"
 
 INSTALL=0

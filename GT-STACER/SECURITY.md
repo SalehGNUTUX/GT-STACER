@@ -14,7 +14,8 @@ report it before disclosing.
 
 | Version       | Supported                |
 |---------------|--------------------------|
-| 26.11 stable  | ✅ current (recommended)  |
+| 26.11.1 stable | ✅ current (recommended) |
+| 26.11 stable  | ⚠️ superseded by 26.11.1  |
 | 26.10 stable  | ⚠️ security fixes only    |
 | 26.09 stable  | ❌ unsupported            |
 | 26.08 stable  | ❌ unsupported            |

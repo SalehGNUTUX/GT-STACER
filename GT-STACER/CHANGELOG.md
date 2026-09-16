@@ -6,6 +6,22 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.11.1-stable] — 2026-09-16
+
+A bug-fix point release on top of 26.11.
+
+### Fixed
+- **Firewall page reported "no supported firewall" even when ufw/firewalld was
+  installed.** A GUI launched from a desktop entry often inherits a `PATH`
+  without the sbin directories, so `ufw` (in `/usr/sbin`, `/sbin`) was invisible
+  to the executable lookup. GT-STACER now ensures `/usr/local/sbin`, `/usr/sbin`
+  and `/sbin` are on `PATH` at startup, so admin tools are detected reliably.
+  (The Firewall page shipped in 26.08; this affected every install since.)
+- **In-app update check ignored the patch component of a version.** The version
+  comparison only looked at `YY.MM`, and the tag parser dropped the patch, so a
+  point release such as 26.11.1 was not recognised as newer than 26.11. Versions
+  are now compared as `YY.MM.PATCH`, and the tag parser captures the patch.
+
 ## [26.11-stable] — 2026-09-16
 
 The "software management" release. The Uninstaller becomes a full Package &
@@ -510,6 +526,7 @@ safety.
 
 ---
 
+[26.11.1-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.1_STABLE
 [26.11-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11_STABLE
 [26.10-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.10_STABLE
 [26.09-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE

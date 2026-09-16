@@ -86,6 +86,15 @@
   </provides>
 
   <releases>
+    <release version="26.11.1" date="2026-09-16">
+      <description>
+        <p>Bug-fix point release on top of 26.11:</p>
+        <ul>
+          <li>Firewall page no longer reports "no supported firewall" when ufw/firewalld is installed — the app now keeps the sbin directories on PATH so admin tools are detected</li>
+          <li>The in-app update check now understands patch versions (YY.MM.PATCH), so point releases are offered correctly</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.11" date="2026-09-16">
       <description>
         <p>Software management. Highlights:</p>

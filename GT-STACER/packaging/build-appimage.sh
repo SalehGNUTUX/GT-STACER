@@ -11,7 +11,7 @@ BUILD_DIR="$ROOT_DIR/build-appimage"
 APPDIR="$BUILD_DIR/AppDir"
 APP_NAME="GT-STACER"
 APP_ID="org.gnutux.gt-stacer"
-VERSION="26.11"
+VERSION="26.11.1"
 CHANNEL="stable"
 ARCH="${1:-x86_64}"
 

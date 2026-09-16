@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.11 STABLE',
+                    download_title: 'Get GT-STACER 26.11.1 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.11 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.11.1 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.11 STABLE',
+                    download_title: 'حمّل GT-STACER 26.11.1 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.11 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.11.1 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -288,6 +288,11 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.11.1 stable', date: '2026-09-16', headline: 'Bug-fix point release · Firewall detection (PATH/sbin) · patch-version update check',
+                      items: [
+                        'Firewall page no longer reports "no supported firewall" when ufw/firewalld is installed — a desktop-launched GUI often lacks the sbin dirs on PATH, so ufw (in /usr/sbin, /sbin) was invisible; the app now keeps the sbin dirs on PATH at startup',
+                        'The in-app update check now understands patch versions (YY.MM.PATCH) — a point release like 26.11.1 is now correctly offered as newer than 26.11',
+                      ] },
                     { ver: '26.11 stable', date: '2026-09-16', headline: 'Software management · Package & Software Manager · store add-ons & AppImage integration · in-app self-update · command-injection fix',
                       items: [
                         'Package & Software Manager (evolves the Uninstaller, same sidebar slot) — a tabbed page: Installed (browse & remove across every detected manager), Search & Install (system manager / Flatpak / Snap), and Upgrades (list and apply available updates)',
@@ -375,6 +380,11 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.11.1 stable', date: '2026-09-16', headline: 'إصدار إصلاحات · كشف جدار الحماية (PATH/sbin) · فحص تحديث يدعم رقم التصحيح',
+                      items: [
+                        'صفحة جدار الحماية لم تعد تقول «لا يوجد جدار حماية مدعوم» عند وجود ufw/firewalld — تطبيق GUI مُطلَق من سطح المكتب غالباً بلا مجلّدات sbin في PATH، فكان ufw (في /usr/sbin و /sbin) غير مرئيّ؛ صار البرنامج يُبقي مجلّدات sbin في PATH عند الإقلاع',
+                        'فحص التحديث من داخل البرنامج صار يفهم رقم التصحيح (YY.MM.PATCH) — فإصدار تصحيحيّ مثل 26.11.1 يُعرَض الآن أحدثَ من 26.11',
+                      ] },
                     { ver: '26.11 stable', date: '2026-09-16', headline: 'إدارة البرامج · مدير الحزم والبرامج · إضافات المتجر وتكامل AppImage · تحديث ذاتيّ · إصلاح ثغرة حقن أوامر',
                       items: [
                         'مدير الحزم والبرامج (تطوير لقسم «إلغاء التثبيت» بنفس مكانه) — صفحة بتبويبات: المثبَّتة (تصفّح وإزالة عبر كلّ مدير مكتشَف)، والبحث والتثبيت (مدير النظام / Flatpak / Snap)، والترقيات (سرد التحديثات المتاحة وتطبيقها)',
@@ -687,8 +697,8 @@
             ];
 
             // ── Download data ──
-            // GT-STACER 26.11 STABLE — published 2026-09-16 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11_STABLE
+            // GT-STACER 26.11.1 STABLE — published 2026-09-16 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.1_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
@@ -696,36 +706,36 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: 'eb18159ee17bb723ac26bf938eab5658e21351968f868541c935a2f05e85ecb8',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/GT-STACER-26.11-x86_64.AppImage',
-                filename: 'GT-STACER-26.11-x86_64.AppImage',
+                sha256: '3af72f9dc92067c4b9e76bb457df536a62ac70484361ce2d9c7a780a4b3aa925',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/GT-STACER-26.11.1-x86_64.AppImage',
+                filename: 'GT-STACER-26.11.1-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
                 size: '2.1 MB',
-                sha256: '6352191beabf97ece2f6c77e07b46554baacd27477d22ba9e9e4bd3f14641323',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/GT-STACER_26.11_amd64.deb',
-                filename: 'GT-STACER_26.11_amd64.deb',
+                sha256: 'c359fdd7cd5d7f4e4aa84c51953e5b5d348689b7bdbc13e584b85b94aad4dcc9',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/GT-STACER_26.11.1_amd64.deb',
+                filename: 'GT-STACER_26.11.1_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
                 size: '2.4 MB',
-                sha256: 'b8636832af70eecc07674a68dc8c4ecf1ed4e9ed8240c2eb3039f7070d9f207d',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/gt-stacer-26.11-2.x86_64.rpm',
-                filename: 'gt-stacer-26.11-2.x86_64.rpm',
+                sha256: '55395411207581bc2b5c8c043e5443472e84702aeea60488a4cf54ce4b57263a',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/gt-stacer-26.11.1-2.x86_64.rpm',
+                filename: 'gt-stacer-26.11.1-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
                 size: '2.2 MB',
-                sha256: '4081e6e096151e1abb545e64c6d5b489c0a89c800c92a66cc53e65f56aaeb6d4',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/GT-STACER-26.11-x86_64.flatpak',
-                filename: 'GT-STACER-26.11-x86_64.flatpak',
+                sha256: '77ea0e1f7a487951ba13ef2d0cecd3168fff563df8198aecb10b64b1cda0fe75',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/GT-STACER-26.11.1-x86_64.flatpak',
+                filename: 'GT-STACER-26.11.1-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

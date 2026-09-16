@@ -54,6 +54,23 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false); // البرنامج يبقى في شريط المهام عند إغلاق النافذة
+
+    // A GUI launched from a desktop entry often inherits a PATH without the sbin
+    // dirs, so admin tools like `ufw` (in /usr/sbin, /sbin) look "missing" to
+    // QStandardPaths::findExecutable — which made the Firewall page report "no
+    // supported firewall" even when ufw/firewalld was installed. Ensure the
+    // standard system dirs are on PATH before any tool probing. (No-op inside
+    // Flatpak, where detection goes through `flatpak-spawn --host`.)
+    {
+        QList<QByteArray> parts = qgetenv("PATH").split(':');
+        bool changed = false;
+        for (const QByteArray &dir : { QByteArrayLiteral("/usr/local/sbin"),
+                                       QByteArrayLiteral("/usr/sbin"),
+                                       QByteArrayLiteral("/sbin") }) {
+            if (!parts.contains(dir)) { parts.append(dir); changed = true; }
+        }
+        if (changed) qputenv("PATH", parts.join(':'));
+    }
     app.setApplicationName("gt-stacer");
     app.setApplicationDisplayName("GT-STACER");
     app.setApplicationVersion(APP_VERSION);
