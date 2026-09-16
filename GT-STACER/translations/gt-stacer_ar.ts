@@ -2577,12 +2577,12 @@ Requires root privileges.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../gt-stacer/main.cpp" line="122"/>
+        <location filename="../gt-stacer/main.cpp" line="139"/>
         <source>GT-STACER %1 is available</source>
         <translation>GT-STACER %1 متوفّر</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/main.cpp" line="123"/>
+        <location filename="../gt-stacer/main.cpp" line="140"/>
         <source>A newer version is out. Open Settings → Check now, or visit:
 %1</source>
         <translation>تتوفّر نسخة أحدث. افتح الإعدادات ← تحقّق الآن، أو زُر:
@@ -4443,7 +4443,7 @@ This cannot be undone — you&apos;ll need to reinstall any app you remove here.
 <context>
     <name>UpdateChecker</name>
     <message>
-        <location filename="../gt-stacer/Managers/update_checker.cpp" line="49"/>
+        <location filename="../gt-stacer/Managers/update_checker.cpp" line="56"/>
         <source>Could not read the latest release version.</source>
         <translation>تعذّرت قراءة رقم أحدث إصدار.</translation>
     </message>
@@ -4593,58 +4593,83 @@ All privileged operations are authenticated securely via polkit.</source>
         <translation type="vanished">🪟 صفحة الإعدادات تُمرَّر الآن على النوافذ الصغيرة، وكلّ صفحة تُترجَم بعد تبديل اللغة أثناء التشغيل.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="19"/>
         <source>💽 Disk-aware System Relief — see disk pressure (PSI) and each process&apos;s I/O, ease a busy disk with one click (ionice), and switch to the BFQ scheduler for a responsive old drive.</source>
-        <translation>💽 إنعاش النظام مُدرِك للقرص — شاهد ضغط القرص (PSI) ودخل/خرج كلّ عمليّة، وخفّف قرصاً مشغولاً بنقرة (ionice)، وبدّل إلى جدولة BFQ لاستجابة قرصٍ قديم.</translation>
+        <translation type="vanished">💽 إنعاش النظام مُدرِك للقرص — شاهد ضغط القرص (PSI) ودخل/خرج كلّ عمليّة، وخفّف قرصاً مشغولاً بنقرة (ionice)، وبدّل إلى جدولة BFQ لاستجابة قرصٍ قديم.</translation>
+    </message>
+    <message>
+        <source>⏻ The Power timer (scheduled shutdown / suspend / hibernate) is now on the Power page too, not only in Settings.</source>
+        <translation type="vanished">⏻ مؤقّت الطاقة (إطفاء/تعليق/سُبات مجدول) صار في صفحة الطاقة أيضاً، لا في الإعدادات فقط.</translation>
+    </message>
+    <message>
+        <source>🎬 A re-openable welcome tour and a &quot;what&apos;s new&quot; dialog after each update — both with an in-dialog language picker.</source>
+        <translation type="vanished">🎬 جولة ترحيب قابلة لإعادة العرض ونشرة «ما الجديد» بعد كلّ تحديث — كلتاهما بمُنتقي لغة داخليّ.</translation>
+    </message>
+    <message>
+        <source>🔔 Optional update check that tells you when a newer release is out, plus a one-click &quot;copy share text&quot; button.</source>
+        <translation type="vanished">🔔 فحص تحديثات اختياريّ يُعلمك بصدور إصدار أحدث، وزرّ «انسخ نصّ المشاركة» بنقرة.</translation>
+    </message>
+    <message>
+        <source>🧭 Services now sits under Processes in the sidebar; assorted fixes.</source>
+        <translation type="vanished">🧭 «الخدمات» صارت تحت «العمليّات» في الشريط الجانبيّ؛ وإصلاحات متفرّقة.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="19"/>
+        <source>📦 Package &amp; Software Manager — the Uninstaller grows into a full tabbed manager: browse &amp; remove, search &amp; install, and apply upgrades across your system package manager, Flatpak and Snap.</source>
+        <translation>📦 مدير الحزم والبرامج — يتطوّر «إلغاء التثبيت» إلى مدير كامل بتبويبات: تصفّح وإزالة، وبحث وتثبيت، وتطبيق الترقيات عبر مدير حزم نظامك و Flatpak و Snap.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="20"/>
-        <source>⏻ The Power timer (scheduled shutdown / suspend / hibernate) is now on the Power page too, not only in Settings.</source>
-        <translation>⏻ مؤقّت الطاقة (إطفاء/تعليق/سُبات مجدول) صار في صفحة الطاقة أيضاً، لا في الإعدادات فقط.</translation>
+        <source>🧩 Store add-ons &amp; AppImages — manage opendesktop.org / KNewStuff content, and integrate AppImages into your menu, GearLever-compatible (metadata read without executing the file).</source>
+        <translation>🧩 إضافات المتجر و AppImage — أدر محتوى opendesktop.org / KNewStuff، وادمج ملفّات AppImage في قائمتك بأسلوب GearLever (تُقرأ البيانات الوصفيّة دون تشغيل الملفّ).</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="21"/>
-        <source>🎬 A re-openable welcome tour and a &quot;what&apos;s new&quot; dialog after each update — both with an in-dialog language picker.</source>
-        <translation>🎬 جولة ترحيب قابلة لإعادة العرض ونشرة «ما الجديد» بعد كلّ تحديث — كلتاهما بمُنتقي لغة داخليّ.</translation>
+        <source>🔄 In-app self-update — GT-STACER can check for a newer version, then download, verify (SHA-256) and install it.</source>
+        <translation>🔄 تحديث ذاتيّ من داخل البرنامج — يستطيع GT-STACER فحص إصدار أحدث، ثمّ تنزيله والتحقّق منه (SHA-256) وتثبيته.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="22"/>
-        <source>🔔 Optional update check that tells you when a newer release is out, plus a one-click &quot;copy share text&quot; button.</source>
-        <translation>🔔 فحص تحديثات اختياريّ يُعلمك بصدور إصدار أحدث، وزرّ «انسخ نصّ المشاركة» بنقرة.</translation>
+        <source>🔒 Security — fixed a command-injection hole in package search; every privileged operation uses validated, no-shell arguments.</source>
+        <translation>🔒 الأمن — أُصلحت ثغرة حقن أوامر في بحث الحزم؛ وكلّ عمليّة مميّزة تستعمل وسائط مُتحقَّقاً منها بلا صَدفة.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="23"/>
-        <source>🧭 Services now sits under Processes in the sidebar; assorted fixes.</source>
-        <translation>🧭 «الخدمات» صارت تحت «العمليّات» في الشريط الجانبيّ؛ وإصلاحات متفرّقة.</translation>
+        <source>⚡ Processes default to busiest-first (CPU %), the tray tooltip shows temperature, and table columns are freely resizable everywhere.</source>
+        <translation>⚡ العمليّات تُرتَّب افتراضيّاً بالأنشط أوّلاً (نسبة المعالج)، وتلميح شريط المهام يعرض درجة الحرارة، وأعمدة الجداول قابلة للتحجيم في كلّ مكان.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="75"/>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="96"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="24"/>
+        <source>🛡️ 26.11.1 fixes — the Firewall page now detects ufw/firewalld reliably (sbin on PATH), and the update check understands patch versions (YY.MM.PATCH).</source>
+        <translation>🛡️ إصلاحات 26.11.1 — صفحة جدار الحماية تكتشف الآن ufw/firewalld بموثوقيّة (مجلّدات sbin في PATH)، وفحص التحديث يفهم أرقام التصحيح (YY.MM.PATCH).</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="76"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="97"/>
         <source>Auto (system language)</source>
         <translation>تلقائيّ (لغة النظام)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="88"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="89"/>
         <source>What&apos;s new</source>
         <translation>ما الجديد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="90"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="91"/>
         <source>What&apos;s new in GT-STACER %1</source>
         <translation>ما الجديد في GT-STACER %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="91"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="92"/>
         <source>Thanks for updating. Here&apos;s what changed in this release:</source>
         <translation>شكراً للتحديث. إليك ما تغيّر في هذا الإصدار:</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="92"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="93"/>
         <source>&lt;a href=&quot;https://github.com/SalehGNUTUX/GT-STACER/blob/main/CHANGELOG.md&quot;&gt;View full changelog&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;https://github.com/SalehGNUTUX/GT-STACER/blob/main/CHANGELOG.md&quot;&gt;عرض السجلّ الكامل&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="94"/>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="95"/>
         <source>Got it</source>
         <translation>فهمت</translation>
     </message>

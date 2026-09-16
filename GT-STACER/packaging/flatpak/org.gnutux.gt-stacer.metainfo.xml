@@ -86,6 +86,15 @@
   </provides>
 
   <releases>
+    <release version="26.11.2" date="2026-09-16">
+      <description>
+        <p>Small point release following testing of 26.11.1:</p>
+        <ul>
+          <li>The "What's new" dialog now lists the correct release (26.11 highlights plus the 26.11.1 fixes) instead of stale 26.10 content</li>
+          <li>The update check now compares versions across any number of components, so stable updates are recognised whatever the numbering and sequence</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.11.1" date="2026-09-16">
       <description>
         <p>Bug-fix point release on top of 26.11:</p>

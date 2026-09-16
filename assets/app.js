@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.11.1 STABLE',
+                    download_title: 'Get GT-STACER 26.11.2 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.11.1 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.11.2 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.11.1 STABLE',
+                    download_title: 'حمّل GT-STACER 26.11.2 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.11.1 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.11.2 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -288,6 +288,11 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.11.2 stable', date: '2026-09-16', headline: 'Point release · "What\'s new" dialog fixed · version compare works for any sequence',
+                      items: [
+                        'The "What\'s new" dialog now lists the correct release (26.11 highlights + 26.11.1 fixes) instead of stale 26.10 content — its highlights were hard-coded and never refreshed',
+                        'The update check now compares versions across any number of components, so stable updates are recognised whatever the numbering and sequence (26.11 < 26.11.1 < 26.11.2 < 26.12 < 27.01) — the newest stable release is always fetched',
+                      ] },
                     { ver: '26.11.1 stable', date: '2026-09-16', headline: 'Bug-fix point release · Firewall detection (PATH/sbin) · patch-version update check',
                       items: [
                         'Firewall page no longer reports "no supported firewall" when ufw/firewalld is installed — a desktop-launched GUI often lacks the sbin dirs on PATH, so ufw (in /usr/sbin, /sbin) was invisible; the app now keeps the sbin dirs on PATH at startup',
@@ -380,6 +385,11 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.11.2 stable', date: '2026-09-16', headline: 'إصدار نقطيّ · إصلاح حوار «ما الجديد» · مقارنة الإصدار تعمل لأيّ تسلسل',
+                      items: [
+                        'حوار «ما الجديد» صار يعرض الإصدار الصحيح (أبرز مزايا 26.11 + إصلاحات 26.11.1) بدل محتوى 26.10 القديم — كان محتواه مُثبَّتاً في الكود ولم يُحدَّث',
+                        'فحص التحديث صار يقارن الإصدارات على أيّ عدد من المكوّنات، فتُكتشَف التحديثات المستقرّة أيّاً كان رقمها وتسلسلها (26.11 < 26.11.1 < 26.11.2 < 26.12 < 27.01) — ويُجلَب دائماً أحدث إصدار مستقرّ',
+                      ] },
                     { ver: '26.11.1 stable', date: '2026-09-16', headline: 'إصدار إصلاحات · كشف جدار الحماية (PATH/sbin) · فحص تحديث يدعم رقم التصحيح',
                       items: [
                         'صفحة جدار الحماية لم تعد تقول «لا يوجد جدار حماية مدعوم» عند وجود ufw/firewalld — تطبيق GUI مُطلَق من سطح المكتب غالباً بلا مجلّدات sbin في PATH، فكان ufw (في /usr/sbin و /sbin) غير مرئيّ؛ صار البرنامج يُبقي مجلّدات sbin في PATH عند الإقلاع',
@@ -697,8 +707,8 @@
             ];
 
             // ── Download data ──
-            // GT-STACER 26.11.1 STABLE — published 2026-09-16 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.1_STABLE
+            // GT-STACER 26.11.2 STABLE — published 2026-09-16 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.2_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
@@ -706,36 +716,36 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: '3af72f9dc92067c4b9e76bb457df536a62ac70484361ce2d9c7a780a4b3aa925',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/GT-STACER-26.11.1-x86_64.AppImage',
-                filename: 'GT-STACER-26.11.1-x86_64.AppImage',
+                sha256: 'bb85d72985a673146603c6bbfd21ca9b7b4a744aa2a8ee040ed27c0dfa7be973',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER-26.11.2-x86_64.AppImage',
+                filename: 'GT-STACER-26.11.2-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
                 size: '2.1 MB',
-                sha256: 'c359fdd7cd5d7f4e4aa84c51953e5b5d348689b7bdbc13e584b85b94aad4dcc9',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/GT-STACER_26.11.1_amd64.deb',
-                filename: 'GT-STACER_26.11.1_amd64.deb',
+                sha256: '2f2794dc156a625623476fa39851757ad732e00ae1b8bb515385d1b9aa40d44e',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER_26.11.2_amd64.deb',
+                filename: 'GT-STACER_26.11.2_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
                 size: '2.4 MB',
-                sha256: '55395411207581bc2b5c8c043e5443472e84702aeea60488a4cf54ce4b57263a',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/gt-stacer-26.11.1-2.x86_64.rpm',
-                filename: 'gt-stacer-26.11.1-2.x86_64.rpm',
+                sha256: '5b8c00add74a56fda87b63a9ac6d654c7b0aff6c91ff39ce392d2aff48085737',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/gt-stacer-26.11.2-2.x86_64.rpm',
+                filename: 'gt-stacer-26.11.2-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
                 size: '2.2 MB',
-                sha256: '77ea0e1f7a487951ba13ef2d0cecd3168fff563df8198aecb10b64b1cda0fe75',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.1_STABLE/GT-STACER-26.11.1-x86_64.flatpak',
-                filename: 'GT-STACER-26.11.1-x86_64.flatpak',
+                sha256: '02455579e3aa7b3d2cf5b76a59c49d765fd5deb10985661ee8299b430ec05132',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER-26.11.2-x86_64.flatpak',
+                filename: 'GT-STACER-26.11.2-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

@@ -16,11 +16,12 @@ namespace {
 QStringList highlights()
 {
     return {
-        WhatsNewDialog::tr("💽 Disk-aware System Relief — see disk pressure (PSI) and each process's I/O, ease a busy disk with one click (ionice), and switch to the BFQ scheduler for a responsive old drive."),
-        WhatsNewDialog::tr("⏻ The Power timer (scheduled shutdown / suspend / hibernate) is now on the Power page too, not only in Settings."),
-        WhatsNewDialog::tr("🎬 A re-openable welcome tour and a \"what's new\" dialog after each update — both with an in-dialog language picker."),
-        WhatsNewDialog::tr("🔔 Optional update check that tells you when a newer release is out, plus a one-click \"copy share text\" button."),
-        WhatsNewDialog::tr("🧭 Services now sits under Processes in the sidebar; assorted fixes."),
+        WhatsNewDialog::tr("📦 Package & Software Manager — the Uninstaller grows into a full tabbed manager: browse & remove, search & install, and apply upgrades across your system package manager, Flatpak and Snap."),
+        WhatsNewDialog::tr("🧩 Store add-ons & AppImages — manage opendesktop.org / KNewStuff content, and integrate AppImages into your menu, GearLever-compatible (metadata read without executing the file)."),
+        WhatsNewDialog::tr("🔄 In-app self-update — GT-STACER can check for a newer version, then download, verify (SHA-256) and install it."),
+        WhatsNewDialog::tr("🔒 Security — fixed a command-injection hole in package search; every privileged operation uses validated, no-shell arguments."),
+        WhatsNewDialog::tr("⚡ Processes default to busiest-first (CPU %), the tray tooltip shows temperature, and table columns are freely resizable everywhere."),
+        WhatsNewDialog::tr("🛡️ 26.11.1 fixes — the Firewall page now detects ufw/firewalld reliably (sbin on PATH), and the update check understands patch versions (YY.MM.PATCH)."),
     };
 }
 }

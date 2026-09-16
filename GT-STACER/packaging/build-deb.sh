@@ -10,7 +10,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$ROOT_DIR/build-deb"
 PKG_DIR="$BUILD_DIR/pkg"
 APP_NAME="gt-stacer"
-VERSION="26.11.1"
+VERSION="26.11.2"
 CHANNEL="stable"
 ARCH="$(dpkg --print-architecture 2>/dev/null || echo 'amd64')"
 

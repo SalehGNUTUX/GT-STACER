@@ -15,11 +15,14 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 bool UpdateChecker::isNewer(const QString &candidate, const QString &current)
 {
-    // Compare YY.MM.PATCH numerically, component by component. A missing patch
-    // (e.g. "26.11") counts as 0, so "26.11.1" is correctly newer than "26.11".
+    // Compare dotted versions numerically, component by component, over as many
+    // components as either side has — so it works for any stable numbering and
+    // sequence (26.11 < 26.11.1 < 26.11.2 < 26.12 < 27.01, and deeper if ever
+    // used). A missing component counts as 0 ("26.11" == "26.11.0").
     const QStringList c = candidate.split('.');
     const QStringList u = current.split('.');
-    for (int i = 0; i < 3; ++i) {
+    const int n = qMax(c.size(), u.size());
+    for (int i = 0; i < n; ++i) {
         const int cv = c.value(i).toInt();
         const int uv = u.value(i).toInt();
         if (cv != uv) return cv > uv;
@@ -44,9 +47,10 @@ void UpdateChecker::checkNow()
         const QString tag = obj.value("tag_name").toString();     // e.g. GT-STACER_26.10_STABLE
         QString url = obj.value("html_url").toString();
         if (url.isEmpty()) url = "https://github.com/SalehGNUTUX/GT-STACER/releases";
-        // Capture YY.MM plus an optional .PATCH (e.g. 26.11 or 26.11.1) from the
-        // tag GT-STACER_<ver>_STABLE, so point releases are read in full.
-        static const QRegularExpression re("(\\d{2}\\.\\d{2}(?:\\.\\d+)?)");
+        // Capture YY.MM plus any number of dotted components (26.11, 26.11.1,
+        // 26.11.2.3…) from the tag GT-STACER_<ver>_STABLE, so the full version is
+        // read whatever the numbering/sequence.
+        static const QRegularExpression re("(\\d{2}\\.\\d{2}(?:\\.\\d+)*)");
         const auto m = re.match(tag);
         if (!m.hasMatch()) {
             emit checkFailed(tr("Could not read the latest release version."));
