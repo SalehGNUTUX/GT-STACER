@@ -4,10 +4,14 @@
 #include "../../Managers/app_manager.h"
 #include "../../Managers/alert_manager.h"
 #include "../../Managers/update_checker.h"
+#include "../../Managers/self_updater.h"
 #include "../../Dialogs/welcome_dialog.h"
 #include "../../Dialogs/whats_new_dialog.h"
 #include <QClipboard>
 #include <QGuiApplication>
+#include <QProgressDialog>
+#include <QDesktopServices>
+#include <QUrl>
 #include "../../../gt-stacer-core/Tools/startup_tool.h"
 #include "../../../gt-stacer-core/Tools/power_tool.h"
 #include <QCoreApplication>
@@ -183,11 +187,20 @@ void SettingsPage::runUpdateCheck()
 {
     if (!m_updateChecker) {
         m_updateChecker = new UpdateChecker(this);
+        // Route the label's links ourselves so "Download & install" triggers the
+        // updater while the release-page link opens the browser.
+        ui->updateStatusLabel->setOpenExternalLinks(false);
+        connect(ui->updateStatusLabel, &QLabel::linkActivated, this, [this](const QString &href){
+            if (href == "gtstacer:install") downloadAndInstall();
+            else QDesktopServices::openUrl(QUrl(href));
+        });
         connect(m_updateChecker, &UpdateChecker::updateAvailable, this, [this](const QString &v, const QString &url){
-            ui->updateStatusLabel->setText(
-                tr("A newer version is available: <b>%1</b> — "
-                   "<a href=\"%2\">open the release page</a>.").arg(v, url));
-            ui->updateStatusLabel->setOpenExternalLinks(true);
+            m_pendingVersion = v;
+            QString msg = tr("A newer version is available: <b>%1</b>.").arg(v);
+            if (SelfUpdater::canAutoInstall())
+                msg += " <a href=\"gtstacer:install\">" + tr("Download && install") + "</a>";
+            msg += " · <a href=\"" + url + "\">" + tr("release page") + "</a>";
+            ui->updateStatusLabel->setText(msg);
         });
         connect(m_updateChecker, &UpdateChecker::upToDate, this, [this](const QString &v){
             ui->updateStatusLabel->setText(tr("You're on the latest version (%1).").arg(v));
@@ -198,6 +211,33 @@ void SettingsPage::runUpdateCheck()
     }
     ui->updateStatusLabel->setText(tr("Checking for updates…"));
     m_updateChecker->checkNow();
+}
+
+void SettingsPage::downloadAndInstall()
+{
+    if (!m_updateChecker || m_pendingVersion.isEmpty()) return;
+
+    auto *dlg = new QProgressDialog(tr("Downloading update…"), tr("Cancel"), 0, 100, this);
+    dlg->setWindowTitle(tr("Update GT-STACER"));
+    dlg->setWindowModality(Qt::WindowModal);
+    dlg->setMinimumDuration(0);
+    dlg->setAutoClose(false);
+    dlg->setAutoReset(false);
+
+    auto *updater = new SelfUpdater(this);
+    connect(updater, &SelfUpdater::progress, dlg, [dlg](int pct, const QString &phase){
+        dlg->setLabelText(phase + "…");
+        dlg->setValue(pct);
+    });
+    connect(dlg, &QProgressDialog::canceled, updater, &SelfUpdater::cancel);
+    connect(updater, &SelfUpdater::finished, this, [this, dlg, updater](bool ok, const QString &message){
+        dlg->close(); dlg->deleteLater();
+        updater->deleteLater();
+        if (ok) QMessageBox::information(this, tr("Update GT-STACER"), message);
+        else    QMessageBox::warning(this, tr("Update GT-STACER"), message);
+        ui->updateStatusLabel->setText(message);
+    });
+    updater->start(m_pendingVersion, m_updateChecker->assets());
 }
 
 void SettingsPage::startPowerTimer()

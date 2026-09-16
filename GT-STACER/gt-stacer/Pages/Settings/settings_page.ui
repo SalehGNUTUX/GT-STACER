@@ -87,7 +87,7 @@
           </item>
           <item>
            <layout class="QHBoxLayout">
-            <item><widget class="QCheckBox" name="checkUpdatesCheck"><property name="text"><string>Check for updates on startup (contacts GitHub)</string></property></widget></item>
+            <item><widget class="QCheckBox" name="checkUpdatesCheck"><property name="text"><string>Check for a new GT-STACER version on startup (contacts GitHub)</string></property></widget></item>
             <item><widget class="QPushButton" name="checkNowButton"><property name="text"><string>Check now</string></property></widget></item>
             <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
            </layout>

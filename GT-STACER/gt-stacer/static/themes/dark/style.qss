@@ -200,10 +200,14 @@ QHeaderView::section {
     background-color: #313244;
     border: none;
     border-bottom: 1px solid #45475a;
-    border-right: 1px solid #45475a;
+    /* A clearly visible separator so the column-resize handle is easy to find. */
+    border-right: 2px solid #585b70;
     padding: 6px 8px;
     color: #89b4fa;
     font-weight: bold;
+}
+QHeaderView::section:hover {
+    background-color: #3b3d54;
 }
 
 QTableView::item:hover {

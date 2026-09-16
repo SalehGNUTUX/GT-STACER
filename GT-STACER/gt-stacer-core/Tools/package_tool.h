@@ -98,6 +98,18 @@ public:
     static QVector<PackageInfo> manualPackages();
     static QVector<PackageInfo> allPackages();
 
+    // ── التثبيت والترقية ──
+    // Install a package by name from the given manager. Same security model as
+    // remove(): the name is validated with isSafeIdentifier() and passed as a
+    // separate argv element (no shell), root ops go through pkexec.
+    static bool install(const QString &name, PkgMgr mgr);
+    // Upgrade a single named package (APT: install --only-upgrade, etc.).
+    static bool upgrade(const QString &name, PkgMgr mgr);
+    // Upgrade everything the manager has updates for.
+    static bool upgradeAll(PkgMgr mgr);
+    // Packages that have a newer version available (name/version = the NEW one).
+    static QVector<PackageInfo> upgradable(PkgMgr mgr);
+
     // ── الإزالة ──
     static bool remove(const QString &name, PkgMgr mgr);
     // Removes a manually-installed app end-to-end: its .desktop launcher, its

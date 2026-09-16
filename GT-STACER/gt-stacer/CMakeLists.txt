@@ -9,6 +9,7 @@ set(APP_SOURCES
     Managers/info_manager.cpp
     Managers/alert_manager.cpp
     Managers/update_checker.cpp
+    Managers/self_updater.cpp
     Managers/language_util.cpp
     Widgets/circular_gauge.cpp
     Widgets/cleaner_card.cpp
@@ -33,7 +34,7 @@ set(APP_SOURCES
     Pages/Services/services_page.cpp
     Pages/StartupApps/startup_apps_page.cpp
     Pages/SystemCleaner/system_cleaner_page.cpp
-    Pages/Uninstaller/uninstaller_page.cpp
+    Pages/PackageManager/package_manager_page.cpp
     Pages/AptSourceManager/apt_source_page.cpp
     Pages/Settings/settings_page.cpp
     Pages/Helpers/helpers_page.cpp
@@ -76,7 +77,7 @@ set(APP_HEADERS
     Pages/Services/services_page.h
     Pages/StartupApps/startup_apps_page.h
     Pages/SystemCleaner/system_cleaner_page.h
-    Pages/Uninstaller/uninstaller_page.h
+    Pages/PackageManager/package_manager_page.h
     Pages/AptSourceManager/apt_source_page.h
     Pages/Settings/settings_page.h
     Pages/Helpers/helpers_page.h
@@ -87,7 +88,6 @@ set(APP_UI_FILES
     Pages/Resources/resources_page.ui
     Pages/Processes/processes_page.ui
     Pages/Services/services_page.ui
-    Pages/Uninstaller/uninstaller_page.ui
     Pages/AptSourceManager/apt_source_page.ui
     Pages/Settings/settings_page.ui
     Pages/Helpers/helpers_page.ui

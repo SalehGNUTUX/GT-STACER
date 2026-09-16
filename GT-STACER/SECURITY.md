@@ -14,15 +14,23 @@ report it before disclosing.
 
 | Version       | Supported                |
 |---------------|--------------------------|
-| 26.08 stable  | ✅ current (recommended)  |
-| 26.07 stable  | ⚠️ security fixes only    |
-| 26.06 stable  | ❌ unsupported            |
-| 26.05 beta    | ❌ unsupported            |
-| 26.04 alpha   | ❌ unsupported            |
+| 26.11 stable  | ✅ current (recommended)  |
+| 26.10 stable  | ⚠️ security fixes only    |
+| 26.09 stable  | ❌ unsupported            |
+| 26.08 stable  | ❌ unsupported            |
+| 26.07 stable  | ❌ unsupported            |
 | older         | ❌ unsupported            |
 
 We do **not** publish patches for unsupported versions. The fix lands in the
 current branch and the next release.
+
+> **Fixed in 26.11:** a command-injection vulnerability in package search — the
+> query was passed to a shell (`sh -c`), so a crafted term could run arbitrary
+> commands. It is now passed as argv (no shell) and validated. Every
+> install / upgrade / remove path added in 26.11 goes through
+> `CommandUtil::execProgram` with `isSafeIdentifier`-validated names; store
+> add-on and AppImage removal are path-guarded. Users on 26.10 or earlier should
+> upgrade.
 
 ---
 

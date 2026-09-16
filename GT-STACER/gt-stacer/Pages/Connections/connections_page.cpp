@@ -1,4 +1,5 @@
 #include "connections_page.h"
+#include "../../Widgets/table_util.h"
 #include "../../Managers/setting_manager.h"
 #include <QCheckBox>
 #include <QHBoxLayout>
@@ -53,9 +54,7 @@ ConnectionsPage::ConnectionsPage(QWidget *parent) : QWidget(parent)
     m_table = new QTableWidget(0, 5, this);
     m_table->setHorizontalHeaderLabels(
         {tr("Proto"), tr("State"), tr("Local Address"), tr("Peer Address"), tr("Process")});
-    auto *hh = m_table->horizontalHeader();
-    hh->setSectionResizeMode(2, QHeaderView::Stretch);
-    hh->setSectionResizeMode(3, QHeaderView::Stretch);
+    setupResizableTable(m_table, 2);   // Local Address fills; all resizable
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_table->setSortingEnabled(true);

@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$ROOT_DIR/build-rpm"
 APP_NAME="gt-stacer"
-VERSION="26.10"
+VERSION="26.11"
 RELEASE="1"
 ARCH="$(uname -m)"
 

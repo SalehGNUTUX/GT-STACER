@@ -9,7 +9,7 @@
 #include "Pages/Services/services_page.h"
 #include "Pages/StartupApps/startup_apps_page.h"
 #include "Pages/SystemCleaner/system_cleaner_page.h"
-#include "Pages/Uninstaller/uninstaller_page.h"
+#include "Pages/PackageManager/package_manager_page.h"
 #include "Pages/AptSourceManager/apt_source_page.h"
 #include "Pages/Settings/settings_page.h"
 #include "Pages/Helpers/helpers_page.h"
@@ -159,7 +159,7 @@ QWidget *App::materializePage(int index)
     case 3: page = new ServicesPage;      break;
     case 4: page = new StartupAppsPage;   break;
     case 5: page = new SystemCleanerPage; break;
-    case 6: page = new UninstallerPage;   break;
+    case 6: page = new PackageManagerPage; break;
     case 7: page = new AptSourcePage;     break;
     case 8: page = new SettingsPage;      break;
     case 9: page = new HelpersPage;       break;
@@ -200,7 +200,7 @@ void App::setupSidebar()
         {SidebarIcons::connections(), tr("Connections"),    tr("Live network connections"),  11},
         // Maintenance
         {SidebarIcons::cleaner(),     tr("System Cleaner"), tr("Free up disk space"),         5},
-        {SidebarIcons::uninstaller(), tr("Uninstaller"),    tr("Remove packages"),            6},
+        {SidebarIcons::packages(),    tr("Packages"),       tr("Install, upgrade & remove software"), 6},
         {SidebarIcons::relief(),      tr("System Relief"),  tr("Relieve RAM/CPU pressure"),  10},
         // Backup & recovery
         {SidebarIcons::backup(),      tr("Backup"),         tr("Snapshots & home backup"),   14},

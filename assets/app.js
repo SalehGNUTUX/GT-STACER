@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.10 STABLE',
+                    download_title: 'Get GT-STACER 26.11 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.10 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.11 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -56,7 +56,7 @@
                     pkg_flatpak_desc: 'Sandboxed — runs on any distro with Flatpak',
                     table_header_aspect: 'Aspect',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.10 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.11 (2026)',
                 },
                 ar: {
                     nav_features: 'المزايا',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.10 STABLE',
+                    download_title: 'حمّل GT-STACER 26.11 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.10 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.11 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -108,7 +108,7 @@
                     pkg_flatpak_desc: 'معزولة في sandbox — تعمل في أي توزيعة فيها Flatpak',
                     table_header_aspect: 'الجانب',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.10 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.11 (2026)',
                 }
             };
 
@@ -176,14 +176,22 @@
                         'Translated welcome tour + after-update "what\'s new", both with a language picker',
                         'Opt-in update check and a copy-share-text button',
                       ] },
-                    { ver: 'v26.11', status: 'planned',
+                    { ver: 'v26.11 stable', status: 'shipped',
+                      title: 'Package & Software Manager',
+                      bullets: [
+                        'Uninstaller becomes a full Package & Software Manager — install, upgrade & remove (system manager + Flatpak + Snap)',
+                        'Store add-ons (opendesktop.org / KNewStuff) and GearLever-compatible AppImage integration',
+                        'In-app self-update — check, download, SHA-256 verify & install',
+                        'Security: fixed a command-injection hole in package search',
+                      ] },
+                    { ver: 'v26.12', status: 'planned',
                       title: 'Plugin system',
                       bullets: [
                         'Lua/Python plugin API',
                         'Community plugin registry',
                         'Sandboxed execution',
                       ] },
-                    { ver: 'v26.12', status: 'future',
+                    { ver: 'v27.01', status: 'future',
                       title: 'Scheduling & automation',
                       bullets: [
                         'Scheduled snapshots & home backups (systemd timers)',
@@ -252,14 +260,22 @@
                         'جولة ترحيب ونشرة «ما الجديد» مترجمتان بمُنتقي لغة',
                         'فحص تحديثات اختياريّ وزرّ نسخ نصّ المشاركة',
                       ] },
-                    { ver: 'إصدار 26.11', status: 'planned',
+                    { ver: 'إصدار 26.11 مستقر', status: 'shipped',
+                      title: 'مدير الحزم والبرامج',
+                      bullets: [
+                        'قسم «إلغاء التثبيت» يصبح مدير حزم وبرامج كامل — تثبيت وترقية وإزالة (مدير النظام + Flatpak + Snap)',
+                        'إضافات المتجر (opendesktop.org / KNewStuff) وتكامل AppImage المتوافق مع GearLever',
+                        'تحديث ذاتيّ من داخل البرنامج — فحص وتنزيل وتحقّق SHA-256 وتثبيت',
+                        'الأمن: إصلاح ثغرة حقن أوامر في بحث الحزم',
+                      ] },
+                    { ver: 'إصدار 26.12', status: 'planned',
                       title: 'نظام إضافات',
                       bullets: [
                         'واجهة برمجة إضافات بـ Lua/Python',
                         'سجلّ إضافات مجتمعي',
                         'تنفيذ معزول (sandbox)',
                       ] },
-                    { ver: 'إصدار 26.12', status: 'future',
+                    { ver: 'إصدار 27.01', status: 'future',
                       title: 'الجدولة والأتمتة',
                       bullets: [
                         'جدولة اللقطات والنسخ الاحتياطيّ (مؤقّتات systemd)',
@@ -272,6 +288,15 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.11 stable', date: '2026-09-16', headline: 'Software management · Package & Software Manager · store add-ons & AppImage integration · in-app self-update · command-injection fix',
+                      items: [
+                        'Package & Software Manager (evolves the Uninstaller, same sidebar slot) — a tabbed page: Installed (browse & remove across every detected manager), Search & Install (system manager / Flatpak / Snap), and Upgrades (list and apply available updates)',
+                        'Store add-ons — manage opendesktop.org / KNewStuff content (Plasma themes, icons, cursors, plasmoids, wallpapers, colour schemes…) with guarded removal, and install via ocs-url links',
+                        'AppImage integration, GearLever-compatible — integrate/remove AppImages using the same folder and launcher format as GearLever (it.mijorus.gearlever), honouring its custom folder and move-vs-clone setting; metadata is extracted without executing the AppImage (ELF-offset unsquashfs read)',
+                        'In-app self-update — checks GitHub for a newer version on startup (on by default) and can download, verify (SHA-256) and install it: self-replace the AppImage, or hand the .deb/.rpm to the package manager via pkexec; package-update checks stay manual',
+                        'Security — fixed a command-injection vulnerability: package search passed the query to a shell (sh -c); it is now argv (no shell) and validated. All new install/upgrade/remove paths use execProgram with validated names; store-add-on and AppImage removal are path-guarded',
+                        'Processes default to CPU % (busiest first), sorted numerically and live; the tray tooltip shows the CPU/system temperature; table columns are freely resizable everywhere with visible drag handles',
+                      ] },
                     { ver: '26.10 stable', date: '2026-08-19', headline: 'Responsiveness & onboarding · disk-aware System Relief · Power timer on the Power page · welcome tour & update check',
                       items: [
                         'System Relief is disk-aware — disk pressure (PSI), per-process I/O column, ease-with-ionice, and a one-click switch to the BFQ scheduler; auto-mode can trigger on disk pressure',
@@ -350,6 +375,15 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.11 stable', date: '2026-09-16', headline: 'إدارة البرامج · مدير الحزم والبرامج · إضافات المتجر وتكامل AppImage · تحديث ذاتيّ · إصلاح ثغرة حقن أوامر',
+                      items: [
+                        'مدير الحزم والبرامج (تطوير لقسم «إلغاء التثبيت» بنفس مكانه) — صفحة بتبويبات: المثبَّتة (تصفّح وإزالة عبر كلّ مدير مكتشَف)، والبحث والتثبيت (مدير النظام / Flatpak / Snap)، والترقيات (سرد التحديثات المتاحة وتطبيقها)',
+                        'إضافات المتجر — إدارة محتوى opendesktop.org / KNewStuff (سمات وأيقونات ومؤشّرات وودجات بلازما وخلفيّات ومخطّطات ألوان…) بإزالة محميّة، والتثبيت عبر روابط ocs-url',
+                        'تكامل AppImage المتوافق مع GearLever — دمج/إزالة ملفّات AppImage بنفس مجلّد وصيغة GearLever (it.mijorus.gearlever) واحترام مجلّده المخصَّص وإعداد النقل مقابل النسخ؛ تُستخرَج البيانات الوصفيّة دون تشغيل الملفّ (قراءة unsquashfs عند إزاحة محسوبة من ترويسة ELF)',
+                        'تحديث ذاتيّ من داخل البرنامج — يفحص GitHub عن إصدار أحدث عند الإقلاع (مفعَّل افتراضيّاً)، ثمّ تنزيل وتحقّق SHA-256 وتثبيت: استبدال AppImage ذاتيّاً، أو تسليم .deb/.rpm لمدير الحزم عبر pkexec؛ وفحص تحديثات الحزم يبقى يدويّاً',
+                        'الأمن — إصلاح ثغرة حقن أوامر: كان بحث الحزم يمرّر الكلمة لصَدفة (sh -c)؛ صار وسائط بلا صَدفة مع تحقّق. وكلّ مسارات التثبيت/الترقية/الإزالة الجديدة عبر execProgram بأسماء مُتحقَّق منها، وإزالة إضافات المتجر وAppImage محميّة بمسار',
+                        'العمليّات تُرتَّب افتراضيّاً بنسبة المعالج (الأنشط أوّلاً) ترتيباً رقميّاً حيّاً؛ وتلميح شريط المهام يعرض درجة الحرارة؛ وأعمدة كلّ الجداول قابلة للتحجيم بحدود واضحة',
+                      ] },
                     { ver: '26.10 stable', date: '2026-08-19', headline: 'الاستجابة والتعريف · إنعاش النظام مُدرِك للقرص · مؤقّت الطاقة في صفحة الطاقة · جولة ترحيب وفحص تحديثات',
                       items: [
                         'إنعاش النظام مُدرِك للقرص — ضغط القرص (PSI) وعمود دخل/خرج لكلّ عمليّة، وتخفيف بـ ionice، وتبديل بنقرة إلى جدولة BFQ؛ والوضع التلقائيّ يمكن أن ينطلق على ضغط القرص',
@@ -438,7 +472,7 @@
                     { file: 'Services.png', title: 'Services' },
                     { file: 'Connections.png', title: 'Connections' },
                     { file: 'System_Cleaner.png', title: 'System Cleaner' },
-                    { file: 'Uninstaller.png', title: 'Uninstaller' },
+                    { file: 'Packages.png', title: 'Package & Software Manager' },
                     { file: 'System_Relief.png', title: 'System Relief' },
                     { file: 'Backup.png', title: 'Backup & Snapshots' },
                     { file: 'Recovery.png', title: 'File Recovery' },
@@ -456,7 +490,7 @@
                     { file: 'الخدمات.png', title: 'الخدمات' },
                     { file: 'الاتصالات.png', title: 'الاتصالات' },
                     { file: 'منظف_النظام.png', title: 'منظف النظام' },
-                    { file: 'إلغاء_التثبيت.png', title: 'إلغاء التثبيت' },
+                    { file: 'الحزم_والبرامج.png', title: 'مدير الحزم والبرامج' },
                     { file: 'إنعاش_النظام.png', title: 'إنعاش النظام' },
                     { file: 'النسخ_الاحتياطيّة.png', title: 'النسخ الاحتياطيّة' },
                     { file: 'الاستعادة.png', title: 'الاستعادة' },
@@ -521,9 +555,9 @@
             }, {
                 icon: '📋',
                 titleKey: 'System Tray',
-                descKey: 'CPU% and RAM% displayed in the tray tooltip, updated every 3 seconds.',
+                descKey: 'CPU%, RAM% and temperature in the tray tooltip, updated every 3 seconds.',
                 titleAr: 'شريط المهام',
-                descAr: 'يعرض CPU% و RAM% في Tooltip الشريط ويُحدَّث كل 3 ثوانٍ.',
+                descAr: 'يعرض CPU% و RAM% ودرجة الحرارة في Tooltip الشريط ويُحدَّث كل 3 ثوانٍ.',
             }, {
                 icon: '💾',
                 titleKey: 'Backup & Snapshots',
@@ -566,6 +600,30 @@
                 descKey: 'A translated welcome tour and an after-update "what\'s new" dialog (both with a language picker), an opt-in update check, and a one-click copy-share-text button.',
                 titleAr: 'التعريف والتحديثات والمشاركة',
                 descAr: 'جولة ترحيب مترجمة ونشرة «ما الجديد» بعد كلّ تحديث (كلتاهما بمُنتقي لغة)، وفحص تحديثات اختياريّ، وزرّ نسخ نصّ المشاركة بنقرة.',
+            }, {
+                icon: '📦',
+                titleKey: 'Package & Software Manager',
+                descKey: 'Install, upgrade and remove software across your system package manager, Flatpak and Snap — Installed, Search & Install and Upgrades tabs, plus external-app detection.',
+                titleAr: 'مدير الحزم والبرامج',
+                descAr: 'ثبّت وترقّ وأزل البرامج عبر مدير حزم نظامك و Flatpak و Snap — تبويبات المثبَّتة والبحث والتثبيت والترقيات، مع كشف البرامج الخارجيّة.',
+            }, {
+                icon: '🧩',
+                titleKey: 'Store add-ons & AppImages',
+                descKey: 'Manage opendesktop.org / KNewStuff content (themes, icons, plasmoids…), and integrate AppImages GearLever-compatibly — same folder & settings, metadata read without executing the file.',
+                titleAr: 'إضافات المتجر و AppImage',
+                descAr: 'أدر محتوى opendesktop.org / KNewStuff (سمات وأيقونات وودجات…)، وادمج ملفّات AppImage بأسلوب GearLever — نفس المجلّد والإعدادات، وقراءة البيانات دون تشغيل الملفّ.',
+            }, {
+                icon: '🔄',
+                titleKey: 'In-app self-update',
+                descKey: 'GT-STACER checks for a newer version and can download, SHA-256 verify and install it itself — replacing the AppImage, or the .deb/.rpm via pkexec.',
+                titleAr: 'تحديث ذاتيّ',
+                descAr: 'يفحص GT-STACER إصداراً أحدث ويستطيع تنزيله والتحقّق منه (SHA-256) وتثبيته بنفسه — باستبدال AppImage، أو .deb/.rpm عبر pkexec.',
+            }, {
+                icon: '🔒',
+                titleKey: 'Security hardening',
+                descKey: 'Fixed a command-injection vulnerability in package search; every privileged operation runs through validated, no-shell argv via pkexec.',
+                titleAr: 'تحصين أمنيّ',
+                descAr: 'إصلاح ثغرة حقن أوامر في بحث الحزم؛ وكلّ عمليّة مميّزة تمرّ عبر وسائط مُتحقَّق منها بلا صَدفة عبر pkexec.',
             }, ];
             const comparisonRows = [
                 { aspect: 'Framework', aspectAr: 'إطار العمل',
@@ -584,14 +642,14 @@
                   stacer: '✗', stacerAr: '✗', gtstacer: 'Circular gauge + time remaining', gtstacerAr: 'عدّاد دائريّ + الوقت المتبقّي', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'Flatpak Support', aspectAr: 'دعم Flatpak',
                   stacer: '✗', stacerAr: '✗', gtstacer: '✅', gtstacerAr: '✅', stacerIcon: '❌', gtstacerIcon: '✅' },
-                { aspect: 'Package Managers', aspectAr: 'مدراء الحزم',
-                  stacer: 'APT · Snap', stacerAr: 'APT · Snap', gtstacer: '28+ managers', gtstacerAr: '28+ مديراً', stacerIcon: '⚠️', gtstacerIcon: '✅' },
+                { aspect: 'Package management', aspectAr: 'إدارة الحزم',
+                  stacer: 'Uninstall only (APT · Snap)', stacerAr: 'إلغاء تثبيت فقط (APT · Snap)', gtstacer: 'Install + upgrade + remove · 28+ managers', gtstacerAr: 'تثبيت + ترقية + إزالة · 28+ مديراً', stacerIcon: '⚠️', gtstacerIcon: '✅' },
                 { aspect: 'Init Systems', aspectAr: 'أنظمة التهيئة',
                   stacer: 'systemd only', stacerAr: 'systemd فقط', gtstacer: 'systemd · OpenRC · runit · s6 · SysV', gtstacerAr: 'systemd · OpenRC · runit · s6 · SysV', stacerIcon: '⚠️', gtstacerIcon: '✅' },
                 { aspect: 'Loading Indicators', aspectAr: 'مؤشّرات التحميل',
                   stacer: '✗', stacerAr: '✗', gtstacer: 'Animated spinner overlay', gtstacerAr: 'طبقة دوّار متحرّكة', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'System Tray', aspectAr: 'شريط النظام',
-                  stacer: 'Tray icon', stacerAr: 'أيقونة شريط', gtstacer: 'Tray + live CPU% / RAM% tooltip', gtstacerAr: 'شريط + Tooltip حيّ لـ CPU%/RAM%', stacerIcon: '✅', gtstacerIcon: '✅' },
+                  stacer: 'Tray icon', stacerAr: 'أيقونة شريط', gtstacer: 'Tray + live CPU% / RAM% / temperature tooltip', gtstacerAr: 'شريط + Tooltip حيّ لـ CPU%/RAM%/الحرارة', stacerIcon: '✅', gtstacerIcon: '✅' },
                 { aspect: 'Welcome Screen', aspectAr: 'شاشة الترحيب',
                   stacer: '✗', stacerAr: '✗', gtstacer: '6 onboarding slides', gtstacerAr: '6 شرائح تعريفيّة', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'Wayland', aspectAr: 'Wayland',
@@ -620,11 +678,17 @@
                   stacer: '✗', stacerAr: '✗', gtstacer: 'Timeshift / Snapper / ZFS + rsync home mirror', gtstacerAr: 'Timeshift / Snapper / ZFS + مرآة rsync للمنزل', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'File recovery', aspectAr: 'استعادة الملفّات',
                   stacer: '✗', stacerAr: '✗', gtstacer: 'PhotoRec front-end — type-select + per-type sort', gtstacerAr: 'واجهة PhotoRec — تحديد الأنواع + فرز لكلّ نوع', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Store add-ons', aspectAr: 'إضافات المتجر',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'opendesktop.org / KNewStuff — manage + install (ocs-url)', gtstacerAr: 'opendesktop.org / KNewStuff — إدارة + تثبيت (ocs-url)', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'AppImage integration', aspectAr: 'تكامل AppImage',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'GearLever-compatible menu integration (extract without executing)', gtstacerAr: 'دمج في القائمة بأسلوب GearLever (استخراج بلا تشغيل)', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'In-app self-update', aspectAr: 'التحديث الذاتيّ',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Check + download + SHA-256 verify + install', gtstacerAr: 'فحص + تنزيل + تحقّق SHA-256 + تثبيت', stacerIcon: '❌', gtstacerIcon: '✅' },
             ];
 
             // ── Download data ──
-            // GT-STACER 26.10 STABLE — published 2026-08-19 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.10_STABLE
+            // GT-STACER 26.11 STABLE — published 2026-09-16 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
@@ -632,36 +696,36 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: 'f5a9bf09be8268fcdd9cea8953fa16f7059af154a6688e234a0fcf7f2e125592',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/GT-STACER-26.10-x86_64.AppImage',
-                filename: 'GT-STACER-26.10-x86_64.AppImage',
+                sha256: 'eb18159ee17bb723ac26bf938eab5658e21351968f868541c935a2f05e85ecb8',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/GT-STACER-26.11-x86_64.AppImage',
+                filename: 'GT-STACER-26.11-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
                 size: '2.1 MB',
-                sha256: '5c0e003fbd8c9178737d9826ac7b8451de3fcb6f44b617d57e46d4706f983348',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/GT-STACER_26.10_amd64.deb',
-                filename: 'GT-STACER_26.10_amd64.deb',
+                sha256: '6352191beabf97ece2f6c77e07b46554baacd27477d22ba9e9e4bd3f14641323',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/GT-STACER_26.11_amd64.deb',
+                filename: 'GT-STACER_26.11_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
                 size: '2.4 MB',
-                sha256: '9df4265ea5429abefe70d78da717693968ac06ddc119ffbf0db588b3f3ce6e4b',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/gt-stacer-26.10-2.x86_64.rpm',
-                filename: 'gt-stacer-26.10-2.x86_64.rpm',
+                sha256: 'b8636832af70eecc07674a68dc8c4ecf1ed4e9ed8240c2eb3039f7070d9f207d',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/gt-stacer-26.11-2.x86_64.rpm',
+                filename: 'gt-stacer-26.11-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
-                size: '2.1 MB',
-                sha256: 'a36633cce2dfe411d3b68d9f89937563d0fb7f74cc025a4ad0557e5f61eb80b1',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.10_STABLE/GT-STACER-26.10-x86_64.flatpak',
-                filename: 'GT-STACER-26.10-x86_64.flatpak',
+                size: '2.2 MB',
+                sha256: '4081e6e096151e1abb545e64c6d5b489c0a89c800c92a66cc53e65f56aaeb6d4',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11_STABLE/GT-STACER-26.11-x86_64.flatpak',
+                filename: 'GT-STACER-26.11-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

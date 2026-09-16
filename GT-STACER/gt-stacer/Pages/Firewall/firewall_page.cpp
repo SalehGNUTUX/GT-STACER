@@ -1,4 +1,5 @@
 #include "firewall_page.h"
+#include "../../Widgets/table_util.h"
 #include "../../Managers/theme.h"
 #include "../../Widgets/status_pill.h"
 #include <QComboBox>
@@ -46,8 +47,7 @@ FirewallPage::FirewallPage(QWidget *parent) : QWidget(parent)
     // Rules table.
     m_table = new QTableWidget(0, 4, this);
     m_table->setHorizontalHeaderLabels({tr("#"), tr("To"), tr("Action"), tr("From")});
-    m_table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    m_table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    setupResizableTable(m_table, 1);   // primary column fills; all resizable
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);

@@ -1,4 +1,5 @@
 #include "services_page.h"
+#include "../../Widgets/table_util.h"
 #include "ui_services_page.h"
 #include "../../Managers/tool_manager.h"
 #include "../../../gt-stacer-core/Tools/service_tool.h"
@@ -20,7 +21,7 @@ ServicesPage::ServicesPage(QWidget *parent)
     m_proxy->setFilterKeyColumn(0);
 
     ui->serviceTable->setModel(m_proxy);
-    ui->serviceTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    setupResizableTable(ui->serviceTable, 3);   // primary column fills; all resizable
     ui->serviceTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->serviceTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 

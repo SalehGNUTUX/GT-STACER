@@ -4,6 +4,7 @@
 namespace Ui { class SettingsPage; }
 class QTimer;
 class UpdateChecker;
+class SelfUpdater;
 
 class SettingsPage : public QWidget {
     Q_OBJECT
@@ -32,6 +33,7 @@ private:
     void showWhatsNew();
     void copyShareText();
     void runUpdateCheck();          // manual "Check now"
+    void downloadAndInstall();      // opt-in: fetch + verify + install the update
     QString shareText() const;      // description + link + hashtags for sharing
 
     Ui::SettingsPage *ui;
@@ -39,4 +41,5 @@ private:
     int     m_powerRemaining = 0;   // seconds left until the scheduled action
     int     m_powerAction    = 0;   // PowerTool::Action index
     UpdateChecker *m_updateChecker = nullptr;
+    QString        m_pendingVersion;   // version offered for download & install
 };

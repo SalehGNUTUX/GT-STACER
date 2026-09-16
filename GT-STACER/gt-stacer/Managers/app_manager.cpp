@@ -4,6 +4,7 @@
 #include "../Dialogs/quit_confirm_dialog.h"
 #include "../../gt-stacer-core/Info/cpu_info.h"
 #include "../../gt-stacer-core/Info/memory_info.h"
+#include "../../gt-stacer-core/Info/temperature_info.h"
 #include <QFile>
 #include <QGuiApplication>
 #include <QIcon>
@@ -180,6 +181,9 @@ void AppManager::updateTrayTooltip()
     QString tip = QString("GT-STACER\nCPU: %1%  |  RAM: %2%")
         .arg(static_cast<int>(cpu.total))
         .arg(static_cast<int>(mem.ramPercent()));
+    // Append the CPU/system temperature when the machine exposes a sensor.
+    if (auto temp = TemperatureInfo::cpuTemperature())
+        tip += QString("  |  %1: %2°C").arg(tr("Temp")).arg(static_cast<int>(*temp));
     if (m_keepAwake)
         tip += '\n' + tr("Keeping awake (sleep & screen locking blocked)");
     m_tray->setToolTip(tip);

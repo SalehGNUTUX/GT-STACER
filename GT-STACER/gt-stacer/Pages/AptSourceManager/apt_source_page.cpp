@@ -1,4 +1,5 @@
 #include "apt_source_page.h"
+#include "../../Widgets/table_util.h"
 #include "ui_apt_source_page.h"
 #include "../../Managers/tool_manager.h"
 #include "../../Dialogs/edit_source_dialog.h"
@@ -42,7 +43,7 @@ AptSourcePage::AptSourcePage(QWidget *parent)
     ui->sourceTable->setModel(m_model);
     // Stretch URI column
     ui->sourceTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    ui->sourceTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    setupResizableTable(ui->sourceTable, 1);   // primary column fills; all resizable
     ui->sourceTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->sourceTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->sourceTable->setItemDelegate(new FullTextDelegate(this));

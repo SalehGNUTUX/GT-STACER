@@ -475,6 +475,104 @@ bool PackageTool::remove(const QString &name, PkgMgr mgr)
     return CommandUtil::execProgram(prog, args, 120000) == 0;
 }
 
+// ─── Install ──────────────────────────────────────────────────────────────
+// Mirrors remove()'s security model exactly: the package name is validated with
+// isSafeIdentifier() (so no shell metacharacter can reach a command) and passed
+// as a distinct argv element via execProgram (no shell). Root managers go
+// through pkexec; user-level managers (flatpak/brew/pip/…) do not.
+bool PackageTool::install(const QString &name, PkgMgr mgr)
+{
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+
+    QString prog;
+    QStringList args;
+    bool needsRoot = true;
+
+    switch (mgr) {
+    case PkgMgr::APT:       prog = "apt-get";       args = {"install", "-y", name}; break;
+    case PkgMgr::DNF:
+    case PkgMgr::DNF5:      prog = "dnf";           args = {"install", "-y", name}; break;
+    case PkgMgr::YUM:       prog = "yum";           args = {"install", "-y", name}; break;
+    case PkgMgr::TDNF:      prog = "tdnf";          args = {"install", "-y", name}; break;
+    case PkgMgr::Pacman:    prog = "pacman";        args = {"-S", "--noconfirm", name}; break;
+    case PkgMgr::Zypper:    prog = "zypper";        args = {"install", "-y", name}; break;
+    case PkgMgr::XBPS:      prog = "xbps-install";  args = {"-y", name}; break;
+    case PkgMgr::APK:       prog = "apk";           args = {"add", name}; break;
+    case PkgMgr::Portage:   prog = "emerge";        args = {name}; break;
+    case PkgMgr::Nix:       prog = "nix-env";       args = {"-iA", name}; needsRoot = false; break;
+    case PkgMgr::RpmOstree: prog = "rpm-ostree";    args = {"install", name}; break;
+    case PkgMgr::Eopkg:     prog = "eopkg";         args = {"install", "-y", name}; break;
+    case PkgMgr::Equo:      prog = "equo";          args = {"install", name}; break;
+    case PkgMgr::Swupd:     prog = "swupd";         args = {"bundle-add", name}; break;
+    case PkgMgr::Guix:      prog = "guix";          args = {"install", name}; needsRoot = false; break;
+    case PkgMgr::Flatpak:   prog = "flatpak";       args = {"install", "-y", name}; needsRoot = false; break;
+    case PkgMgr::Snap:      prog = "snap";          args = {"install", name}; break;
+    case PkgMgr::Brew:      prog = "brew";          args = {"install", name}; needsRoot = false; break;
+    case PkgMgr::Conda:     prog = "conda";         args = {"install", "-y", name}; needsRoot = false; break;
+    case PkgMgr::Pip3:      prog = "pip3";          args = {"install", name}; needsRoot = false; break;
+    case PkgMgr::Cargo:     prog = "cargo";         args = {"install", name}; needsRoot = false; break;
+    case PkgMgr::Npm:       prog = "npm";           args = {"install", "-g", name}; needsRoot = false; break;
+    default:                return false;
+    }
+
+    if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
+    return CommandUtil::execProgram(prog, args, 600000) == 0;
+}
+
+// ─── Upgrade ──────────────────────────────────────────────────────────────
+bool PackageTool::upgrade(const QString &name, PkgMgr mgr)
+{
+    if (!CommandUtil::isSafeIdentifier(name)) return false;
+
+    QString prog;
+    QStringList args;
+    bool needsRoot = true;
+
+    switch (mgr) {
+    case PkgMgr::APT:       prog = "apt-get"; args = {"install", "--only-upgrade", "-y", name}; break;
+    case PkgMgr::DNF:
+    case PkgMgr::DNF5:      prog = "dnf";     args = {"upgrade", "-y", name}; break;
+    case PkgMgr::YUM:       prog = "yum";     args = {"update", "-y", name}; break;
+    case PkgMgr::Zypper:    prog = "zypper";  args = {"update", "-y", name}; break;
+    case PkgMgr::Pacman:    prog = "pacman";  args = {"-S", "--noconfirm", name}; break;
+    case PkgMgr::XBPS:      prog = "xbps-install"; args = {"-u", "-y", name}; break;
+    case PkgMgr::APK:       prog = "apk";     args = {"upgrade", name}; break;
+    case PkgMgr::Flatpak:   prog = "flatpak"; args = {"update", "-y", name}; needsRoot = false; break;
+    case PkgMgr::Snap:      prog = "snap";    args = {"refresh", name}; break;
+    case PkgMgr::Brew:      prog = "brew";    args = {"upgrade", name}; needsRoot = false; break;
+    case PkgMgr::Pip3:      prog = "pip3";    args = {"install", "--upgrade", name}; needsRoot = false; break;
+    default:                return false;
+    }
+
+    if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
+    return CommandUtil::execProgram(prog, args, 600000) == 0;
+}
+
+bool PackageTool::upgradeAll(PkgMgr mgr)
+{
+    QString prog;
+    QStringList args;
+    bool needsRoot = true;
+
+    switch (mgr) {
+    case PkgMgr::APT:       prog = "apt-get"; args = {"upgrade", "-y"}; break;
+    case PkgMgr::DNF:
+    case PkgMgr::DNF5:      prog = "dnf";     args = {"upgrade", "-y"}; break;
+    case PkgMgr::YUM:       prog = "yum";     args = {"update", "-y"}; break;
+    case PkgMgr::Zypper:    prog = "zypper";  args = {"update", "-y"}; break;
+    case PkgMgr::Pacman:    prog = "pacman";  args = {"-Syu", "--noconfirm"}; break;
+    case PkgMgr::XBPS:      prog = "xbps-install"; args = {"-Su", "-y"}; break;
+    case PkgMgr::APK:       prog = "apk";     args = {"upgrade"}; break;
+    case PkgMgr::Flatpak:   prog = "flatpak"; args = {"update", "-y"}; needsRoot = false; break;
+    case PkgMgr::Snap:      prog = "snap";    args = {"refresh"}; break;
+    case PkgMgr::Brew:      prog = "brew";    args = {"upgrade"}; needsRoot = false; break;
+    default:                return false;
+    }
+
+    if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
+    return CommandUtil::execProgram(prog, args, 1800000) == 0;
+}
+
 // ─── Cache cleaning ───────────────────────────────────────────────────────
 // Every branch uses execProgram (no shell), and falls through to false only
 // when the manager genuinely doesn't expose a cache-clean operation
@@ -624,13 +722,21 @@ bool PackageTool::update(PkgMgr mgr)
 QVector<PackageInfo> PackageTool::search(const QString &query, PkgMgr mgr)
 {
     QVector<PackageInfo> result;
-    QString cmd;
+
+    // SECURITY: the query used to be concatenated into a `/bin/sh -c` string —
+    // a command-injection vector (e.g. "x; rm -rf ~"). It is now (1) validated to
+    // a conservative character set and (2) passed as separate argv elements via
+    // execProgramOutput, which never invokes a shell. Both together close the hole.
+    const QString q = query.trimmed();
+    static const QRegularExpression kSafe("^[A-Za-z0-9 ._+:@-]{1,64}$");
+    if (q.isEmpty() || !kSafe.match(q).hasMatch()) return result;
+    const QStringList terms = q.split(' ', Qt::SkipEmptyParts);
 
     switch (mgr) {
-    case PkgMgr::APT:
-        cmd = "apt-cache search " + query + " 2>/dev/null";
-        for (const auto &line : CommandUtil::execLines(cmd)) {
-            int sep = line.indexOf(" - ");
+    case PkgMgr::APT: {
+        const QString out = CommandUtil::execProgramOutput("apt-cache", QStringList{"search"} + terms, 20000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const int sep = line.indexOf(" - ");
             if (sep < 0) continue;
             PackageInfo p; p.manager = mgr;
             p.name        = line.left(sep).trimmed();
@@ -638,30 +744,150 @@ QVector<PackageInfo> PackageTool::search(const QString &query, PkgMgr mgr)
             result << p;
         }
         break;
+    }
     case PkgMgr::DNF:
-    case PkgMgr::DNF5:
-        cmd = "dnf search " + query + " 2>/dev/null";
-        for (const auto &line : CommandUtil::execLines(cmd)) {
-            auto p2 = line.split(':');
-            if (p2.size() < 2) continue;
+    case PkgMgr::DNF5: {
+        const QString out = CommandUtil::execProgramOutput("dnf", QStringList{"search"} + terms, 30000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const int sep = line.indexOf(':');
+            if (sep < 0 || line.startsWith('=') || line.startsWith(' ')) continue;
             PackageInfo p; p.manager = mgr;
-            p.name        = p2[0].trimmed().split('.').first();
-            p.description = p2[1].trimmed();
-            result << p;
+            p.name        = line.left(sep).trimmed().split('.').first();
+            p.description = line.mid(sep + 1).trimmed();
+            if (!p.name.isEmpty()) result << p;
         }
         break;
-    case PkgMgr::Pacman:
-        cmd = "pacman -Ss " + query + " 2>/dev/null";
-        for (const auto &line : CommandUtil::execLines(cmd)) {
+    }
+    case PkgMgr::Zypper: {
+        const QString out = CommandUtil::execProgramOutput("zypper", QStringList{"--no-refresh", "search"} + terms, 30000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            if (!line.startsWith("i") && !line.startsWith("  ")) continue;
+            const QStringList cols = line.split('|');
+            if (cols.size() < 3) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name        = cols[1].trimmed();
+            p.description = cols[2].trimmed();
+            if (!p.name.isEmpty() && p.name != "Name") result << p;
+        }
+        break;
+    }
+    case PkgMgr::Pacman: {
+        const QString out = CommandUtil::execProgramOutput("pacman", QStringList{"-Ss"} + terms, 20000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
             if (!line.startsWith(' ') && line.contains('/')) {
                 PackageInfo p; p.manager = mgr;
-                auto nameVer = line.split('/').last().split(' ');
+                const auto nameVer = line.split('/').last().split(' ');
                 p.name    = nameVer.value(0);
                 p.version = nameVer.value(1);
                 result << p;
             }
         }
         break;
+    }
+    case PkgMgr::Flatpak: {
+        // Tab-separated: Name  Description  App ID  Version  Branch  Remotes
+        const QString out = CommandUtil::execProgramOutput("flatpak", QStringList{"search", "--columns=name,description,application,version"} + terms, 20000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const QStringList c = line.split('\t');
+            if (c.size() < 3) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name        = c.value(2).trimmed();   // app-id is what install() needs
+            p.description = c.value(0).trimmed() + " — " + c.value(1).trimmed();
+            p.version     = c.value(3).trimmed();
+            if (!p.name.isEmpty() && p.name != "Application ID") result << p;
+        }
+        break;
+    }
+    case PkgMgr::Snap: {
+        const QString out = CommandUtil::execProgramOutput("snap", QStringList{"find"} + terms, 20000);
+        const QStringList lines = out.split('\n', Qt::SkipEmptyParts);
+        for (int i = 1; i < lines.size(); ++i) {           // skip the header row
+            const QStringList c = lines[i].split(QRegularExpression("\\s{2,}"), Qt::SkipEmptyParts);
+            if (c.size() < 2) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name        = c.value(0).trimmed();
+            p.version     = c.value(1).trimmed();
+            p.description = c.size() > 4 ? c.value(4).trimmed() : QString();
+            if (!p.name.isEmpty()) result << p;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return result;
+}
+
+// ─── Upgradable packages ──────────────────────────────────────────────────
+// Packages with a newer version available. Read-only (no root for the query on
+// most managers); all through execProgramOutput (no shell).
+QVector<PackageInfo> PackageTool::upgradable(PkgMgr mgr)
+{
+    QVector<PackageInfo> result;
+    switch (mgr) {
+    case PkgMgr::APT: {
+        // apt list --upgradable: "name/repo NEWVER arch [upgradable from: OLDVER]"
+        const QString out = CommandUtil::execProgramOutput("apt", {"list", "--upgradable"}, 30000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const int slash = line.indexOf('/');
+            if (slash <= 0 || line.startsWith("Listing")) continue;
+            const QStringList parts = line.split(' ', Qt::SkipEmptyParts);
+            PackageInfo p; p.manager = mgr;
+            p.name    = line.left(slash);
+            p.version = parts.value(1);
+            result << p;
+        }
+        break;
+    }
+    case PkgMgr::DNF:
+    case PkgMgr::DNF5: {
+        const QString out = CommandUtil::execProgramOutput("dnf", {"--quiet", "check-update"}, 60000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const QStringList c = line.split(' ', Qt::SkipEmptyParts);
+            if (c.size() < 3 || line.startsWith("Last metadata")) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name    = c.value(0).split('.').first();
+            p.version = c.value(1);
+            if (!p.name.isEmpty()) result << p;
+        }
+        break;
+    }
+    case PkgMgr::Pacman: {
+        const QString out = CommandUtil::execProgramOutput("pacman", {"-Qu"}, 30000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const QStringList c = line.split(' ', Qt::SkipEmptyParts);
+            if (c.isEmpty()) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name    = c.value(0);
+            p.version = c.value(3);   // "name old -> new"
+            result << p;
+        }
+        break;
+    }
+    case PkgMgr::Flatpak: {
+        const QString out = CommandUtil::execProgramOutput("flatpak", {"remote-ls", "--updates", "--columns=application,version"}, 30000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const QStringList c = line.split('\t');
+            PackageInfo p; p.manager = mgr;
+            p.name    = c.value(0).trimmed();
+            p.version = c.value(1).trimmed();
+            if (!p.name.isEmpty() && p.name != "Application ID") result << p;
+        }
+        break;
+    }
+    case PkgMgr::Snap: {
+        const QString out = CommandUtil::execProgramOutput("snap", {"refresh", "--list"}, 30000);
+        const QStringList lines = out.split('\n', Qt::SkipEmptyParts);
+        for (int i = 1; i < lines.size(); ++i) {
+            const QStringList c = lines[i].split(QRegularExpression("\\s{2,}"), Qt::SkipEmptyParts);
+            if (c.size() < 2) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name    = c.value(0).trimmed();
+            p.version = c.value(1).trimmed();
+            if (!p.name.isEmpty()) result << p;
+        }
+        break;
+    }
     default:
         break;
     }

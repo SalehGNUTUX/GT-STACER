@@ -22,6 +22,8 @@ add_library(gt-stacer-core STATIC
     Tools/backup_tool.cpp
     Tools/recovery_tool.cpp
     Tools/relief_tool.cpp
+    Tools/store_addon_tool.cpp
+    Tools/appimage_tool.cpp
     Utils/command_util.cpp
     Utils/file_util.cpp
     Utils/format_util.cpp

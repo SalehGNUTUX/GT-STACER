@@ -86,6 +86,18 @@
   </provides>
 
   <releases>
+    <release version="26.11" date="2026-09-16">
+      <description>
+        <p>Software management. Highlights:</p>
+        <ul>
+          <li>The Uninstaller becomes a full Package &amp; Software Manager: install, upgrade and remove software from your system package manager, Flatpak and Snap, in a tabbed page</li>
+          <li>Manage opendesktop.org / KNewStuff store add-ons (themes, icons, plasmoids…) and integrate AppImages into your app menu — GearLever-compatible, reading its folder and settings, extracting metadata without executing the AppImage</li>
+          <li>In-app updates: GT-STACER checks for a newer version and can download, verify (SHA-256) and install it (AppImage self-replace, or the package via pkexec)</li>
+          <li>Security: fixed a command-injection vulnerability in package search; all new package operations use no-shell argv with validated names</li>
+          <li>Processes default to busiest-first (CPU %); the tray tooltip shows temperature; table columns are freely resizable everywhere</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.10" date="2026-08-19">
       <description>
         <p>Responsiveness &amp; onboarding. Highlights:</p>

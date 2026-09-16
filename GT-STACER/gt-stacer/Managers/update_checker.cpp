@@ -4,6 +4,7 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QRegularExpression>
 #include <QUrl>
 
@@ -48,9 +49,20 @@ void UpdateChecker::checkNow()
             emit checkFailed(tr("Could not read the latest release version."));
             return;
         }
-        const QString latest  = m.captured(1);
+        // Capture the downloadable assets so the self-updater can fetch the right one.
+        m_assets.clear();
+        for (const auto &a : obj.value("assets").toArray()) {
+            const QJsonObject ao = a.toObject();
+            ReleaseAsset asset;
+            asset.name = ao.value("name").toString();
+            asset.url  = ao.value("browser_download_url").toString();
+            asset.size = ao.value("size").toVariant().toLongLong();
+            if (!asset.name.isEmpty() && !asset.url.isEmpty()) m_assets << asset;
+        }
+        m_latestTag     = tag;
+        m_latestVersion = m.captured(1);
         const QString current = QStringLiteral(APP_VERSION);
-        if (isNewer(latest, current)) emit updateAvailable(latest, url);
-        else                          emit upToDate(current);
+        if (isNewer(m_latestVersion, current)) emit updateAvailable(m_latestVersion, url);
+        else                                   emit upToDate(current);
     });
 }

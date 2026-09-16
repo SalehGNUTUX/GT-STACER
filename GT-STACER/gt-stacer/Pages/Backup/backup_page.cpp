@@ -1,4 +1,5 @@
 #include "backup_page.h"
+#include "../../Widgets/table_util.h"
 #include "../../../gt-stacer-core/Tools/backup_tool.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
 #include "../../Managers/theme.h"
@@ -104,7 +105,7 @@ void BackupPage::buildSnapshotSection()
 
     m_snapTable = new QTableWidget(0, 3, m_snapBox);
     m_snapTable->setHorizontalHeaderLabels({tr("Date"), tr("Tags"), tr("Description")});
-    m_snapTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    setupResizableTable(m_snapTable, 2);   // primary column fills; all resizable
     m_snapTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_snapTable->setSelectionMode(QAbstractItemView::SingleSelection);
     m_snapTable->setEditTriggers(QAbstractItemView::NoEditTriggers);

@@ -1,4 +1,5 @@
 #include "relief_page.h"
+#include "../../Widgets/table_util.h"
 #include "../../../gt-stacer-core/Tools/relief_tool.h"
 #include "../../../gt-stacer-core/Info/memory_info.h"
 #include "../../../gt-stacer-core/Info/cpu_info.h"
@@ -90,7 +91,7 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     // Candidate table.
     m_table = new QTableWidget(0, 5, this);
     m_table->setHorizontalHeaderLabels({tr("Process"), tr("User"), tr("Memory"), tr("CPU %"), tr("Disk")});
-    m_table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    setupResizableTable(m_table, 0);   // primary column fills; all resizable
     m_table->setSelectionMode(QAbstractItemView::NoSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_table->verticalHeader()->setVisible(false);

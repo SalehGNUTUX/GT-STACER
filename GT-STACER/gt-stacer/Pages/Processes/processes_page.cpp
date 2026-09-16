@@ -1,5 +1,6 @@
 #include "processes_page.h"
 #include "ui_processes_page.h"
+#include "../../Widgets/table_util.h"
 #include "../../Managers/info_manager.h"
 #include "../../Managers/setting_manager.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
@@ -25,6 +26,19 @@ public:
     void setQuery(const QString &q) { m_query = q.trimmed(); invalidateFilter(); }
 
 protected:
+    // PID (0), CPU% (3) and Memory (4) must sort by their stored NUMERIC value
+    // (Qt::UserRole), not the display text — otherwise "10%" sorts below "2%" and
+    // "1.5 GB" below "900 MB". Name/User fall back to the default string compare.
+    bool lessThan(const QModelIndex &l, const QModelIndex &r) const override {
+        const int col = l.column();
+        if (col == 0 || col == 3 || col == 4) {
+            const double lv = l.data(Qt::UserRole).toDouble();
+            const double rv = r.data(Qt::UserRole).toDouble();
+            if (lv != rv) return lv < rv;
+        }
+        return QSortFilterProxyModel::lessThan(l, r);
+    }
+
     bool filterAcceptsRow(int row, const QModelIndex &parent) const override {
         if (m_query.isEmpty()) return true;
         const QAbstractItemModel *m = sourceModel();
@@ -59,10 +73,14 @@ ProcessesPage::ProcessesPage(QWidget *parent)
     m_proxy = proxy;
 
     ui->processTable->setModel(m_proxy);
-    ui->processTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    setupResizableTable(ui->processTable, 1);   // Name fills; all columns resizable
     ui->processTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->processTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->processTable->setSortingEnabled(true);
+    // The page exists to show what's using the machine — so default to CPU%,
+    // busiest first, and keep re-sorting live as usage changes (task-manager
+    // behaviour). The user can click any other column to re-sort at will.
+    ui->processTable->sortByColumn(3, Qt::DescendingOrder);
 
     // Inform users they can search by PID / cmdline too.
     ui->searchEdit->setPlaceholderText(tr("Search by name, PID, command, or user…"));
