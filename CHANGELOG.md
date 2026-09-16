@@ -6,6 +6,58 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.11-stable] — 2026-09-16
+
+The "software management" release. The Uninstaller becomes a full Package &
+Software Manager; the app can update itself; and a real command-injection hole
+was fixed. No new hard dependency.
+
+### Package & Software Manager (evolves the Uninstaller page, same sidebar slot)
+- **Installed** — browse and remove software across every detected manager
+  (multi-select), as before.
+- **Search & Install** — search the system package manager, Flatpak or Snap and
+  install packages. New core: `PackageTool::install()` / `upgrade()` /
+  `upgradeAll()` / `upgradable()`, mirroring the secure `remove()` model
+  (`isSafeIdentifier` + argv + `pkexec`).
+- **Upgrades** — list packages with available updates and apply them (selected or
+  all). Checking is manual — no automatic package-update polling.
+- **Store add-ons** — manage opendesktop.org / KNewStuff content installed under
+  `~/.local/share` (Plasma themes, icons, cursors, plasmoids, wallpapers, colour
+  schemes…): remove (guarded) and install via `ocs-url://` links, or open the store.
+- **AppImages** — integrate/remove AppImages, GearLever-compatible (below).
+
+### AppImage integration (GearLever-compatible)
+- Uses the **same managed folder and launcher format** as GearLever
+  (`it.mijorus.gearlever`) — reads its configured folder and move-vs-clone
+  preference from its keyfile, so apps integrated by either tool appear in both,
+  with no duplication. Works standalone when GearLever is absent (defaults to
+  `~/AppImages`, clone).
+- Integration extracts the icon and desktop entry **without executing the
+  AppImage** — it computes the squashfs offset from the ELF header and reads it
+  with `unsquashfs`. Writes a valid freedesktop launcher (`desktop-file-validate`
+  clean).
+
+### In-app updates
+- Checks GitHub for a newer GT-STACER version on startup (**on by default**) and
+  can **download → verify SHA-256 → install** the update: replace the running
+  AppImage (atomic, no root), or hand the `.deb`/`.rpm` to the package manager via
+  `pkexec`; Flatpak/source builds get guidance. Nothing runs without an explicit
+  click; the checksum is verified before any install.
+
+### Security
+- **Fixed a command-injection vulnerability:** package search concatenated the
+  user's query into a `sh -c` string. It is now passed as argv (no shell) and
+  validated to a safe character set. All new install/upgrade/remove paths use
+  `execProgram` with validated names; store-add-on and AppImage removal are
+  path-guarded; AppImage metadata is read without executing the file.
+
+### UI
+- **Processes** default to CPU %, busiest first, sorted numerically and live.
+- **Tray tooltip** shows the CPU/system temperature next to CPU % / RAM %.
+- **Resizable table columns everywhere** — a shared helper keeps the primary
+  column filling the width while every column stays freely resizable with a
+  visible, grabbable drag handle; clearer header separators.
+
 ## [26.10-stable] — 2026-08-19
 
 The "responsiveness & onboarding" release. System Relief learns about disk I/O,
@@ -458,6 +510,7 @@ safety.
 
 ---
 
+[26.11-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11_STABLE
 [26.10-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.10_STABLE
 [26.09-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.09_STABLE
 [26.08-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.08_STABLE

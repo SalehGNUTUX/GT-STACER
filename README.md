@@ -7,7 +7,7 @@
 ### Linux System Optimizer and Monitor
 **محسّن ومراقب نظام لينكس**
 
-[![Version](https://img.shields.io/badge/version-26.10--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
+[![Version](https://img.shields.io/badge/version-26.11--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green?style=flat-square)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-6.2+-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.qt.io)
 [![C++](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)](https://isocpp.org)
@@ -18,14 +18,15 @@
 
 </div>
 
-> ## 🎉 ما الجديد في 26.10 stable
+> ## 🎉 ما الجديد في 26.11 stable
 >
-> - 💽 **«إنعاش النظام» صار مُدرِكاً للقرص** — يعرض **ضغط القرص (PSI)** ومعدّل دخل/خرج كلّ عمليّة (فترى مَن يُرهق القرص)، و**«تخفيف ضغط القرص»** يخفض أولويّة العمليّة (`ionice`) بلا تجميدها، و**«بدّل إلى BFQ»** بنقرة — أكبر مكسب لاستجابة الأقراص القديمة تحت الحِمل. والوضع التلقائيّ يمكن أن ينطلق على ضغط القرص أيضاً.
-> - ⏻ **مؤقّت الطاقة في صفحة «الطاقة»** — الإطفاء/الإعادة/التعليق/السُبات المجدول بعدّاد حيّ صار متاحاً في صفحة الطاقة أيضاً، لا في الإعدادات فقط.
-> - 🎬 **جولة ترحيب ونشرة مستجدّات** — الجولة قابلة لإعادة العرض من الإعدادات، ونشرة «ما الجديد» تظهر مرّة بعد كلّ تحديث؛ كلتاهما مترجمة وفيهما **مُنتقي لغة** (الجولة مكان اختيار اللغة أوّل تشغيل).
-> - 🔔 **فحص تحديثات وزرّ مشاركة** — فحص اختياريّ يُعلمك بصدور إصدار أحدث (عبر GitHub، بلا تنزيل)، وزرّ **«انسخ نصّ المشاركة»** (وصف + رابط + وسوم).
-> - 🧭 **ترتيب** — «الخدمات» صارت تحت «العمليّات» في الشريط الجانبيّ، وخانة العربيّة بُسِّطت إلى «العربية».
-> - 🔒 **أمن** — كل العمليات الحساسة عبر pkexec بـ execProgram (لا shell). انظر [CHANGELOG.md](CHANGELOG.md) للقائمة الكاملة.
+> - 📦 **مدير الحزم و البرامج (تطوير لقسم «إلغاء التثبيت»)** — صفحة بتبويبات احترافيّة: **المثبَّتة** (تصفّح وإزالة عبر كلّ مدير مكتشَف)، و**البحث والتثبيت** (ابحث في مدير نظامك / Flatpak / Snap وثبِّت)، و**الترقيات** (سرد التحديثات المتاحة وتطبيقها)، و**إضافات المتجر** (إدارة محتوى opendesktop.org / KNewStuff — سمات وأيقونات وودجات… — والتثبيت عبر روابط `ocs-url`)، و**AppImage**.
+> - 🧩 **تكامل AppImage بأسلوب GearLever** — ادمج ملفّ AppImage في قائمة تطبيقاتك بنقرة؛ يستعمل GT-STACER **نفس مجلّد وصيغة مُشغِّلات GearLever** (`it.mijorus.gearlever`) ويحترم إعداداته (مجلّدك المخصَّص، النقل مقابل النسخ)، فتظهر البرامج المدموجة من أيّ الأداتين في كلتيهما بلا تكرار. تُستخرَج الأيقونة والاسم **دون تشغيل ملفّ AppImage** (قراءة `unsquashfs` آمنة عند إزاحة squashfs).
+> - 🔄 **تحديث ذاتيّ من داخل البرنامج** — يفحص GT-STACER إصداراً أحدث عند الإقلاع (مفعَّل افتراضيّاً) ويستطيع **التنزيل والتحقّق (SHA-256) والتثبيت** بنفسه — يستبدل ملفّ AppImage، أو يُسلِّم `.deb`/`.rpm` لمدير حزمك عبر `pkexec`. أمّا فحص تحديثات **الحزم** فيبقى يدويّاً. لا شيء يُنزَّل أو يُثبَّت دون نقرتك.
+> - 🔒 **تحصين أمنيّ** — أُصلحت ثغرة **حقن أوامر** حقيقيّة: كان البحث عن الحزم يمرّر كلمتك لصَدفة (`sh -c`)، فقد يُنفِّذ حدٌّ مُصاغ بخبث أوامر عشوائيّة. صار الآن يُمرَّر كوسائط (بلا صَدفة) ويُتحقَّق منه. وكلّ مسار تثبيت/ترقية/إزالة جديد يمرّ عبر `execProgram` بأسماء مُتحقَّق منها.
+> - ⚡ **العمليّات: الأنشط أوّلاً** — تُرتَّب قائمة العمليّات افتراضيّاً بـ**نسبة المعالج تنازليّاً** (وترتيب رقميّ حيّ)، فترى مَن يُرهق الجهاز لحظةَ فتحك القسم بلا نقر على أيّ عمود.
+> - 🌡️ **درجة الحرارة في تلميح شريط المهام** — يعرض التلميح الآن درجة حرارة المعالج/الجهاز إلى جانب نسبتَي المعالج والذاكرة.
+> - 🖱️ **أعمدة جداول قابلة للتحجيم في كلّ الأقسام** — صارت حدود الأعمدة واضحةً وسهلة السحب في كلّ جدول (والعمود الأساسيّ يبقى يملأ العرض).
 
 ---
 
@@ -44,7 +45,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 ### ✨ ما الجديد في GT-STACER مقارنةً بالأصل
 
-| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.10 (2026) |
+| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.11 (2026) |
 |---|---|---|
 | إطار العمل | Qt5 (EOL) | **Qt6 ≥ 6.2** |
 | معيار C++ | C++11 | **C++17** |
@@ -58,7 +59,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | مدراء الحزم | APT · Snap | **28+ مدير** |
 | أنظمة init | systemd فقط | systemd · OpenRC · runit · s6 · SysV |
 | مؤشرات التحميل | ✗ | ✅ Loading overlay متحرك على كل عملية |
-| شريط المهام | ✗ | ✅ CPU% وRAM% في الـ Tooltip لحظياً |
+| شريط المهام | ✗ | ✅ CPU% وRAM% **ودرجة الحرارة** في الـ Tooltip لحظياً |
 | شاشة الترحيب | ✗ | ✅ 6 شرائح تعريفية عند أول تشغيل |
 | Wayland | جزئي | ✅ كامل |
 | العربية | ✅ | ✅ ar_MA · RTL · أرقام غربية 🇲🇦 |
@@ -69,7 +70,10 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | تنبيهات | ✗ | **libnotify + UI كامل في Settings** (4 عتبات + تعطيل) |
 | اختصارات لوحة المفاتيح | ✗ | **Ctrl+1..0** للتنقل · F1 · Ctrl+R · Ctrl+Q |
 | أيقونة Wayland | ✗ | **app_id صحيح** + ملف .desktop |
-| Uninstaller | حزمة واحدة | **متعدد التحديد** + progress تتابعي + **كشف البرامج الخارجيّة** (/opt · AppImage · سكربتات) |
+| مدير الحزم والبرامج | إلغاء تثبيت فقط | **تثبيت + ترقية + إزالة** (مدير النظام · Flatpak · Snap) بتبويبات + كشف البرامج الخارجيّة (/opt · سكربتات) |
+| إضافات المتجر | ✗ | ✅ **opendesktop.org / KNewStuff** — إدارة المثبَّت + تثبيت عبر `ocs-url` |
+| AppImage | ✗ | ✅ **دمج في القائمة بأسلوب GearLever** (نفس المجلّد والإعدادات، استخراج بلا تشغيل) |
+| تحديث ذاتيّ | ✗ | ✅ **فحص + تنزيل + تحقّق SHA-256 + تثبيت** (AppImage/DEB/RPM) من داخل البرنامج |
 | إنعاش النظام | ✗ | ✅ **تجميد/استئناف** (SIGSTOP/SIGCONT) للعمليات الخاملة — يدويّ + تلقائيّ |
 | مؤقّت الطاقة | ✗ | ✅ **إطفاء/إعادة/تعليق/سُبات** مجدول بعدّاد حيّ عبر logind |
 | بدء التشغيل | ✗ | ✅ **autostart موثوق** (.desktop نصّي) + تأخير + Flatpak/Snap |
@@ -103,7 +107,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 - **سلوك الإغلاق:** افتراضي = تصغير للشريط، قابل للتغيير من الإعدادات
 
 #### 🔧 إدارة النظام
-- **العمليات:** ترتيب · بحث · إنهاء مع تأكيد
+- **العمليات:** الأنشط أوّلاً افتراضيّاً (نسبة المعالج تنازليّاً) · ترتيب رقميّ حيّ · بحث · إنهاء مع تأكيد
 - **الخدمات:** start/stop/enable/disable لـ systemd · OpenRC · runit · s6 · SysV
 - **System Cleaner:** فحص في خلفية منفصلة مع spinner · أعمدة قابلة للتوسيع · ألوان حسب الحجم · **يعرض إنشاء نقطة استعادة قبل التنظيف الجذريّ الخطر**
 - **مصادر APT:** نقر مزدوج يفتح نافذة تعديل كاملة · Tooltip يعرض URL كامل
@@ -124,6 +128,14 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 - **إنعاش القرص:** «إنعاش النظام» يقرأ **ضغط القرص (PSI)** ومعدّل دخل/خرج كلّ عمليّة (عمود «قرص»)؛ و**تخفيف ضغط القرص** يخفض أولويّة العمليّة (`ionice` خامل) بلا تجميدها؛ و**تبديل جدولة القرص إلى BFQ** بنقرة (أنجع مكسب للأقراص القديمة تحت الحِمل). الوضع التلقائيّ يمكن أن ينطلق على ضغط القرص
 - **مؤقّت الطاقة:** الإطفاء/الإعادة/التعليق/السُبات المجدول بعدّاد حيّ صار متاحاً في صفحة «الطاقة» أيضاً
 - **التعريف والتحديثات والمشاركة:** جولة ترحيب قابلة لإعادة العرض + نشرة «ما الجديد» بعد كلّ تحديث (كلتاهما مترجمة بمُنتقي لغة داخليّ) + فحص تحديثات اختياريّ عبر GitHub + زرّ «انسخ نصّ المشاركة»
+
+#### 📦 مدير الحزم والبرامج والتحديث الذاتيّ (26.11)
+- **مدير الحزم والبرامج:** تطوير لقسم «إلغاء التثبيت» إلى صفحة بخمسة تبويبات — **المثبَّتة** (تصفّح وإزالة عبر كلّ مدير مكتشَف + كشف البرامج الخارجيّة) · **البحث والتثبيت** (بحث في مدير النظام / Flatpak / Snap ثمّ تثبيت) · **الترقيات** (سرد التحديثات المتاحة وتطبيقها) · **إضافات المتجر** · **AppImage**
+- **إضافات المتجر (opendesktop.org / KNewStuff):** إدارة المحتوى المثبَّت (سمات · أيقونات · ودجات بلازما · مخطّطات ألوان · خلفيّات…) بإزالة محميّة بمسار، والتثبيت عبر روابط `ocs-url` (يُخفى المُثبِّت إن غاب)
+- **تكامل AppImage بأسلوب GearLever:** دمج ملفّ AppImage في قائمة تطبيقاتك بنقرة بنفس مجلّد وصيغة GearLever (`it.mijorus.gearlever`) واحترام إعداداته (المجلّد المخصَّص، النقل مقابل النسخ)، فلا تكرار مع GearLever إن كان مثبَّتاً؛ تُستخرَج البيانات الوصفيّة **دون تشغيل الملفّ** (قراءة `unsquashfs` عند إزاحة squashfs المحسوبة من ترويسة ELF)
+- **التحديث الذاتيّ:** فحص إصدار أحدث عند الإقلاع (مفعَّل افتراضيّاً)، ثمّ **تنزيل + تحقّق SHA-256 + تثبيت** من داخل البرنامج (استبدال AppImage ذاتيّاً، أو تسليم `.deb`/`.rpm` عبر `pkexec`)؛ وفحص تحديثات **الحزم** يبقى يدويّاً
+- **تحصين أمنيّ:** إصلاح ثغرة **حقن أوامر** في بحث الحزم (كانت الكلمة تمرّ لصَدفة) — صارت وسائط بلا صَدفة مع تحقّق؛ وكلّ عمليّات الحزم الجديدة عبر `execProgram` بأسماء مُتحقَّق منها
+- **تحسينات الجداول والعمليّات:** العمليّات تُرتَّب افتراضيّاً بنسبة المعالج تنازليّاً؛ درجة الحرارة في تلميح شريط المهام؛ أعمدة كلّ الجداول قابلة للتحجيم بحدود واضحة
 
 #### 📦 دعم مدراء الحزم (28+ مدير)
 
@@ -148,7 +160,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### 🌐 دعم اللغات (19 لغة، كل ملفات .qm تُولَّد 100%)
 
-في v26.10، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
+في v26.11، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
 
 | اللغة | تغطية أصلية | الباقي (إنجليزي fallback) | العلم |
 |---|---|---|---|
@@ -180,13 +192,13 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### ⚡ AppImage — لا تثبيت مطلوب
 ```bash
-chmod +x GT-STACER-26.10-x86_64.AppImage
-./GT-STACER-26.10-x86_64.AppImage
+chmod +x GT-STACER-26.11-x86_64.AppImage
+./GT-STACER-26.11-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.10_amd64.deb
+sudo dpkg -i GT-STACER_26.11_amd64.deb
 sudo apt-get install -f          # إصلاح الاعتماديات إن وُجد نقص
 ```
 
@@ -194,7 +206,7 @@ sudo apt-get install -f          # إصلاح الاعتماديات إن وُج
 
 #### Fedora / RHEL / AlmaLinux / Rocky
 ```bash
-sudo dnf install gt-stacer-26.10-2.x86_64.rpm
+sudo dnf install gt-stacer-26.11-2.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -205,11 +217,11 @@ yay -S gt-stacer
 
 #### Flatpak (معزول داخل sandbox)
 ```bash
-flatpak install --user GT-STACER-26.10-x86_64.flatpak
+flatpak install --user GT-STACER-26.11-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 
-> الـ app-id هو `org.gnutux.gt-stacer` على runtime `org.kde.Platform//6.9`. كل العمليات المميّزة (المنظّف، إدارة الخدمات، uninstaller، تعديل `/etc/hosts`، sysctl) تُنفَّذ على المُضيف عبر `flatpak-spawn --host pkexec ...` — مربّع polkit نفسه دون تغيير. الكشف يتم تلقائياً عبر `$FLATPAK_ID` أو `/.flatpak-info`.
+> الـ app-id هو `org.gnutux.gt-stacer` على runtime `org.kde.Platform//6.9`. كل العمليات المميّزة (المنظّف، إدارة الخدمات، مدير الحزم، تعديل `/etc/hosts`، sysctl) تُنفَّذ على المُضيف عبر `flatpak-spawn --host pkexec ...` — مربّع polkit نفسه دون تغيير. الكشف يتم تلقائياً عبر `$FLATPAK_ID` أو `/.flatpak-info`.
 
 ---
 
@@ -385,14 +397,15 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 > 🙏 **Attribution:** Inspired by [Stacer](https://github.com/oguzhaninan/Stacer) — thank you Oguzhan INAN.  
 > 🌐 [salehgnutux.github.io/GT-STACER](https://salehgnutux.github.io/GT-STACER)
 
-### 🎉 What's new in 26.10 stable
+### 🎉 What's new in 26.11 stable
 
-- 💽 **Disk-aware System Relief** — reads **disk pressure (PSI)** and each process's block-layer I/O rate (so you see the disk hog), can **ease a busy process's I/O** (`ionice` idle) instead of freezing it, and offers a one-click **Switch to BFQ** scheduler — the biggest win for an old HDD under load. Auto-mode can trigger on disk pressure too.
-- ⏻ **Power timer on the Power page** — the scheduled shutdown / restart / suspend / hibernate timer (live countdown, survives minimize) is now on the Power page as well as in Settings.
-- 🎬 **Welcome tour & "what's new"** — a re-openable onboarding tour and an after-update highlights dialog, both translated and with an **in-dialog language picker**.
-- 🔔 **Update check & sharing** — an opt-in check that notifies when a newer release is out (via GitHub's public API, nothing downloaded), plus a **Copy share text** button.
-- 🧭 **Sidebar & polish** — Services now sits under Processes; the Arabic language entry simplified to "العربية".
-- 🔒 **Defence in depth** — every privileged op goes through `execProgram` (no shell); see [CHANGELOG.md](CHANGELOG.md) and [SECURITY.md](SECURITY.md)
+- 📦 **Package & Software Manager (evolves the Uninstaller)** — a professional, tabbed page: **Installed** (browse & remove across every detected manager), **Search & Install** (search your system manager / Flatpak / Snap and install), **Upgrades** (list and apply available updates), **Store add-ons** (opendesktop.org / KNewStuff), and **AppImages**.
+- 🧩 **AppImage integration, GearLever-compatible** — integrate an AppImage into your app menu in one click, using the **same folder and launcher format as GearLever** (`it.mijorus.gearlever`) and honouring its settings (custom folder, move-vs-clone), so apps integrated by either tool appear in both with no duplication. Metadata is extracted **without executing the AppImage** (a safe `unsquashfs` read at the ELF-computed squashfs offset).
+- 🔄 **In-app self-update** — GT-STACER checks for a newer version on startup (on by default) and can **download, verify (SHA-256) and install** it — replacing the AppImage, or handing the `.deb`/`.rpm` to your package manager via `pkexec`. Checking for *package* updates stays manual. Nothing is downloaded or installed without your click.
+- 🔒 **Security hardening** — fixed a genuine **command-injection** hole: package search passed your query to a shell (`sh -c`). It is now passed as argv (no shell) and validated; every new install/upgrade/remove path goes through `execProgram` with validated names. See [SECURITY.md](SECURITY.md).
+- ⚡ **Processes: busiest first** — the Processes list now defaults to **CPU %, descending** (numeric, live), so you see what's using the machine the moment you open it — no clicking a header.
+- 🌡️ **Tray tooltip temperature** — the tray tooltip now shows the CPU/system temperature alongside CPU % and RAM %.
+- 🖱️ **Resizable table columns everywhere** — every table's columns are freely resizable with clearly visible, grabbable drag handles (the primary column still fills the width).
 
 ### Key Features
 
@@ -403,7 +416,10 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **GPU monitoring** — Intel/AMD/NVIDIA auto-detected
 - **Temperature sensors** — hwmon + thermal zones
 - **Battery** — charge gauge + estimated time remaining
-- **28+ package managers** auto-detected (APT, DNF, Pacman, Zypper, Flatpak, Snap, XBPS, APK, Portage, Nix, …)
+- **Package & Software Manager** — install, upgrade and remove across your system manager + Flatpak + Snap, plus external-app detection, in a tabbed page (28+ managers auto-detected)
+- **Store add-ons** — manage opendesktop.org / KNewStuff content (themes, icons, plasmoids…) and install via `ocs-url` links
+- **AppImage integration** — integrate AppImages into your app menu, GearLever-compatible (same folder & settings), metadata extracted without executing the file
+- **In-app self-update** — check, download, SHA-256 verify and install a newer GT-STACER (AppImage / DEB / RPM)
 - **Service manager** — systemd · OpenRC · runit · s6 · SysV
 - **System Cleaner** — icon-card UI, per-category selection, drill-down for app caches, root-aware cleaning via `pkexec`
 - **Startup Apps** — icons + toggle + add-from-system dialog + per-entry delay (Flatpak/Snap aware)
@@ -419,34 +435,34 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **Onboarding & updates** — re-openable welcome tour, after-update "what's new" dialog (both with a language picker), an opt-in update check, and a copy-share-text button
 - **Restore point before risky cleans** — System Cleaner can snapshot before irreversible root-level cleanups
 - **Collapsible sidebar** — SVG icons, logo stays visible when collapsed
-- **System tray** — CPU%/RAM% tooltip · quit-confirm dialog (with remember-my-choice)
+- **System tray** — CPU% / RAM% / temperature tooltip · quit-confirm dialog (with remember-my-choice)
 - **About dialog** (F1) with version, license, links
 - **19 languages** — Arabic complete (RTL, 🇲🇦), 17 others partial (community-driven)
 - **Auto theme** that follows GNOME/KDE color-scheme
 
 ### Install
 
-Pick the format that fits your distro. All 26.10 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
+Pick the format that fits your distro. All 26.11 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
 
 #### ⚡ AppImage — no install, run anywhere
 ```bash
-chmod +x GT-STACER-26.10-x86_64.AppImage
-./GT-STACER-26.10-x86_64.AppImage
+chmod +x GT-STACER-26.11-x86_64.AppImage
+./GT-STACER-26.11-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Pop!_OS / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.10_amd64.deb
+sudo dpkg -i GT-STACER_26.11_amd64.deb
 sudo apt-get install -f          # fix any missing deps
 ```
 
-> **Debian 13 (Trixie) note:** the package uses `Recommends` for polkit to keep `polkitd` compatible. Privileged actions (service control, cleaner, uninstaller, hosts editor) need one of `polkitd | policykit-1 | polkit` installed.
+> **Debian 13 (Trixie) note:** the package uses `Recommends` for polkit to keep `polkitd` compatible. Privileged actions (service control, cleaner, package manager, hosts editor) need one of `polkitd | policykit-1 | polkit` installed.
 
 #### Fedora / RHEL / AlmaLinux / Rocky / openSUSE
 ```bash
-sudo dnf install ./gt-stacer-26.10-2.x86_64.rpm
+sudo dnf install ./gt-stacer-26.11-2.x86_64.rpm
 # or
-sudo rpm -i ./gt-stacer-26.10-2.x86_64.rpm
+sudo rpm -i ./gt-stacer-26.11-2.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -457,11 +473,11 @@ yay -S gt-stacer
 
 #### Flatpak (sandboxed)
 ```bash
-flatpak install --user GT-STACER-26.10-x86_64.flatpak
+flatpak install --user GT-STACER-26.11-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 
-> The app-id is `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`. Every privileged op (cleaner, service manager, uninstaller, `/etc/hosts` editor, sysctl) runs **on the host** through `flatpak-spawn --host pkexec ...` — the polkit dialog is identical to the DEB/RPM case. Sandbox detection is automatic via `$FLATPAK_ID` or `/.flatpak-info`.
+> The app-id is `org.gnutux.gt-stacer` on `org.kde.Platform//6.9`. Every privileged op (cleaner, service manager, package manager, `/etc/hosts` editor, sysctl) runs **on the host** through `flatpak-spawn --host pkexec ...` — the polkit dialog is identical to the DEB/RPM case. Sandbox detection is automatic via `$FLATPAK_ID` or `/.flatpak-info`.
 
 ### Quick Start (build from source)
 
