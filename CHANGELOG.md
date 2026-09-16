@@ -6,6 +6,24 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.11.2-stable] — 2026-09-16
+
+Another small point release, following testing of 26.11.1.
+
+### Fixed
+- **The "What's new" dialog still showed the 26.10 highlights.** Its content was
+  hard-coded and never refreshed, so after updating to 26.11 / 26.11.1 the dialog
+  listed the wrong release's changes (the title was correct). It now lists the
+  26.11 highlights plus the 26.11.1 fixes, in English and Arabic.
+
+### Changed
+- **The update check now compares versions across any number of components.**
+  `isNewer` walks every dotted component (not just `YY.MM.PATCH`) and the tag
+  parser captures them all, so stable updates are recognised whatever the version
+  numbering and sequence (26.11 < 26.11.1 < 26.11.2 < 26.12 < 27.01, and deeper).
+  `/releases/latest` already returns the newest non-prerelease, and the installer
+  picks its asset by type, so any stable release is fetched correctly.
+
 ## [26.11.1-stable] — 2026-09-16
 
 A bug-fix point release on top of 26.11.
@@ -526,6 +544,7 @@ safety.
 
 ---
 
+[26.11.2-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.2_STABLE
 [26.11.1-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.1_STABLE
 [26.11-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11_STABLE
 [26.10-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.10_STABLE
