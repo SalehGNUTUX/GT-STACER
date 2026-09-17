@@ -5,6 +5,7 @@
 #include "../../Managers/theme.h"
 #include "../../Widgets/loading_overlay.h"
 #include "../../Widgets/status_pill.h"
+#include "../../../gt-stacer-core/Tools/notification_tool.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDir>
@@ -360,10 +361,14 @@ void BackupPage::startBackup()
     });
     connect(m_proc, &QProcess::finished, this, [this](int code, QProcess::ExitStatus){
         setBackupRunning(false);
-        m_backupStatus->setText(code == 0 ? tr("Backup complete.")
-                                          : tr("Backup stopped (exit %1).").arg(code));
+        const QString msg = code == 0 ? tr("Backup complete.")
+                                      : tr("Backup stopped (exit %1).").arg(code);
+        m_backupStatus->setText(msg);
         m_progress->setValue(code == 0 ? 100 : m_progress->value());
         m_proc->deleteLater(); m_proc = nullptr;
+        NotificationTool::notify(tr("Home backup — finished"), msg,
+            code == 0 ? NotificationTool::Urgency::Normal : NotificationTool::Urgency::Critical,
+            "gt-stacer");
     });
     setBackupRunning(true);
     m_backupStatus->setText(tr("Starting…"));

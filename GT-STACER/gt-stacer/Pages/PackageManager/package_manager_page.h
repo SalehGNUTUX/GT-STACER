@@ -66,6 +66,12 @@ private:
     void runOff(const QString &msg, const std::function<void()> &work,
                 const std::function<void()> &after);
 
+    // Run package commands ({label, argv}) sequentially in a live progress-log
+    // window (with a Stop button), then call `after` (e.g. reload the list).
+    void runCommands(const QString &title,
+                     const QVector<QPair<QString, QStringList>> &steps,
+                     const std::function<void()> &after);
+
     QTabWidget     *m_tabs    = nullptr;
     LoadingOverlay *m_overlay = nullptr;
 

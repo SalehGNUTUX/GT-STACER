@@ -427,13 +427,10 @@ QVector<PackageInfo> PackageTool::allPackages()
 // Each entry builds an argv list (program + args) and is passed to QProcess
 // without going through a shell, so package names with metacharacters cannot
 // be turned into command injection. We additionally validate the name.
-bool PackageTool::remove(const QString &name, PkgMgr mgr)
+QStringList PackageTool::removeCommand(const QString &name, PkgMgr mgr)
 {
-    // Manual apps are matched against a fresh filesystem scan (not shelled out
-    // by name), so display names with spaces/uppercase are fine here.
-    if (mgr == PkgMgr::Manual) return removeManual(name);
-
-    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    if (mgr == PkgMgr::Manual) return {};   // no single command; use removeManual()
+    if (!CommandUtil::isSafeIdentifier(name)) return {};
 
     QString prog;
     QStringList args;
@@ -465,14 +462,22 @@ bool PackageTool::remove(const QString &name, PkgMgr mgr)
     case PkgMgr::Pip3:      prog = "pip3";          args = {"uninstall", "-y", name}; needsRoot = false; break;
     case PkgMgr::Cargo:     prog = "cargo";         args = {"uninstall", name}; needsRoot = false; break;
     case PkgMgr::Npm:       prog = "npm";           args = {"uninstall", "-g", name}; needsRoot = false; break;
-    default:                return false;
+    default:                return {};
     }
 
-    if (needsRoot) {
-        args.prepend(prog);
-        prog = "pkexec";
-    }
-    return CommandUtil::execProgram(prog, args, 120000) == 0;
+    if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
+    args.prepend(prog);
+    return args;
+}
+
+bool PackageTool::remove(const QString &name, PkgMgr mgr)
+{
+    // Manual apps are matched against a fresh filesystem scan (not shelled out
+    // by name), so display names with spaces/uppercase are fine here.
+    if (mgr == PkgMgr::Manual) return removeManual(name);
+    const QStringList cmd = removeCommand(name, mgr);
+    if (cmd.isEmpty()) return false;
+    return CommandUtil::execProgram(cmd.first(), cmd.mid(1), 120000) == 0;
 }
 
 // ─── Install ──────────────────────────────────────────────────────────────
@@ -480,9 +485,9 @@ bool PackageTool::remove(const QString &name, PkgMgr mgr)
 // isSafeIdentifier() (so no shell metacharacter can reach a command) and passed
 // as a distinct argv element via execProgram (no shell). Root managers go
 // through pkexec; user-level managers (flatpak/brew/pip/…) do not.
-bool PackageTool::install(const QString &name, PkgMgr mgr)
+QStringList PackageTool::installCommand(const QString &name, PkgMgr mgr)
 {
-    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    if (!CommandUtil::isSafeIdentifier(name)) return {};
 
     QString prog;
     QStringList args;
@@ -512,17 +517,25 @@ bool PackageTool::install(const QString &name, PkgMgr mgr)
     case PkgMgr::Pip3:      prog = "pip3";          args = {"install", name}; needsRoot = false; break;
     case PkgMgr::Cargo:     prog = "cargo";         args = {"install", name}; needsRoot = false; break;
     case PkgMgr::Npm:       prog = "npm";           args = {"install", "-g", name}; needsRoot = false; break;
-    default:                return false;
+    default:                return {};
     }
 
     if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
-    return CommandUtil::execProgram(prog, args, 600000) == 0;
+    args.prepend(prog);
+    return args;
+}
+
+bool PackageTool::install(const QString &name, PkgMgr mgr)
+{
+    const QStringList cmd = installCommand(name, mgr);
+    if (cmd.isEmpty()) return false;
+    return CommandUtil::execProgram(cmd.first(), cmd.mid(1), 600000) == 0;
 }
 
 // ─── Upgrade ──────────────────────────────────────────────────────────────
-bool PackageTool::upgrade(const QString &name, PkgMgr mgr)
+QStringList PackageTool::upgradeCommand(const QString &name, PkgMgr mgr)
 {
-    if (!CommandUtil::isSafeIdentifier(name)) return false;
+    if (!CommandUtil::isSafeIdentifier(name)) return {};
 
     QString prog;
     QStringList args;
@@ -541,14 +554,22 @@ bool PackageTool::upgrade(const QString &name, PkgMgr mgr)
     case PkgMgr::Snap:      prog = "snap";    args = {"refresh", name}; break;
     case PkgMgr::Brew:      prog = "brew";    args = {"upgrade", name}; needsRoot = false; break;
     case PkgMgr::Pip3:      prog = "pip3";    args = {"install", "--upgrade", name}; needsRoot = false; break;
-    default:                return false;
+    default:                return {};
     }
 
     if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
-    return CommandUtil::execProgram(prog, args, 600000) == 0;
+    args.prepend(prog);
+    return args;
 }
 
-bool PackageTool::upgradeAll(PkgMgr mgr)
+bool PackageTool::upgrade(const QString &name, PkgMgr mgr)
+{
+    const QStringList cmd = upgradeCommand(name, mgr);
+    if (cmd.isEmpty()) return false;
+    return CommandUtil::execProgram(cmd.first(), cmd.mid(1), 600000) == 0;
+}
+
+QStringList PackageTool::upgradeAllCommand(PkgMgr mgr)
 {
     QString prog;
     QStringList args;
@@ -566,11 +587,19 @@ bool PackageTool::upgradeAll(PkgMgr mgr)
     case PkgMgr::Flatpak:   prog = "flatpak"; args = {"update", "-y"}; needsRoot = false; break;
     case PkgMgr::Snap:      prog = "snap";    args = {"refresh"}; break;
     case PkgMgr::Brew:      prog = "brew";    args = {"upgrade"}; needsRoot = false; break;
-    default:                return false;
+    default:                return {};
     }
 
     if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
-    return CommandUtil::execProgram(prog, args, 1800000) == 0;
+    args.prepend(prog);
+    return args;
+}
+
+bool PackageTool::upgradeAll(PkgMgr mgr)
+{
+    const QStringList cmd = upgradeAllCommand(mgr);
+    if (cmd.isEmpty()) return false;
+    return CommandUtil::execProgram(cmd.first(), cmd.mid(1), 1800000) == 0;
 }
 
 // ─── Cache cleaning ───────────────────────────────────────────────────────

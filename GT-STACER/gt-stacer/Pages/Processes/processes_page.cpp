@@ -129,6 +129,11 @@ void ProcessesPage::refresh()
                 << new QStandardItem(cpuTxt)
                 << new QStandardItem(memTxt);
             row[0]->setData(p.pid,        Qt::UserRole);
+            // Tick box in the PID column to select processes for a batch action
+            // without holding Ctrl. Check state persists across the in-place
+            // refresh (the item is reused, not recreated).
+            row[0]->setCheckable(true);
+            row[0]->setCheckState(Qt::Unchecked);
             row[1]->setData(p.command,    CMDLINE_ROLE);  // searchable cmdline
             row[1]->setToolTip(p.command);
             row[3]->setData(p.cpuPercent, Qt::UserRole);
@@ -166,7 +171,48 @@ QPair<int, QString> ProcessesPage::currentSelection() const
 
 void ProcessesPage::killSelected()
 {
-    runActionOnSelected(Action::Terminate);
+    // Batch-kill every ticked process; if none is ticked, fall back to the single
+    // highlighted row (so a quick click + button still works).
+    QVector<QPair<int, QString>> checked;
+    for (int r = 0; r < m_model->rowCount(); ++r) {
+        auto *it = m_model->item(r, 0);
+        if (it && it->isCheckable() && it->checkState() == Qt::Checked)
+            checked.append({it->text().toInt(), m_model->item(r, 1)->text()});
+    }
+    if (checked.isEmpty()) { runActionOnSelected(Action::Terminate); return; }
+
+    QStringList names;
+    bool anyCritical = false;
+    for (const auto &c : checked) {
+        names << QString("• %1 (PID %2)").arg(c.second).arg(c.first);
+        if (ProcessInfo::isCriticalProcess(c.first, c.second)) anyCritical = true;
+    }
+
+    QMessageBox box(this);
+    box.setWindowTitle(tr("Confirm action"));
+    box.setIcon(anyCritical ? QMessageBox::Critical : QMessageBox::Warning);
+    box.setTextFormat(Qt::RichText);
+    QString body = tr("Terminate the following <b>%1</b> process(es)?").arg(checked.size())
+                   + "<br><br>" + names.join("<br>");
+    if (anyCritical)
+        body += "<br><br>" + tr("⚠ <span style='color:#f38ba8;'><b>The selection includes a "
+                                "critical system process.</b></span> Ending it can hang your "
+                                "session or log you out.");
+    box.setText(body);
+    auto *go = box.addButton(anyCritical ? tr("Yes, I understand the risk") : tr("Yes"),
+                             QMessageBox::AcceptRole);
+    box.addButton(tr("Cancel"), QMessageBox::RejectRole);
+    box.exec();
+    if (box.clickedButton() != go) return;
+
+    int failed = 0;
+    for (const auto &c : checked)
+        if (!ProcessInfo::kill(c.first)) ++failed;
+    refresh();
+    if (failed)
+        QMessageBox::warning(this, tr("Error"),
+            tr("%1 of %2 process(es) could not be terminated — you may not own them.")
+                .arg(failed).arg(checked.size()));
 }
 
 void ProcessesPage::runActionOnSelected(Action a)

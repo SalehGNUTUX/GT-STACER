@@ -1,10 +1,13 @@
 #include "package_manager_page.h"
 #include "../../Widgets/loading_overlay.h"
 #include "../../Widgets/table_util.h"
+#include "../../Dialogs/command_log_dialog.h"
 #include "../../../gt-stacer-core/Tools/package_tool.h"
 #include "../../../gt-stacer-core/Tools/store_addon_tool.h"
 #include "../../../gt-stacer-core/Tools/appimage_tool.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
+#include "../../../gt-stacer-core/Tools/notification_tool.h"
+#include <QCheckBox>
 #include <QFileDialog>
 #include <QTabWidget>
 #include <QStandardItemModel>
@@ -83,6 +86,51 @@ QTableView *makeTable(QStandardItemModel *model, QAbstractItemView::SelectionMod
     setupResizableTable(t, primaryCol);
     return t;
 }
+
+// Make column 0 of every row a checkbox, so the user can tick specific rows for
+// an action without holding Ctrl. Call after (re)populating the model.
+void makeCheckable(QStandardItemModel *model)
+{
+    for (int r = 0; r < model->rowCount(); ++r)
+        if (auto *it = model->item(r, 0)) {
+            it->setCheckable(true);
+            it->setCheckState(Qt::Unchecked);
+        }
+}
+
+// Tick or clear every row's checkbox.
+void setAllChecked(QStandardItemModel *model, bool on)
+{
+    for (int r = 0; r < model->rowCount(); ++r)
+        if (auto *it = model->item(r, 0))
+            it->setCheckState(on ? Qt::Checked : Qt::Unchecked);
+}
+
+// Collect (name, manager) targets for an action: ticked rows first; if nothing
+// is ticked, fall back to the current row selection (so a single click + button
+// still works). `src` is the QStandardItemModel; `view`/`viewModel` describe how
+// the rows are presented (a proxy, when sorting/filtering is on).
+QVector<QPair<QString, PkgMgr>> collectTargets(QStandardItemModel *src, QTableView *view,
+                                               QAbstractItemModel *viewModel)
+{
+    QVector<QPair<QString, PkgMgr>> out;
+    for (int r = 0; r < src->rowCount(); ++r) {
+        auto *it = src->item(r, 0);
+        if (it && it->checkState() == Qt::Checked) {
+            const QString name = it->data(Qt::UserRole).toString();
+            if (!name.isEmpty())
+                out.append({name, PkgMgr(it->data(Qt::UserRole + 1).toInt())});
+        }
+    }
+    if (!out.isEmpty()) return out;
+    // Nothing ticked → use the selection (mapped through the presented model).
+    for (const auto &idx : view->selectionModel()->selectedRows()) {
+        const QString name = viewModel->data(viewModel->index(idx.row(), 0), Qt::UserRole).toString();
+        const int mgr = viewModel->data(viewModel->index(idx.row(), 0), Qt::UserRole + 1).toInt();
+        if (!name.isEmpty()) out.append({name, PkgMgr(mgr)});
+    }
+    return out;
+}
 } // namespace
 
 PackageManagerPage::PackageManagerPage(QWidget *parent) : QWidget(parent)
@@ -136,12 +184,37 @@ void PackageManagerPage::runOff(const QString &msg, const std::function<void()> 
 {
     m_overlay->start(msg);
     auto *w = new QFutureWatcher<void>(this);
-    connect(w, &QFutureWatcher<void>::finished, this, [this, w, after] {
+    connect(w, &QFutureWatcher<void>::finished, this, [this, w, after, msg] {
         w->deleteLater();
         m_overlay->stop();
         if (after) after();
+        // Notify on completion so a user who navigated away still learns it's done.
+        NotificationTool::notify(tr("GT-STACER — task finished"), msg,
+                                 NotificationTool::Urgency::Normal, "gt-stacer");
     });
     w->setFuture(QtConcurrent::run(work));
+}
+
+void PackageManagerPage::runCommands(const QString &title,
+                                     const QVector<QPair<QString, QStringList>> &steps,
+                                     const std::function<void()> &after)
+{
+    auto *dlg = new CommandLogDialog(title, this);
+    for (const auto &s : steps) dlg->addStep(s.first, s.second);
+    connect(dlg, &CommandLogDialog::completed, this, [this, after, title](bool ok){
+        if (after) after();
+        // Signal completion even if the user navigated to another page/section:
+        // a desktop notification plus a persistent in-app status line.
+        NotificationTool::notify(
+            ok ? tr("%1 — finished").arg(title) : tr("%1 — finished with errors").arg(title),
+            ok ? tr("The operation completed successfully.")
+               : tr("The operation finished with errors — open the log for details."),
+            ok ? NotificationTool::Urgency::Normal : NotificationTool::Urgency::Critical,
+            "gt-stacer");
+    });
+    connect(dlg, &QDialog::finished, dlg, &QObject::deleteLater);
+    dlg->show();
+    dlg->run();
 }
 
 // ── Installed tab ─────────────────────────────────────────────────────────────
@@ -174,15 +247,17 @@ QWidget *PackageManagerPage::buildInstalledTab()
     v->addWidget(m_instTable, 1);
 
     auto *arow = new QHBoxLayout;
+    auto *selAll = new QCheckBox(tr("Select all"));
     m_instStatus = new QLabel;
     m_instStatus->setObjectName("infoValue");
     m_instRemove = new QPushButton(tr("Uninstall"));
     m_instRemove->setObjectName("dangerButton");
-    m_instRemove->setEnabled(false);
+    arow->addWidget(selAll);
     arow->addWidget(m_instStatus, 1);
     arow->addWidget(m_instRemove);
     v->addLayout(arow);
 
+    connect(selAll, &QCheckBox::toggled, this, [this](bool on){ setAllChecked(m_instModel, on); });
     connect(reload, &QPushButton::clicked, this, &PackageManagerPage::loadInstalled);
     connect(m_instRemove, &QPushButton::clicked, this, &PackageManagerPage::removeSelectedInstalled);
     connect(m_instSearch, &QLineEdit::textChanged, this, [this](const QString &t){
@@ -193,11 +268,6 @@ QWidget *PackageManagerPage::buildInstalledTab()
         const int id = m_instMgr->itemData(i).toInt();
         if (id < 0) { m_instProxy->setFilterKeyColumn(0); m_instProxy->setFilterFixedString(m_instSearch->text()); }
         else        { m_instProxy->setFilterKeyColumn(3); m_instProxy->setFilterFixedString(PackageTool::managerName(PkgMgr(id))); }
-    });
-    connect(m_instTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]{
-        const int n = m_instTable->selectionModel()->selectedRows().size();
-        m_instRemove->setEnabled(n > 0);
-        m_instRemove->setText(n > 1 ? tr("Uninstall %1 packages").arg(n) : tr("Uninstall"));
     });
     return tab;
 }
@@ -217,6 +287,7 @@ void PackageManagerPage::loadInstalled()
             r[0]->setData(int(p.manager), Qt::UserRole + 1);
             m_instModel->appendRow(r);
         }
+        makeCheckable(m_instModel);
         m_instStatus->setText(tr("%1 packages").arg(pkgs.size()));
     });
     w->setFuture(QtConcurrent::run([]{ return PackageTool::allPackages(); }));
@@ -224,17 +295,12 @@ void PackageManagerPage::loadInstalled()
 
 void PackageManagerPage::removeSelectedInstalled()
 {
-    auto rows = m_instTable->selectionModel()->selectedRows();
-    if (rows.isEmpty()) return;
-    std::sort(rows.begin(), rows.end(), [](auto &a, auto &b){ return a.row() < b.row(); });
-    QVector<QPair<QString, PkgMgr>> targets;
-    for (const auto &idx : rows) {
-        const QString name = m_instProxy->data(m_instProxy->index(idx.row(), 0), Qt::UserRole).toString();
-        const int mgr = m_instProxy->data(m_instProxy->index(idx.row(), 0), Qt::UserRole + 1).toInt();
-        if (!name.isEmpty()) targets.append({name, PkgMgr(mgr)});
+    const auto targets = collectTargets(m_instModel, m_instTable, m_instProxy);
+    if (targets.isEmpty()) {
+        QMessageBox::information(this, tr("Uninstall"),
+            tr("Tick the packages to uninstall (or select a row) first."));
+        return;
     }
-    if (targets.isEmpty()) return;
-
     QStringList names;
     for (const auto &t : targets) names << "• " + t.first;
     if (QMessageBox::warning(this, tr("Uninstall"),
@@ -243,9 +309,22 @@ void PackageManagerPage::removeSelectedInstalled()
             QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
         return;
 
-    runOff(tr("Uninstalling %1 package(s)…").arg(targets.size()),
-        [targets]{ for (const auto &t : targets) PackageTool::remove(t.first, t.second); },
-        [this]{ loadInstalled(); });
+    // Manual apps have no single command — remove them off-thread; the rest run
+    // in the live log window.
+    QVector<QPair<QString, QStringList>> steps;
+    QVector<QPair<QString, PkgMgr>> manual;
+    for (const auto &t : targets) {
+        const QStringList cmd = PackageTool::removeCommand(t.first, t.second);
+        if (cmd.isEmpty()) manual.append(t);
+        else steps.append({tr("Uninstall %1").arg(t.first), cmd});
+    }
+    if (!manual.isEmpty())
+        runOff(tr("Removing %1 external app(s)…").arg(manual.size()),
+            [manual]{ for (const auto &t : manual) PackageTool::remove(t.first, t.second); },
+            [this]{ loadInstalled(); });
+    if (!steps.isEmpty())
+        runCommands(tr("Uninstalling %1 package(s)").arg(steps.size()), steps,
+                    [this]{ loadInstalled(); });
 }
 
 // ── Search & Install tab ──────────────────────────────────────────────────────
@@ -275,24 +354,21 @@ QWidget *PackageManagerPage::buildSearchTab()
     v->addWidget(m_srchTable, 1);
 
     auto *arow = new QHBoxLayout;
+    auto *selAll = new QCheckBox(tr("Select all"));
     m_srchStatus = new QLabel;
     m_srchStatus->setObjectName("infoValue");
     m_srchStatus->setWordWrap(true);
     m_srchInstall = new QPushButton(tr("Install"));
     m_srchInstall->setObjectName("primaryButton");
-    m_srchInstall->setEnabled(false);
+    arow->addWidget(selAll);
     arow->addWidget(m_srchStatus, 1);
     arow->addWidget(m_srchInstall);
     v->addLayout(arow);
 
+    connect(selAll, &QCheckBox::toggled, this, [this](bool on){ setAllChecked(m_srchModel, on); });
     connect(m_srchButton, &QPushButton::clicked, this, &PackageManagerPage::runSearch);
     connect(m_srchEdit, &QLineEdit::returnPressed, this, &PackageManagerPage::runSearch);
     connect(m_srchInstall, &QPushButton::clicked, this, &PackageManagerPage::installSelectedSearch);
-    connect(m_srchTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]{
-        const int n = m_srchTable->selectionModel()->selectedRows().size();
-        m_srchInstall->setEnabled(n > 0);
-        m_srchInstall->setText(n > 1 ? tr("Install %1 packages").arg(n) : tr("Install"));
-    });
     if (m_srchMgr->count() == 0) {
         m_srchButton->setEnabled(false);
         m_srchStatus->setText(tr("No installable package manager was detected."));
@@ -302,8 +378,13 @@ QWidget *PackageManagerPage::buildSearchTab()
 
 void PackageManagerPage::runSearch()
 {
+    if (m_srchMgr->count() == 0) return;
     const QString q = m_srchEdit->text().trimmed();
-    if (q.isEmpty() || m_srchMgr->count() == 0) return;
+    if (q.isEmpty()) {                       // give feedback instead of doing nothing
+        m_srchStatus->setText(tr("Type a package name in the box, then Search."));
+        m_srchEdit->setFocus();
+        return;
+    }
     const PkgMgr mgr = PkgMgr(m_srchMgr->currentData().toInt());
     m_srchModel->setRowCount(0);
     m_srchStatus->setText(tr("Searching…"));
@@ -319,6 +400,7 @@ void PackageManagerPage::runSearch()
             r[0]->setData(int(p.manager), Qt::UserRole + 1);
             m_srchModel->appendRow(r);
         }
+        makeCheckable(m_srchModel);
         m_srchStatus->setText(res.isEmpty() ? tr("No results — try a different term.")
                                             : tr("%1 result(s).").arg(res.size()));
         m_srchButton->setEnabled(true);
@@ -328,26 +410,25 @@ void PackageManagerPage::runSearch()
 
 void PackageManagerPage::installSelectedSearch()
 {
-    auto rows = m_srchTable->selectionModel()->selectedRows();
-    if (rows.isEmpty()) return;
-    QVector<QPair<QString, PkgMgr>> targets;
-    for (const auto &idx : rows) {
-        const QString name = m_srchModel->data(m_srchModel->index(idx.row(), 0), Qt::UserRole).toString();
-        const int mgr = m_srchModel->data(m_srchModel->index(idx.row(), 0), Qt::UserRole + 1).toInt();
-        if (!name.isEmpty()) targets.append({name, PkgMgr(mgr)});
+    const auto targets = collectTargets(m_srchModel, m_srchTable, m_srchModel);
+    if (targets.isEmpty()) {
+        QMessageBox::information(this, tr("Install"),
+            tr("Tick the packages to install (or select a row) first."));
+        return;
     }
-    if (targets.isEmpty()) return;
-
     QStringList names;
-    for (const auto &t : targets) names << "• " + t.first;
+    QVector<QPair<QString, QStringList>> steps;
+    for (const auto &t : targets) {
+        names << "• " + t.first;
+        steps.append({tr("Install %1").arg(t.first), PackageTool::installCommand(t.first, t.second)});
+    }
     if (QMessageBox::question(this, tr("Install"),
             tr("Install the following %1 package(s)?\n\n%2\n\nYou may be asked for your password.")
                 .arg(targets.size()).arg(names.join("\n")),
             QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
         return;
 
-    runOff(tr("Installing %1 package(s)…").arg(targets.size()),
-        [targets]{ for (const auto &t : targets) PackageTool::install(t.first, t.second); },
+    runCommands(tr("Installing %1 package(s)").arg(steps.size()), steps,
         [this]{ m_srchStatus->setText(tr("Done. Check the Installed tab.")); loadInstalled(); });
 }
 
@@ -374,24 +455,23 @@ QWidget *PackageManagerPage::buildUpgradesTab()
     v->addWidget(m_upTable, 1);
 
     auto *arow = new QHBoxLayout;
+    auto *selAll = new QCheckBox(tr("Select all"));
     m_upStatus = new QLabel;
     m_upStatus->setObjectName("infoValue");
     m_upOne = new QPushButton(tr("Upgrade selected"));
-    m_upOne->setEnabled(false);
     m_upAll = new QPushButton(tr("Upgrade all"));
     m_upAll->setObjectName("primaryButton");
     m_upAll->setEnabled(false);
+    arow->addWidget(selAll);
     arow->addWidget(m_upStatus, 1);
     arow->addWidget(m_upOne);
     arow->addWidget(m_upAll);
     v->addLayout(arow);
 
+    connect(selAll, &QCheckBox::toggled, this, [this](bool on){ setAllChecked(m_upModel, on); });
     connect(m_upCheck, &QPushButton::clicked, this, &PackageManagerPage::loadUpgrades);
     connect(m_upOne,   &QPushButton::clicked, this, &PackageManagerPage::upgradeSelected);
     connect(m_upAll,   &QPushButton::clicked, this, &PackageManagerPage::upgradeEverything);
-    connect(m_upTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]{
-        m_upOne->setEnabled(!m_upTable->selectionModel()->selectedRows().isEmpty());
-    });
     if (m_upMgr->count() == 0) m_upCheck->setEnabled(false);
     return tab;
 }
@@ -415,6 +495,7 @@ void PackageManagerPage::loadUpgrades()
             r[0]->setData(int(p.manager), Qt::UserRole + 1);
             m_upModel->appendRow(r);
         }
+        makeCheckable(m_upModel);
         m_upStatus->setText(res.isEmpty() ? tr("Everything is up to date.")
                                           : tr("%1 upgrade(s) available.").arg(res.size()));
         m_upCheck->setEnabled(true);
@@ -425,18 +506,17 @@ void PackageManagerPage::loadUpgrades()
 
 void PackageManagerPage::upgradeSelected()
 {
-    auto rows = m_upTable->selectionModel()->selectedRows();
-    if (rows.isEmpty()) return;
-    QVector<QPair<QString, PkgMgr>> targets;
-    for (const auto &idx : rows) {
-        const QString name = m_upModel->data(m_upModel->index(idx.row(), 0), Qt::UserRole).toString();
-        const int mgr = m_upModel->data(m_upModel->index(idx.row(), 0), Qt::UserRole + 1).toInt();
-        if (!name.isEmpty()) targets.append({name, PkgMgr(mgr)});
+    const auto targets = collectTargets(m_upModel, m_upTable, m_upModel);
+    if (targets.isEmpty()) {
+        QMessageBox::information(this, tr("Upgrade selected"),
+            tr("Tick the packages to upgrade (or select a row) first."));
+        return;
     }
-    if (targets.isEmpty()) return;
-    runOff(tr("Upgrading %1 package(s)…").arg(targets.size()),
-        [targets]{ for (const auto &t : targets) PackageTool::upgrade(t.first, t.second); },
-        [this]{ loadUpgrades(); });
+    QVector<QPair<QString, QStringList>> steps;
+    for (const auto &t : targets)
+        steps.append({tr("Upgrade %1").arg(t.first), PackageTool::upgradeCommand(t.first, t.second)});
+    runCommands(tr("Upgrading %1 package(s)").arg(steps.size()), steps,
+                [this]{ loadUpgrades(); });
 }
 
 void PackageManagerPage::upgradeEverything()
@@ -448,9 +528,10 @@ void PackageManagerPage::upgradeEverything()
                "You will be asked for your password.").arg(PackageTool::managerName(mgr)),
             QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
         return;
-    runOff(tr("Upgrading all packages… this can take a while."),
-        [mgr]{ PackageTool::upgradeAll(mgr); },
-        [this]{ loadUpgrades(); });
+    runCommands(tr("Upgrading all packages"),
+                {{tr("Upgrade all packages via %1").arg(PackageTool::managerName(mgr)),
+                  PackageTool::upgradeAllCommand(mgr)}},
+                [this]{ loadUpgrades(); });
 }
 
 // ── Store add-ons tab ─────────────────────────────────────────────────────────
@@ -490,15 +571,17 @@ QWidget *PackageManagerPage::buildStoreTab()
     v->addWidget(m_stTable, 1);
 
     auto *arow = new QHBoxLayout;
+    auto *selAll = new QCheckBox(tr("Select all"));
     m_stStatus = new QLabel;
     m_stStatus->setObjectName("infoValue");
     m_stRemove = new QPushButton(tr("Remove"));
     m_stRemove->setObjectName("dangerButton");
-    m_stRemove->setEnabled(false);
+    arow->addWidget(selAll);
     arow->addWidget(m_stStatus, 1);
     arow->addWidget(m_stRemove);
     v->addLayout(arow);
 
+    connect(selAll, &QCheckBox::toggled, this, [this](bool on){ setAllChecked(m_stModel, on); });
     connect(reload,   &QPushButton::clicked, this, &PackageManagerPage::loadStore);
     connect(m_stRemove, &QPushButton::clicked, this, &PackageManagerPage::removeSelectedStore);
     connect(ocsBtn,   &QPushButton::clicked, this, &PackageManagerPage::installFromOcs);
@@ -507,11 +590,6 @@ QWidget *PackageManagerPage::buildStoreTab()
     });
     connect(m_stSearch, &QLineEdit::textChanged, this, [this](const QString &t){
         m_stProxy->setFilterFixedString(t);
-    });
-    connect(m_stTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]{
-        const int n = m_stTable->selectionModel()->selectedRows().size();
-        m_stRemove->setEnabled(n > 0);
-        m_stRemove->setText(n > 1 ? tr("Remove %1 add-ons").arg(n) : tr("Remove"));
     });
     return tab;
 }
@@ -531,6 +609,7 @@ void PackageManagerPage::loadStore()
             r[2]->setData(qlonglong(a.sizeBytes), Qt::UserRole);
             m_stModel->appendRow(r);
         }
+        makeCheckable(m_stModel);
         m_stStatus->setText(tr("%1 add-on(s).").arg(items.size()));
     });
     w->setFuture(QtConcurrent::run([]{ return StoreAddonTool::installed(); }));
@@ -538,17 +617,28 @@ void PackageManagerPage::loadStore()
 
 void PackageManagerPage::removeSelectedStore()
 {
-    auto rows = m_stTable->selectionModel()->selectedRows();
-    if (rows.isEmpty()) return;
     QVector<StoreAddon> targets;
     QStringList names;
-    for (const auto &idx : rows) {
-        StoreAddon a;
-        a.path = m_stProxy->data(m_stProxy->index(idx.row(), 0), Qt::UserRole).toString();
-        a.name = m_stProxy->data(m_stProxy->index(idx.row(), 0)).toString();
-        if (!a.path.isEmpty()) { targets.append(a); names << "• " + a.name; }
+    // Ticked rows first, else the current selection.
+    for (int r = 0; r < m_stModel->rowCount(); ++r) {
+        auto *it = m_stModel->item(r, 0);
+        if (it && it->checkState() == Qt::Checked) {
+            StoreAddon a; a.path = it->data(Qt::UserRole).toString(); a.name = it->text();
+            if (!a.path.isEmpty()) { targets.append(a); names << "• " + a.name; }
+        }
     }
-    if (targets.isEmpty()) return;
+    if (targets.isEmpty())
+        for (const auto &idx : m_stTable->selectionModel()->selectedRows()) {
+            StoreAddon a;
+            a.path = m_stProxy->data(m_stProxy->index(idx.row(), 0), Qt::UserRole).toString();
+            a.name = m_stProxy->data(m_stProxy->index(idx.row(), 0)).toString();
+            if (!a.path.isEmpty()) { targets.append(a); names << "• " + a.name; }
+        }
+    if (targets.isEmpty()) {
+        QMessageBox::information(this, tr("Remove add-ons"),
+            tr("Tick the add-ons to remove (or select a row) first."));
+        return;
+    }
     if (QMessageBox::warning(this, tr("Remove add-ons"),
             tr("Permanently delete the following %1 add-on(s) from your home folder?\n\n%2")
                 .arg(targets.size()).arg(names.join("\n")),
@@ -622,15 +712,17 @@ QWidget *PackageManagerPage::buildAppImagesTab()
     v->addWidget(m_aiTable, 1);
 
     auto *arow = new QHBoxLayout;
+    auto *selAll = new QCheckBox(tr("Select all"));
     m_aiStatus = new QLabel;
     m_aiStatus->setObjectName("infoValue");
     m_aiRemove = new QPushButton(tr("Remove"));
     m_aiRemove->setObjectName("dangerButton");
-    m_aiRemove->setEnabled(false);
+    arow->addWidget(selAll);
     arow->addWidget(m_aiStatus, 1);
     arow->addWidget(m_aiRemove);
     v->addLayout(arow);
 
+    connect(selAll, &QCheckBox::toggled, this, [this](bool on){ setAllChecked(m_aiModel, on); });
     connect(reload, &QPushButton::clicked, this, &PackageManagerPage::loadAppImages);
     connect(add,    &QPushButton::clicked, this, &PackageManagerPage::addAppImage);
     connect(m_aiRemove, &QPushButton::clicked, this, &PackageManagerPage::removeSelectedAppImage);
@@ -639,11 +731,6 @@ QWidget *PackageManagerPage::buildAppImagesTab()
     });
     connect(m_aiSearch, &QLineEdit::textChanged, this, [this](const QString &t){
         m_aiProxy->setFilterFixedString(t);
-    });
-    connect(m_aiTable->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]{
-        const int n = m_aiTable->selectionModel()->selectedRows().size();
-        m_aiRemove->setEnabled(n > 0);
-        m_aiRemove->setText(n > 1 ? tr("Remove %1 AppImages").arg(n) : tr("Remove"));
     });
     return tab;
 }
@@ -667,6 +754,7 @@ void PackageManagerPage::loadAppImages()
             r[0]->setData(e.iconPath,     Qt::UserRole + 2);
             m_aiModel->appendRow(r);
         }
+        makeCheckable(m_aiModel);
         m_aiStatus->setText(tr("%1 AppImage(s).").arg(items.size()));
     });
     w->setFuture(QtConcurrent::run([]{ return AppImageTool::installed(); }));
@@ -687,19 +775,27 @@ void PackageManagerPage::addAppImage()
 
 void PackageManagerPage::removeSelectedAppImage()
 {
-    auto rows = m_aiTable->selectionModel()->selectedRows();
-    if (rows.isEmpty()) return;
     QVector<AppImageEntry> targets;
     QStringList names;
-    for (const auto &idx : rows) {
+    auto grab = [&](QStandardItem *it) {
         AppImageEntry e;
-        e.appImagePath = m_aiProxy->data(m_aiProxy->index(idx.row(), 0), Qt::UserRole).toString();
-        e.desktopPath  = m_aiProxy->data(m_aiProxy->index(idx.row(), 0), Qt::UserRole + 1).toString();
-        e.iconPath     = m_aiProxy->data(m_aiProxy->index(idx.row(), 0), Qt::UserRole + 2).toString();
-        e.name         = m_aiProxy->data(m_aiProxy->index(idx.row(), 0)).toString();
+        e.appImagePath = it->data(Qt::UserRole).toString();
+        e.desktopPath  = it->data(Qt::UserRole + 1).toString();
+        e.iconPath     = it->data(Qt::UserRole + 2).toString();
+        e.name         = it->text();
         if (!e.appImagePath.isEmpty()) { targets.append(e); names << "• " + e.name; }
+    };
+    for (int r = 0; r < m_aiModel->rowCount(); ++r)
+        if (auto *it = m_aiModel->item(r, 0); it && it->checkState() == Qt::Checked) grab(it);
+    if (targets.isEmpty())
+        for (const auto &idx : m_aiTable->selectionModel()->selectedRows())
+            if (auto *it = m_aiModel->itemFromIndex(
+                    m_aiProxy->mapToSource(m_aiProxy->index(idx.row(), 0)))) grab(it);
+    if (targets.isEmpty()) {
+        QMessageBox::information(this, tr("Remove AppImages"),
+            tr("Tick the AppImages to remove (or select a row) first."));
+        return;
     }
-    if (targets.isEmpty()) return;
     if (QMessageBox::warning(this, tr("Remove AppImages"),
             tr("Remove the following %1 AppImage(s) — the file, its launcher and its icon?\n\n%2")
                 .arg(targets.size()).arg(names.join("\n")),

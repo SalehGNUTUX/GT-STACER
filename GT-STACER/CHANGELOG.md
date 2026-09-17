@@ -6,6 +6,39 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.11.3-stable] — 2026-09-17
+
+A UX-focused point release, from a testing pass on the Package Manager and
+Recovery pages.
+
+### Added
+- **Checkbox selection in tables — no more Ctrl-click.** Every action table (the
+  Package Manager's Installed / Search & Install / Upgrades / Store add-ons /
+  AppImages tabs, and the Processes list) now has a tick box per row and a
+  **Select all** toggle, so you can pick several items for install / upgrade /
+  remove / kill without holding a modifier key. A single row selection still works
+  as a fallback.
+- **A live progress-log window for package operations, with a Stop button.**
+  Install / upgrade / uninstall now run in a window that streams the command's
+  output line by line, shows a busy indicator, and can be **stopped** — the
+  missing cancel control. (A privileged step already running as root may finish in
+  the background; the log says so.)
+- **Completion notifications for long tasks.** Any operation you start and leave
+  running — package install/upgrade/remove, System Cleaner, Home backup, File
+  Recovery — now raises a desktop notification when it finishes, so you learn it's
+  done even after navigating to another section.
+
+### Changed
+- **Recovery: the file-type list fills the available height** instead of a small
+  cramped box, and it's dimmed while "Recover all file types" is on (the cue that
+  every format is already included) — unticking that re-enables per-type picking.
+- Search & Install now gives feedback ("type a package name…") instead of doing
+  nothing when the box is empty.
+- `PackageTool` gained `installCommand()` / `upgradeCommand()` / `upgradeAllCommand()` /
+  `removeCommand()` (the argv the executors already built), so the UI can run a
+  package command with live output and cancel — same no-shell, validated-name
+  security model.
+
 ## [26.11.2-stable] — 2026-09-16
 
 Another small point release, following testing of 26.11.1.
@@ -554,6 +587,7 @@ safety.
 
 ---
 
+[26.11.3-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.3_STABLE
 [26.11.2-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.2_STABLE
 [26.11.1-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.1_STABLE
 [26.11-stable]: https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11_STABLE

@@ -110,6 +110,17 @@ public:
     // Packages that have a newer version available (name/version = the NEW one).
     static QVector<PackageInfo> upgradable(PkgMgr mgr);
 
+    // ── Command builders ──
+    // Return the exact argv ({program, arg…}, pkexec-prepended when root is
+    // needed) for an operation, WITHOUT running it — empty on an invalid name or
+    // unsupported manager. Exposed so the UI can run the command with live output
+    // and a cancel button (see CommandLogDialog). remove of a Manual app has no
+    // single command, so removeCommand() returns empty for PkgMgr::Manual.
+    static QStringList installCommand(const QString &name, PkgMgr mgr);
+    static QStringList upgradeCommand(const QString &name, PkgMgr mgr);
+    static QStringList upgradeAllCommand(PkgMgr mgr);
+    static QStringList removeCommand(const QString &name, PkgMgr mgr);
+
     // ── الإزالة ──
     static bool remove(const QString &name, PkgMgr mgr);
     // Removes a manually-installed app end-to-end: its .desktop launcher, its

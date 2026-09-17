@@ -28,6 +28,7 @@ set(APP_SOURCES
     Dialogs/pkg_cache_dialog.cpp
     Dialogs/universal_apps_dialog.cpp
     Dialogs/startup_add_dialog.cpp
+    Dialogs/command_log_dialog.cpp
     Pages/Dashboard/dashboard_page.cpp
     Pages/Resources/resources_page.cpp
     Pages/Processes/processes_page.cpp
@@ -63,6 +64,7 @@ set(APP_HEADERS
     Widgets/sidebar.h
     Widgets/sidebar_icons.h
     Widgets/skeleton_rows.h
+    Dialogs/command_log_dialog.h
     Dialogs/welcome_dialog.h
     Dialogs/edit_source_dialog.h
     Dialogs/about_dialog.h

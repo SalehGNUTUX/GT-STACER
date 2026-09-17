@@ -494,173 +494,173 @@ Apps will rebuild their caches on next launch.</source>
 <context>
     <name>BackupPage</name>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="35"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="36"/>
         <source>Backup &amp; Snapshots</source>
         <translation>النسخ الاحتياطيّة واللقطات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="39"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="40"/>
         <source>Create system restore points (snapshots) and mirror your home directory to another disk. Snapshots and restores need authorization; a home backup does not — they are your own files.</source>
         <translation>أنشئ نقاط استعادة للنظام (لقطات) وانسخ مجلّد المنزل إلى قرص آخر. اللقطات والاستعادة تتطلّب تصريحاً؛ نسخ المنزل لا يتطلّبه — فهي ملفّاتك.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="66"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="67"/>
         <source>System snapshots</source>
         <translation>لقطات النظام</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="84"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="85"/>
         <source>Engine</source>
         <translation>المحرّك</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="90"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="91"/>
         <source>recommended for %1</source>
         <translation>موصى به لـ %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="107"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="108"/>
         <source>Date</source>
         <translation>التاريخ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="107"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="108"/>
         <source>Tags</source>
         <translation>الوسوم</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="107"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="108"/>
         <source>Description</source>
         <translation>الوصف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="118"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="119"/>
         <source>Comment for a new snapshot (optional)</source>
         <translation>تعليق للقطة جديدة (اختياريّ)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="119"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="120"/>
         <source>Create snapshot</source>
         <translation>أنشئ لقطة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="121"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="122"/>
         <source>Load</source>
         <translation>تحميل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="122"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="123"/>
         <source>Restore selected</source>
         <translation>استعادة المحدَّد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="123"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="124"/>
         <source>Delete selected</source>
         <translation>حذف المحدَّد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="147"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="148"/>
         <source>Not configured</source>
         <translation>غير مُهيَّأ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="151"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="152"/>
         <source>Engine: %1%2 · filesystem: %3 · restores need a reboot</source>
         <translation>المحرّك: %1%2 · نظام الملفّات: %3 · الاستعادة تتطلّب إعادة تشغيل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="155"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="168"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="156"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="169"/>
         <source>unknown</source>
         <translation>غير معروف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="157"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="158"/>
         <source>Timeshift is installed but not set up yet — configure it to enable snapshots on your %1 filesystem.</source>
         <translation>Timeshift مثبَّت لكنّه غير مُهيَّأ بعد — هيّئه لتفعيل اللقطات على نظام ملفّاتك %1.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="159"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="160"/>
         <source>current</source>
         <translation>الحاليّ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="161"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="162"/>
         <source>Your root filesystem is Btrfs — install Timeshift or Snapper for instant snapshots.</source>
         <translation>نظام ملفّات جذرك هو Btrfs — ثبّت Timeshift أو Snapper للقطات فوريّة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="164"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="165"/>
         <source>Your root filesystem is ZFS — install the zfs tools to manage snapshots.</source>
         <translation>نظام ملفّات جذرك هو ZFS — ثبّت أدوات zfs لإدارة اللقطات.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="167"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="168"/>
         <source>Your root filesystem is %1 — install Timeshift for rsync-based snapshots.</source>
         <translation>نظام ملفّات جذرك هو %1 — ثبّت Timeshift للقطات بأسلوب rsync.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="177"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="178"/>
         <source>Restore isn&apos;t available for %1 yet.</source>
         <translation>الاستعادة غير متاحة لـ %1 بعد.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="207"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="208"/>
         <source>Loading snapshots…</source>
         <translation>جارٍ تحميل اللقطات…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="227"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="228"/>
         <source>Creating snapshot… this can take a while.</source>
         <translation>جارٍ إنشاء اللقطة… قد يستغرق وقتاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="231"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="240"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="248"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="255"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="268"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="232"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="241"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="249"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="256"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="269"/>
         <source>Snapshot</source>
         <translation>لقطة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="232"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="233"/>
         <source>Could not create the snapshot (authorization declined?).</source>
         <translation>تعذّر إنشاء اللقطة (رُفض التصريح؟).</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="240"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="255"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="241"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="256"/>
         <source>Select a snapshot first.</source>
         <translation>اختر لقطةً أوّلاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="243"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="244"/>
         <source>Delete snapshot</source>
         <translation>حذف لقطة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="244"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="245"/>
         <source>Delete the snapshot from %1?</source>
         <translation>حذف اللقطة المؤرَّخة %1؟</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="245"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="246"/>
         <source>Deleting snapshot…</source>
         <translation>جارٍ حذف اللقطة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="248"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="249"/>
         <source>Could not delete the snapshot.</source>
         <translation>تعذّر حذف اللقطة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="258"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="259"/>
         <source>Restore snapshot</source>
         <translation>استعادة لقطة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="259"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="260"/>
         <source>Restore the system to the snapshot from %1?
 
 This overwrites current system files and REBOOTS the machine to finish. Save your work first.</source>
@@ -669,110 +669,183 @@ This overwrites current system files and REBOOTS the machine to finish. Save you
 سيؤدّي هذا إلى الكتابة فوق ملفّات النظام الحاليّة وإعادة تشغيل الجهاز للإنهاء. احفظ عملك أوّلاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="263"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="264"/>
         <source>Restore &amp;&amp; reboot</source>
         <translation>استعادة وإعادة تشغيل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="266"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="267"/>
         <source>Restoring… the system will reboot.</source>
         <translation>جارٍ الاستعادة… سيُعاد تشغيل النظام.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="269"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="270"/>
         <source>Could not start the restore (authorization declined?).</source>
         <translation>تعذّر بدء الاستعادة (رُفض التصريح؟).</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="275"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="276"/>
         <source>Home backup (rsync mirror)</source>
         <translation>نسخ المنزل (مرآة rsync)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="279"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="280"/>
         <source>Mirror your home folder to another disk. Caches and the trash are skipped.</source>
         <translation>انسخ مجلّد منزلك إلى قرص آخر مطابقةً. تُتجاهَل الذواكر المخبّأة وسلّة المهملات.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="283"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="284"/>
         <source>Destination</source>
         <translation>الوجهة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="285"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="286"/>
         <source>/run/media/you/BackupDrive/home-backup</source>
         <translation>/run/media/you/BackupDrive/home-backup</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="286"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="287"/>
         <source>Browse…</source>
         <translation>تصفّح…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="292"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="293"/>
         <source>Mirror (delete files at the destination that no longer exist)</source>
         <translation>مطابقة (حذف ملفّات الوجهة التي لم تعد موجودة)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="294"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="295"/>
         <source>Back up now</source>
         <translation>انسخ الآن</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="296"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="297"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="321"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="322"/>
         <source>Choose backup destination</source>
         <translation>اختر وجهة النسخ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="338"/>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="340"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="339"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="341"/>
         <source>Backup</source>
         <translation>النسخ الاحتياطيّة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="338"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="339"/>
         <source>Choose a destination folder first.</source>
         <translation>اختر مجلّد وجهة أوّلاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="340"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="341"/>
         <source>The destination is not writable.</source>
         <translation>الوجهة غير قابلة للكتابة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="342"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="343"/>
         <source>Mirror backup</source>
         <translation>نسخ بالمطابقة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="343"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="344"/>
         <source>Mirror mode will DELETE files at the destination that are no longer in your home folder. Continue?</source>
         <translation>وضع المطابقة سيحذف ملفّات الوجهة التي لم تعد في مجلّد منزلك. أتُتابع؟</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="359"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="360"/>
         <source>Backing up… %1%</source>
         <translation>جارٍ النسخ… %1%</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="363"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="364"/>
         <source>Backup complete.</source>
         <translation>اكتمل النسخ.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="364"/>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="365"/>
         <source>Backup stopped (exit %1).</source>
         <translation>توقّف النسخ (خروج %1).</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="369"/>
+        <source>Home backup — finished</source>
+        <translation>نسخ المنزل — انتهى</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Backup/backup_page.cpp" line="374"/>
         <source>Starting…</source>
         <translation>جارٍ البدء…</translation>
+    </message>
+</context>
+<context>
+    <name>CommandLogDialog</name>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="29"/>
+        <source>Preparing…</source>
+        <translation>جارٍ التحضير…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="48"/>
+        <source>Stop</source>
+        <translation>إيقاف</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="50"/>
+        <source>Close</source>
+        <translation>إغلاق</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="93"/>
+        <source>  (skipped)</source>
+        <translation>  (تُخطّي)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="118"/>
+        <source>  ⏹ Stopped.</source>
+        <translation>  ⏹ أُوقِف.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="119"/>
+        <source>  ✗ Command failed (exit %1).</source>
+        <translation>  ✗ فشل الأمر (خروج %1).</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="121"/>
+        <source>  ✓ Done.</source>
+        <translation>  ✓ تمّ.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="133"/>
+        <source>  ✗ %1</source>
+        <translation>  ✗ %1</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="143"/>
+        <source>Stopping…</source>
+        <translation>جارٍ الإيقاف…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="145"/>
+        <source>  ⏹ Stopping… (a privileged step already running as root may finish in the background)</source>
+        <translation>  ⏹ جارٍ الإيقاف… (خطوة مميّزة تعمل أصلاً كجذر قد تنتهي في الخلفيّة)</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="163"/>
+        <source>Stopped.</source>
+        <translation>أُوقِف.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="164"/>
+        <source>✓ Finished successfully.</source>
+        <translation>✓ انتهى بنجاح.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/command_log_dialog.cpp" line="165"/>
+        <source>✗ Finished with errors — see the log above.</source>
+        <translation>✗ انتهى بأخطاء — راجع السجلّ أعلاه.</translation>
     </message>
 </context>
 <context>
@@ -1462,182 +1535,265 @@ Note: this is a runtime change. To persist across reboots, add it to /etc/sysctl
 <context>
     <name>PackageManagerPage</name>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="51"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="54"/>
         <source>Plasma Theme</source>
         <translation>سمة بلازما</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="52"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="55"/>
         <source>Plasmoid</source>
         <translation>بلازمويد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="53"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="56"/>
         <source>Global Theme</source>
         <translation>سمة شاملة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="54"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="57"/>
         <source>Wallpaper Plugin</source>
         <translation>إضافة خلفيّة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="55"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="58"/>
         <source>Window Decoration</source>
         <translation>زخرفة النوافذ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="56"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="59"/>
         <source>Colour Scheme</source>
         <translation>مخطّط ألوان</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="57"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="60"/>
         <source>Wallpaper</source>
         <translation>خلفيّة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="58"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="61"/>
         <source>Icons</source>
         <translation>أيقونات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="59"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="62"/>
         <source>Desktop Theme</source>
         <translation>سمة سطح المكتب</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="60"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="63"/>
         <source>Font</source>
         <translation>خطّ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="61"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="64"/>
         <source>Konsole Profile</source>
         <translation>ملفّ Konsole</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="62"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="65"/>
         <source>KWin Effect</source>
         <translation>مؤثّر KWin</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="63"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="66"/>
         <source>KWin Script</source>
         <translation>سكربت KWin</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="64"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="67"/>
         <source>KWin Switcher</source>
         <translation>مبدّل KWin</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="65"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="68"/>
         <source>SDDM Theme</source>
         <translation>سمة SDDM</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="94"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="142"/>
         <source>Package &amp; Software Manager</source>
         <translation>مدير الحزم و البرامج</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="98"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="146"/>
         <source>Install, upgrade and remove software from your system package manager, Flatpak and Snap — and manage desktop store add-ons. Changes that touch the system ask for your password.</source>
         <translation>ثبّت البرامج ورقّها وأزِلها من مدير حزم نظامك ومن Flatpak وSnap — وأدِر إضافات متجر سطح المكتب. التغييرات التي تمسّ النظام تطلب كلمة مرورك.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="107"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="155"/>
         <source>Installed</source>
         <translation>المثبَّتة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="108"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="156"/>
         <source>Search &amp;&amp; Install</source>
         <translation>بحث وتثبيت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="109"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="157"/>
         <source>Upgrades</source>
         <translation>الترقيات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="110"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="158"/>
         <source>Store add-ons</source>
         <translation>إضافات المتجر</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="111"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="159"/>
         <source>AppImages</source>
         <translation>AppImage</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="155"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="192"/>
+        <source>GT-STACER — task finished</source>
+        <translation>GT-STACER — انتهت المهمّة</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="209"/>
+        <source>%1 — finished</source>
+        <translation>%1 — انتهى</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="209"/>
+        <source>%1 — finished with errors</source>
+        <translation>%1 — انتهى بأخطاء</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="210"/>
+        <source>The operation completed successfully.</source>
+        <translation>اكتملت العمليّة بنجاح.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="211"/>
+        <source>The operation finished with errors — open the log for details.</source>
+        <translation>انتهت العمليّة بأخطاء — افتح السجلّ للتفاصيل.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="228"/>
         <source>Filter installed packages…</source>
         <translation>تصفية الحزم المثبَّتة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="157"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="230"/>
         <source>All</source>
         <translation>الكل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="161"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="473"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="604"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="234"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="554"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="694"/>
         <source>Reload</source>
         <translation>إعادة تحميل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="168"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="241"/>
         <source>Name</source>
         <translation>الاسم</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="168"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="271"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="615"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="241"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="350"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="705"/>
         <source>Version</source>
         <translation>الإصدار</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="168"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="483"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="615"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="241"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="564"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="705"/>
         <source>Size</source>
         <translation>الحجم</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="168"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="241"/>
         <source>Manager</source>
         <translation>المدير</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="179"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="200"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="240"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="250"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="357"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="458"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="574"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="715"/>
+        <source>Select all</source>
+        <translation>تحديد الكلّ</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="253"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="300"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="306"/>
         <source>Uninstall</source>
         <translation>إلغاء التثبيت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="200"/>
-        <source>Uninstall %1 packages</source>
-        <translation>إلغاء تثبيت %1 حزمة</translation>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="319"/>
+        <source>Uninstall %1</source>
+        <translation>إزالة %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="207"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="521"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="654"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="322"/>
+        <source>Removing %1 external app(s)…</source>
+        <translation>إزالة %1 برنامج خارجيّ…</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="326"/>
+        <source>Uninstalling %1 package(s)</source>
+        <translation>إزالة %1 حزمة</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="431"/>
+        <source>Installing %1 package(s)</source>
+        <translation>تثبيت %1 حزمة</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="512"/>
+        <source>Tick the packages to upgrade (or select a row) first.</source>
+        <translation>أشِّر الحزم المراد ترقيتها (أو حدّد صفّاً) أوّلاً.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="517"/>
+        <source>Upgrade %1</source>
+        <translation>ترقية %1</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="518"/>
+        <source>Upgrading %1 package(s)</source>
+        <translation>ترقية %1 حزمة</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="531"/>
+        <source>Upgrading all packages</source>
+        <translation>ترقية كلّ الحزم</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="532"/>
+        <source>Upgrade all packages via %1</source>
+        <translation>ترقية كلّ الحزم عبر %1</translation>
+    </message>
+    <message>
+        <source>Uninstall %1 packages</source>
+        <translation type="vanished">إلغاء تثبيت %1 حزمة</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="277"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="599"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="741"/>
         <source>Loading…</source>
         <translation>جارٍ التحميل…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="220"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="291"/>
         <source>%1 packages</source>
         <translation>%1 حزمة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="241"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="301"/>
+        <source>Tick the packages to uninstall (or select a row) first.</source>
+        <translation>أشِّر الحزم المراد إزالتها (أو حدّد صفّاً) أوّلاً.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="307"/>
         <source>Uninstall the following %1 package(s)?
 
 %2
@@ -1650,65 +1806,78 @@ You will be asked for your password.</source>
 سيُطلب منك كلمة المرور.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="246"/>
         <source>Uninstalling %1 package(s)…</source>
-        <translation>جارٍ إزالة %1 حزمة…</translation>
+        <translation type="vanished">جارٍ إزالة %1 حزمة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="262"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="341"/>
         <source>Search for a package to install…</source>
         <translation>ابحث عن حزمة لتثبيتها…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="263"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="342"/>
         <source>Search</source>
         <translation>بحث</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="271"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="372"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="350"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="453"/>
         <source>Package</source>
         <translation>الحزمة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="271"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="350"/>
         <source>Description</source>
         <translation>الوصف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="281"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="294"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="343"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="361"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="415"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="425"/>
         <source>Install</source>
         <translation>تثبيت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="294"/>
         <source>Install %1 packages</source>
-        <translation>تثبيت %1 حزمة</translation>
+        <translation type="vanished">تثبيت %1 حزمة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="298"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="374"/>
         <source>No installable package manager was detected.</source>
         <translation>لم يُكتشَف مدير حزم قابل للتثبيت.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="309"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="384"/>
+        <source>Type a package name in the box, then Search.</source>
+        <translation>اكتب اسم حزمة في الصندوق ثمّ اضغط بحث.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="390"/>
         <source>Searching…</source>
         <translation>جارٍ البحث…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="322"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="404"/>
         <source>No results — try a different term.</source>
         <translation>لا نتائج — جرّب كلمة أخرى.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="323"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="405"/>
         <source>%1 result(s).</source>
         <translation>%1 نتيجة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="344"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="416"/>
+        <source>Tick the packages to install (or select a row) first.</source>
+        <translation>أشِّر الحزم المراد تثبيتها (أو حدّد صفّاً) أوّلاً.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="423"/>
+        <source>Install %1</source>
+        <translation>تثبيت %1</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="426"/>
         <source>Install the following %1 package(s)?
 
 %2
@@ -1721,58 +1890,57 @@ You may be asked for your password.</source>
 قد يُطلب منك كلمة المرور.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="349"/>
         <source>Installing %1 package(s)…</source>
-        <translation>جارٍ تثبيت %1 حزمة…</translation>
+        <translation type="vanished">جارٍ تثبيت %1 حزمة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="351"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="432"/>
         <source>Done. Check the Installed tab.</source>
         <translation>تمّ. راجع تبويب «المثبَّتة».</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="364"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="445"/>
         <source>Check for upgrades</source>
         <translation>تحقّق من الترقيات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="372"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="453"/>
         <source>New version</source>
         <translation>الإصدار الجديد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="379"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="461"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="511"/>
         <source>Upgrade selected</source>
         <translation>ترقية المحدَّد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="381"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="446"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="462"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="526"/>
         <source>Upgrade all</source>
         <translation>ترقية الكلّ</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="404"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="484"/>
         <source>Checking…</source>
         <translation>جارٍ التحقّق…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="418"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="499"/>
         <source>Everything is up to date.</source>
         <translation>كلّ شيء مُحدَّث.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="419"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="500"/>
         <source>%1 upgrade(s) available.</source>
         <translation>%1 ترقية متاحة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="437"/>
         <source>Upgrading %1 package(s)…</source>
-        <translation>جارٍ ترقية %1 حزمة…</translation>
+        <translation type="vanished">جارٍ ترقية %1 حزمة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="447"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="527"/>
         <source>Upgrade every package with an available update via %1?
 
 You will be asked for your password.</source>
@@ -1781,65 +1949,67 @@ You will be asked for your password.</source>
 سيُطلب منك كلمة المرور.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="451"/>
         <source>Upgrading all packages… this can take a while.</source>
-        <translation>جارٍ ترقية كلّ الحزم… قد يستغرق هذا وقتاً.</translation>
+        <translation type="vanished">جارٍ ترقية كلّ الحزم… قد يستغرق هذا وقتاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="462"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="543"/>
         <source>Desktop add-ons installed from opendesktop.org / store.kde.org — themes, icons, cursors, plasmoids, wallpapers and more. Remove them here, or install new ones from the store.</source>
         <translation>إضافات سطح المكتب المثبَّتة من opendesktop.org / store.kde.org — سمات وأيقونات ومؤشّرات وبلازمويدات وخلفيّات وغيرها. أزِلها من هنا، أو ثبّت جديدها من المتجر.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="472"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="553"/>
         <source>Filter add-ons…</source>
         <translation>تصفية الإضافات…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="474"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="555"/>
         <source>Install from link…</source>
         <translation>تثبيت من رابط…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="475"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="556"/>
         <source>Open store</source>
         <translation>افتح المتجر</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="483"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="564"/>
         <source>Add-on</source>
         <translation>الإضافة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="483"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="564"/>
         <source>Category</source>
         <translation>الفئة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="495"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="514"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="627"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="646"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="577"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="718"/>
         <source>Remove</source>
         <translation>حذف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="514"/>
         <source>Remove %1 add-ons</source>
-        <translation>إزالة %1 إضافة</translation>
+        <translation type="vanished">إزالة %1 إضافة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="534"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="613"/>
         <source>%1 add-on(s).</source>
         <translation>%1 إضافة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="552"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="638"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="642"/>
         <source>Remove add-ons</source>
         <translation>إزالة إضافات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="553"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="639"/>
+        <source>Tick the add-ons to remove (or select a row) first.</source>
+        <translation>أشِّر الإضافات المراد إزالتها (أو حدّد صفّاً) أوّلاً.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="643"/>
         <source>Permanently delete the following %1 add-on(s) from your home folder?
 
 %2</source>
@@ -1848,118 +2018,123 @@ You will be asked for your password.</source>
 %2</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="557"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="647"/>
         <source>Removing %1 add-on(s)…</source>
         <translation>جارٍ إزالة %1 إضافة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="565"/>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="570"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="655"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="660"/>
         <source>Install from link</source>
         <translation>تثبيت من رابط</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="566"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="656"/>
         <source>Paste an ocs-url:// install link from the store&apos;s &quot;Install&quot; button:</source>
         <translation>الصق رابط تثبيت ocs-url:// من زرّ «Install» في المتجر:</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="572"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="662"/>
         <source>That does not look like a valid ocs-url:// link.</source>
         <translation>لا يبدو هذا رابط ocs-url:// صالحاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="573"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="663"/>
         <source>No ocs-url handler is installed. Install &quot;ocs-url&quot; (or Plasma Discover) to enable one-click store installs.</source>
         <translation>لا يوجد مُعالج ocs-url مثبَّت. ثبّت «ocs-url» (أو Plasma Discover) لتفعيل التثبيت بنقرة من المتجر.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="577"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="667"/>
         <source>Handed the link to the store installer…</source>
         <translation>سُلِّم الرابط لمثبِّت المتجر…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="591"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="681"/>
         <source>Integrate AppImages into your application menu. GT-STACER uses the same folder and format as GearLever (%1), so apps integrated by either tool appear here — no duplication.</source>
         <translation>أدمِج حزم AppImage في قائمة تطبيقاتك. يستعمل GT-STACER نفس مجلّد GearLever وصيغته (%1)، فتظهر هنا البرامج المُدمَجة بأيّ من الأداتين — دون تكرار.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="594"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="684"/>
         <source>Integrate AppImages into your application menu: GT-STACER moves or copies the file into %1, extracts its icon, and creates a launcher.</source>
         <translation>أدمِج حزم AppImage في قائمة تطبيقاتك: ينقل GT-STACER الملفّ أو ينسخه إلى %1، ويستخرج أيقونته، وينشئ مُشغّلاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="603"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="693"/>
         <source>Filter AppImages…</source>
         <translation>تصفية حزم AppImage…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="605"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="695"/>
         <source>Add AppImage…</source>
         <translation>أضِف AppImage…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="607"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="697"/>
         <source>Open folder</source>
         <translation>افتح المجلّد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="615"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="705"/>
         <source>Application</source>
         <translation>التطبيق</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="615"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="705"/>
         <source>Source</source>
         <translation>المصدر</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="646"/>
         <source>Remove %1 AppImages</source>
-        <translation>إزالة %1 AppImage</translation>
+        <translation type="vanished">إزالة %1 AppImage</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="664"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="751"/>
         <source>GearLever folder</source>
         <translation>مجلّد GearLever</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="664"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="751"/>
         <source>Integrated</source>
         <translation>مُدمَج</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="670"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="758"/>
         <source>%1 AppImage(s).</source>
         <translation>%1 AppImage.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="677"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="765"/>
         <source>Choose an AppImage to integrate</source>
         <translation>اختر AppImage لدمجه</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="678"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="766"/>
         <source>AppImages (*.AppImage *.appimage);;All files (*)</source>
         <translation>حزم AppImage (*.AppImage *.appimage);;كلّ الملفّات (*)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="680"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="768"/>
         <source>Integrating %1…</source>
         <translation>جارٍ دمج %1…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="683"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="771"/>
         <source>Integrated — it should now appear in your app menu.</source>
         <translation>تمّ الدمج — ينبغي أن يظهر الآن في قائمة تطبيقاتك.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="703"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="795"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="799"/>
         <source>Remove AppImages</source>
         <translation>إزالة حزم AppImage</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="704"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="796"/>
+        <source>Tick the AppImages to remove (or select a row) first.</source>
+        <translation>أشِّر ملفّات AppImage المراد إزالتها (أو حدّد صفّاً) أوّلاً.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="800"/>
         <source>Remove the following %1 AppImage(s) — the file, its launcher and its icon?
 
 %2</source>
@@ -1968,7 +2143,7 @@ You will be asked for your password.</source>
 %2</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="708"/>
+        <location filename="../gt-stacer/Pages/PackageManager/package_manager_page.cpp" line="804"/>
         <source>Removing %1 AppImage(s)…</source>
         <translation>جارٍ إزالة %1 AppImage…</translation>
     </message>
@@ -2437,119 +2612,138 @@ You will be asked for your password.</source>
         <translation>ابحث بالاسم أو PID أو الأمر أو المستخدم…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="181"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="227"/>
         <source>terminate</source>
         <translation>إنهاء</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="182"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="228"/>
         <source>force-kill</source>
         <translation>قتل قسري</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="183"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="229"/>
         <source>suspend</source>
         <translation>تعليق</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="184"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="230"/>
         <source>resume</source>
         <translation>استئناف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="185"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="231"/>
         <source>lower priority of</source>
         <translation>خفض أولوية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="186"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="232"/>
         <source>raise priority of</source>
         <translation>رفع أولوية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="190"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="192"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="236"/>
         <source>Confirm action</source>
         <translation>تأكيد الإجراء</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="192"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="238"/>
         <source>About to &lt;b&gt;%1&lt;/b&gt; process &lt;b&gt;&apos;%2&apos;&lt;/b&gt; (PID %3).</source>
         <translation>على وشك &lt;b&gt;%1&lt;/b&gt; العملية &lt;b&gt;&apos;%2&apos;&lt;/b&gt; (PID %3).</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="194"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="240"/>
         <source>⚠ &lt;span style=&apos;color:#f38ba8;&apos;&gt;&lt;b&gt;This is a critical system process.&lt;/b&gt;&lt;/span&gt; Ending it can hang your session, log you out, or require a reboot. Continue only if you understand the impact.</source>
         <translation>⚠ &lt;span style=&apos;color:#f38ba8;&apos;&gt;&lt;b&gt;هذه عملية نظام حرجة.&lt;/b&gt;&lt;/span&gt; إنهاؤها قد يجمّد الجلسة أو يخرجك منها أو يستلزم إعادة تشغيل. لا تتابع إلا إذا كنت تفهم العواقب.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="201"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="202"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="247"/>
         <source>Yes, I understand the risk</source>
         <translation>نعم، أتفهّم الخطر</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="201"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="195"/>
+        <source>Terminate the following &lt;b&gt;%1&lt;/b&gt; process(es)?</source>
+        <translation>إنهاء العمليّات &lt;b&gt;%1&lt;/b&gt; التالية؟</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="198"/>
+        <source>⚠ &lt;span style=&apos;color:#f38ba8;&apos;&gt;&lt;b&gt;The selection includes a critical system process.&lt;/b&gt;&lt;/span&gt; Ending it can hang your session or log you out.</source>
+        <translation>⚠ &lt;span style='color:#f38ba8;'&gt;&lt;b&gt;يتضمّن التحديد عمليّة نظام حرجة.&lt;/b&gt;&lt;/span&gt; إنهاؤها قد يُعلّق جلستك أو يُخرجك.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="202"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="247"/>
         <source>Yes</source>
         <translation>نعم</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="203"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="204"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="249"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="215"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="214"/>
+        <source>%1 of %2 process(es) could not be terminated — you may not own them.</source>
+        <translation>تعذّر إنهاء %1 من %2 عمليّة — قد لا تملكها.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="261"/>
         <source>Lower priority</source>
         <translation>خفض الأولوية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="216"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="262"/>
         <source>Niceness for &apos;%1&apos; (higher = lower priority, 1..19):</source>
         <translation>قيمة nice لـ &apos;%1&apos; (أعلى = أولوية أقل، 1..19):</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="224"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="270"/>
         <source>Raise priority</source>
         <translation>رفع الأولوية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="225"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="271"/>
         <source>Niceness for &apos;%1&apos; (lower = higher priority, -20..-1).
 Requires root privileges.</source>
         <translation>قيمة nice لـ &apos;%1&apos; (أقل = أولوية أعلى، -20..-1).
 يتطلب صلاحيات الجذر.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="236"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="282"/>
         <source>Operation failed for PID %1. You may not own this process.</source>
         <translation>فشلت العملية لـ PID %1. ربما لا تملك هذه العملية.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="246"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="292"/>
         <source>Terminate (SIGTERM)</source>
         <translation>إنهاء (SIGTERM)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="247"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="293"/>
         <source>Force kill (SIGKILL)</source>
         <translation>قتل قسري (SIGKILL)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="249"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="295"/>
         <source>Suspend (SIGSTOP)</source>
         <translation>تعليق (SIGSTOP)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="250"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="296"/>
         <source>Resume (SIGCONT)</source>
         <translation>استئناف (SIGCONT)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="252"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="298"/>
         <source>Lower priority…</source>
         <translation>خفض الأولوية…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="253"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="299"/>
         <source>Raise priority…</source>
         <translation>رفع الأولوية…</translation>
     </message>
@@ -2559,7 +2753,7 @@ Requires root privileges.</source>
         <translation>إنهاء العملية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="155"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="160"/>
         <source>%1 processes</source>
         <translation>%1 عملية</translation>
     </message>
@@ -2569,7 +2763,8 @@ Requires root privileges.</source>
         <translation>بحث في العمليات...</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="235"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="213"/>
+        <location filename="../gt-stacer/Pages/Processes/processes_page.cpp" line="281"/>
         <source>Error</source>
         <translation>خطأ</translation>
     </message>
@@ -2620,12 +2815,12 @@ Requires root privileges.</source>
 <context>
     <name>RecoveryPage</name>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="30"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="31"/>
         <source>File Recovery</source>
         <translation>استعادة الملفّات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="34"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="35"/>
         <source>Recover lost or deleted files by carving a disk, partition or image with PhotoRec. Choose a destination on a DIFFERENT disk — never the one you are recovering from. Reading a raw device needs authorization.</source>
         <translation>استعِد الملفّات المفقودة أو المحذوفة بنحت قرص أو قسم أو صورة عبر PhotoRec. اختر وجهةً على قرص مختلف — لا القرص الذي تستعيد منه. قراءة الجهاز الخام تتطلّب تصريحاً.</translation>
     </message>
@@ -2634,139 +2829,144 @@ Requires root privileges.</source>
         <translation type="vanished">PhotoRec غير مثبَّت. ثبّت حزمة «testdisk» لتفعيل استعادة الملفّات.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="45"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="46"/>
         <source>File recovery needs PhotoRec</source>
         <translation>تتطلّب استعادة الملفّات PhotoRec</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="46"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="47"/>
         <source>Install the “testdisk” package to carve lost or deleted files from a disk, partition or image.</source>
         <translation>ثبّت حزمة «testdisk» لاستخراج الملفّات المفقودة أو المحذوفة من قرص أو قسم أو صورة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="54"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="55"/>
         <source>Recover from</source>
         <translation>استعادة من</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="56"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="57"/>
         <source>Refresh</source>
         <translation>تحديث</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="63"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="64"/>
         <source>Save recovered files to</source>
         <translation>احفظ الملفّات المستعادة في</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="65"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="66"/>
         <source>/run/media/you/OtherDrive/recovered</source>
         <translation>/run/media/you/OtherDrive/recovered</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="66"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="67"/>
         <source>Browse…</source>
         <translation>تصفّح…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="74"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="75"/>
         <source>Recover all file types</source>
         <translation>استعادة كلّ أنواع الملفّات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="76"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="77"/>
         <source>Sort recovered files into a folder per type</source>
         <translation>فرز الملفّات المستعادة في مجلّد لكلّ نوع</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="98"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="101"/>
         <source>Start recovery</source>
         <translation>ابدأ الاستعادة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="100"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="103"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="102"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="105"/>
         <source>Open folder</source>
         <translation>افتح المجلّد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="146"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="149"/>
         <source>mounted</source>
         <translation>مُركَّب</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="153"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="156"/>
         <source>Choose where to save recovered files</source>
         <translation>اختر مكان حفظ الملفّات المستعادة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="173"/>
         <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="176"/>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="202"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="179"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="205"/>
         <source>Recovery</source>
         <translation>الاستعادة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="173"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="176"/>
         <source>Choose a source first.</source>
         <translation>اختر مصدراً أوّلاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="176"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="179"/>
         <source>Choose a destination folder first.</source>
         <translation>اختر مجلّد وجهة أوّلاً.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="182"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="185"/>
         <source>Unsafe destination</source>
         <translation>وجهة غير آمنة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="183"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="186"/>
         <source>The destination is on the same disk you are recovering from (%1). Recovering onto it would overwrite the very files you are trying to rescue. Choose a folder on another disk.</source>
         <translation>الوجهة على القرص نفسه الذي تستعيد منه (%1). الكتابة عليه ستطمس الملفّات التي تحاول إنقاذها. اختر مجلّداً على قرص آخر.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="189"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="192"/>
         <source>Source is mounted</source>
         <translation>المصدر مُركَّب</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="190"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="193"/>
         <source>%1 is mounted at %2. Recovery is more reliable on an unmounted partition. Continue anyway?</source>
         <translation>%1 مُركَّب على %2. الاستعادة أوثق على قسم غير مُركَّب. أتُتابع رغم ذلك؟</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="203"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="206"/>
         <source>Pick at least one file type, or tick “Recover all file types”.</source>
         <translation>اختر نوعاً واحداً على الأقلّ، أو أشّر «استعادة كلّ أنواع الملفّات».</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="223"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="226"/>
         <source>Recovery finished — %1 file(s) recovered to %2</source>
         <translation>انتهت الاستعادة — استُعيد %1 ملفّاً إلى %2</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="224"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="227"/>
         <source>Recovery stopped (exit %1) — %2 file(s) recovered so far</source>
         <translation>توقّفت الاستعادة (خروج %1) — استُعيد %2 ملفّاً حتى الآن</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="227"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="230"/>
         <source>  ·  sorted %1 file(s) into per-type folders</source>
         <translation>  ·  فُرِز %1 ملفّاً في مجلّدات حسب النوع</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="236"/>
+        <source>File Recovery — finished</source>
+        <translation>استعادة الملفّات — انتهت</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="241"/>
         <source>Starting PhotoRec on %1…</source>
         <translation>جارٍ تشغيل PhotoRec على %1…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="270"/>
+        <location filename="../gt-stacer/Pages/Recovery/recovery_page.cpp" line="275"/>
         <source>Recovering… %1 file(s) so far</source>
         <translation>جارٍ الاستعادة… %1 ملفّاً حتى الآن</translation>
     </message>
@@ -3949,7 +4149,7 @@ https://salehgnutux.github.io/GT-STACER/
     <name>SystemCleanerPage</name>
     <message>
         <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.ui" line="7"/>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="85"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="86"/>
         <source>System Cleaner</source>
         <translation>منظف النظام</translation>
     </message>
@@ -3960,7 +4160,7 @@ https://salehgnutux.github.io/GT-STACER/
     </message>
     <message>
         <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.ui" line="12"/>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="168"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="169"/>
         <source>Scan</source>
         <translation>فحص</translation>
     </message>
@@ -3980,242 +4180,253 @@ https://salehgnutux.github.io/GT-STACER/
         <translation>انقر فحص لتحليل نظامك</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="59"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="60"/>
         <source>Crash Reports</source>
         <translation>تقارير الأعطال</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="57"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="58"/>
         <source>System Logs</source>
         <translation>سجلات النظام</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="53"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="54"/>
         <source>App Cache</source>
         <translation>ذاكرة التطبيقات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="51"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="52"/>
         <source>Files in the user trash bin</source>
         <translation>ملفات سلة مهملات المستخدم</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="37"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="38"/>
         <source>Package Cache</source>
         <translation>ذاكرة الحزم</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="38"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="39"/>
         <source>%1 Cache</source>
         <translation>ذاكرة %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="40"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="41"/>
         <source>Downloaded packages waiting to be installed</source>
         <translation>حزم منزّلة بانتظار التثبيت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="41"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="42"/>
         <source>Downloaded %1 packages waiting to be installed</source>
         <translation>حزم %1 منزّلة بانتظار التثبيت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="53"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="54"/>
         <source>Application cache files in ~/.cache</source>
         <translation>ملفات ذاكرة التطبيقات في ~/.cache</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="55"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="56"/>
         <source>Thumbnails</source>
         <translation>الصور المصغرة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="55"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="56"/>
         <source>Image thumbnail cache</source>
         <translation>ذاكرة الصور المصغرة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="57"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="58"/>
         <source>Rotated log archives in /var/log</source>
         <translation>أرشيف السجلات المدوّرة في /var/log</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="59"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="60"/>
         <source>System crash dumps in /var/crash</source>
         <translation>تقارير انهيار النظام في /var/crash</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="63"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="64"/>
         <source>Remove orphaned kernel packages (autoremove)</source>
         <translation>إزالة حزم النواة المتروكة (autoremove)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="66"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="67"/>
         <source>Flatpak Apps</source>
         <translation>تطبيقات Flatpak</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="66"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="67"/>
         <source>Installed Flatpak applications — double-click to manage per-app removals</source>
         <translation>تطبيقات Flatpak المثبّتة — انقر نقراً مزدوجاً لإدارة الإزالة الفردية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="68"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="69"/>
         <source>Snap Apps</source>
         <translation>تطبيقات Snap</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="68"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="69"/>
         <source>Installed Snap packages — double-click to manage per-app removals</source>
         <translation>حزم Snap المثبّتة — انقر نقراً مزدوجاً لإدارة الإزالة الفردية</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="89"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="90"/>
         <source>Pick the categories to scan, then choose which results to clean.</source>
         <translation>اختر الفئات المراد فحصها، ثم اختر ما تريد تنظيفه من النتائج.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="114"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="115"/>
         <source>ⓘ Double-click (or use the Details button below) to manage per-application caches.</source>
         <translation>ⓘ انقر نقراً مزدوجاً (أو استخدم زر التفاصيل أدناه) لإدارة ذواكر كل تطبيق على حدة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="124"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="125"/>
         <source>ⓘ Double-click (or use the Details button below) to choose which cached packages to remove.</source>
         <translation>ⓘ انقر نقراً مزدوجاً (أو استخدم زر التفاصيل أدناه) لاختيار الحزم المخبَّأة المراد إزالتها.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="156"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="157"/>
         <source>Select All</source>
         <translation>تأشير الكل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="176"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="177"/>
         <source>App Cache Details…</source>
         <translation>تفاصيل ذاكرة التطبيقات…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="177"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="178"/>
         <source>Manage which application caches to clean individually</source>
         <translation>تحكّم في أي ذواكر تطبيقات تُنظَّف بشكل فردي</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="184"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="185"/>
         <source>Clean</source>
         <translation>تنظيف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="264"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="265"/>
         <source>Pick at least one category to scan.</source>
         <translation>اختر فئة واحدة على الأقل للفحص.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="270"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="271"/>
         <source>Scanning…</source>
         <translation>جارٍ الفحص…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="271"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="272"/>
         <source>Scanning selected categories…</source>
         <translation>جارٍ فحص الفئات المختارة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="299"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="300"/>
         <source>autoremove</source>
         <translation>autoremove</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="308"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="309"/>
         <source>Found %1 to clean. Select what to remove, then press Clean.</source>
         <translation>وُجد %1 صالح للتنظيف. اختر ما تريد إزالته ثم اضغط تنظيف.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="386"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="387"/>
         <source>Nothing selected to clean.</source>
         <translation>لم يُختر شيء للتنظيف.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="397"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="398"/>
         <source>&lt;b&gt;You are about to remove:&lt;/b&gt;&lt;br&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;أنت على وشك إزالة:&lt;/b&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="415"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="416"/>
         <source>(autoremove)</source>
         <translation>(autoremove)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="419"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="420"/>
         <source>Estimated total: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>المجموع التقديري: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="422"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="423"/>
         <source>ⓘ You will be asked for your password to perform the root-level cleanups.</source>
         <translation>ⓘ ستُطلب منك كلمة المرور لتنفيذ عمليات التنظيف على مستوى الجذر.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="426"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="427"/>
         <source>Confirm clean</source>
         <translation>تأكيد التنظيف</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="437"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="438"/>
         <source>Create a system restore point first (%1)</source>
         <translation>أنشئ نقطة استعادة للنظام أولاً (%1)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="442"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="443"/>
         <source>Clean now</source>
         <translation>نظّف الآن</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="444"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="445"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="451"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="452"/>
         <source>Cleaning…</source>
         <translation>جارٍ التنظيف…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="452"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="453"/>
         <source>Creating a restore point, then cleaning…</source>
         <translation>جارٍ إنشاء نقطة استعادة، ثم التنظيف…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="453"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="454"/>
         <source>Cleaning selected categories…</source>
         <translation>جارٍ تنظيف الفئات المختارة…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="464"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="465"/>
         <source>Could not create a restore point — nothing was cleaned. Authorization may have been denied.</source>
         <translation>تعذّر إنشاء نقطة استعادة — لم يُنظَّف أيّ شيء. ربما رُفض التفويض.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="478"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="479"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="486"/>
         <source>Cleaning complete — %1 categories processed.</source>
         <translation>اكتمل التنظيف — تمت معالجة %1 فئة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="481"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="482"/>
         <source>Cleaned %1, failed %2 (%3). Authorization may have been denied.</source>
         <translation>تم تنظيف %1، وفشل %2 (%3). ربما رُفض التفويض.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="490"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="485"/>
+        <source>System Cleaner — finished</source>
+        <translation>منظّف النظام — انتهى</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="487"/>
+        <source>Finished with %1 failure(s).</source>
+        <translation>انتهى بـ%1 إخفاق.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="497"/>
         <source>Restore point</source>
         <translation>نقطة استعادة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="51"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="52"/>
         <source>Trash</source>
         <translation>سلة المهملات</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="63"/>
+        <location filename="../gt-stacer/Pages/SystemCleaner/system_cleaner_page.cpp" line="64"/>
         <source>Old Kernels</source>
         <translation>النوى القديمة</translation>
     </message>

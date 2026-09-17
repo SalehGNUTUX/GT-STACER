@@ -10,6 +10,7 @@
 #include "../../../gt-stacer-core/Utils/file_util.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
+#include "../../../gt-stacer-core/Tools/notification_tool.h"
 #include <QCheckBox>
 #include <QDir>
 #include <QFutureWatcher>
@@ -480,6 +481,12 @@ void SystemCleanerPage::clean()
             m_statusLabel->setText(
                 tr("Cleaned %1, failed %2 (%3). Authorization may have been denied.")
                     .arg(ok).arg(failed).arg(failedNames.join(", ")));
+        // Notify on completion so a user who navigated away still learns it's done.
+        NotificationTool::notify(tr("System Cleaner — finished"),
+            failed == 0 ? tr("Cleaning complete — %1 categories processed.").arg(ok)
+                        : tr("Finished with %1 failure(s).").arg(failed),
+            failed == 0 ? NotificationTool::Urgency::Normal : NotificationTool::Urgency::Critical,
+            "gt-stacer");
         m_scanButton->setEnabled(true);
         // After cleaning, kick off a rescan of the same categories to refresh sizes.
         for (auto &c : m_categories) if (c.card) c.card->setSizeText("");

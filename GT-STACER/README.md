@@ -7,7 +7,7 @@
 ### Linux System Optimizer and Monitor
 **محسّن ومراقب نظام لينكس**
 
-[![Version](https://img.shields.io/badge/version-26.11.2--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
+[![Version](https://img.shields.io/badge/version-26.11.3--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green?style=flat-square)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-6.2+-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.qt.io)
 [![C++](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)](https://isocpp.org)
@@ -192,13 +192,13 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### ⚡ AppImage — لا تثبيت مطلوب
 ```bash
-chmod +x GT-STACER-26.11.2-x86_64.AppImage
-./GT-STACER-26.11.2-x86_64.AppImage
+chmod +x GT-STACER-26.11.3-x86_64.AppImage
+./GT-STACER-26.11.3-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.11.2_amd64.deb
+sudo dpkg -i GT-STACER_26.11.3_amd64.deb
 sudo apt-get install -f          # إصلاح الاعتماديات إن وُجد نقص
 ```
 
@@ -206,7 +206,7 @@ sudo apt-get install -f          # إصلاح الاعتماديات إن وُج
 
 #### Fedora / RHEL / AlmaLinux / Rocky
 ```bash
-sudo dnf install gt-stacer-26.11.2-2.x86_64.rpm
+sudo dnf install gt-stacer-26.11.3-2.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -217,7 +217,7 @@ yay -S gt-stacer
 
 #### Flatpak (معزول داخل sandbox)
 ```bash
-flatpak install --user GT-STACER-26.11.2-x86_64.flatpak
+flatpak install --user GT-STACER-26.11.3-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 
@@ -446,13 +446,13 @@ Pick the format that fits your distro. All 26.11 artifacts are signed-by-hash in
 
 #### ⚡ AppImage — no install, run anywhere
 ```bash
-chmod +x GT-STACER-26.11.2-x86_64.AppImage
-./GT-STACER-26.11.2-x86_64.AppImage
+chmod +x GT-STACER-26.11.3-x86_64.AppImage
+./GT-STACER-26.11.3-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Pop!_OS / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.11.2_amd64.deb
+sudo dpkg -i GT-STACER_26.11.3_amd64.deb
 sudo apt-get install -f          # fix any missing deps
 ```
 
@@ -460,9 +460,9 @@ sudo apt-get install -f          # fix any missing deps
 
 #### Fedora / RHEL / AlmaLinux / Rocky / openSUSE
 ```bash
-sudo dnf install ./gt-stacer-26.11.2-2.x86_64.rpm
+sudo dnf install ./gt-stacer-26.11.3-2.x86_64.rpm
 # or
-sudo rpm -i ./gt-stacer-26.11.2-2.x86_64.rpm
+sudo rpm -i ./gt-stacer-26.11.3-2.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -473,7 +473,7 @@ yay -S gt-stacer
 
 #### Flatpak (sandboxed)
 ```bash
-flatpak install --user GT-STACER-26.11.2-x86_64.flatpak
+flatpak install --user GT-STACER-26.11.3-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 

@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.11.2 STABLE',
+                    download_title: 'Get GT-STACER 26.11.3 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.11.2 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.11.3 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.11.2 STABLE',
+                    download_title: 'حمّل GT-STACER 26.11.3 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.11.2 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.11.3 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -288,6 +288,13 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.11.3 stable', date: '2026-09-17', headline: 'UX release · checkbox selection in tables · live progress-log window with Stop · completion notifications',
+                      items: [
+                        'Checkbox selection with a Select-all toggle in every action table (Package Manager tabs and the Processes list) — pick items for install / upgrade / remove / kill without holding Ctrl',
+                        'A live progress-log window for package operations that streams the command output and can be stopped — the cancel control that was missing',
+                        'Completion notifications for long tasks (package install/upgrade/remove, System Cleaner, Home backup, File Recovery) so you learn it finished even after navigating away',
+                        'Recovery: the file-type list fills the window (was a cramped box) and dims while "recover all types" is on; Search gives feedback when the box is empty',
+                      ] },
                     { ver: '26.11.2 stable', date: '2026-09-16', headline: 'Point release · reliable in-app "Download & install" · "What\'s new" dialog fixed · version compare works for any sequence',
                       items: [
                         'In-app "Download & install" now appears reliably in a clear window — the install-type detection used a slow file-list scan (dpkg -S) that could time out on a cold cache or busy old disk and hide the one-click update; it now queries by package name (fast), and the update offer is a proper dialog with a prominent install button',
@@ -386,6 +393,13 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.11.3 stable', date: '2026-09-17', headline: 'إصدار تجربة استخدام · خانات تحديد في الجداول · نافذة سجلّ تقدّم حيّة مع إيقاف · إخطارات إتمام',
+                      items: [
+                        'خانات تحديد (checkbox) مع زرّ «تحديد الكلّ» في كلّ جدول إجراءات (تبويبات مدير الحزم وقائمة العمليّات) — اختر عناصر للتثبيت / الترقية / الإزالة / القتل دون الحاجة لزرّ Ctrl',
+                        'نافذة سجلّ تقدّم حيّة لعمليّات الحزم تعرض خرج الأمر سطراً سطراً ويمكن إيقافها — زرّ الإلغاء الذي كان ناقصاً',
+                        'إخطارات إتمام للمهام الطويلة (تثبيت/ترقية/إزالة الحزم، منظّف النظام، نسخ المنزل، استعادة الملفّات) لتعلم أنّها انتهت حتى بعد الانتقال لقسم آخر',
+                        'الاستعادة: قائمة أنواع الملفّات تملأ النافذة (كانت صندوقاً مقلَّصاً) وتبهت عند تفعيل «استعادة كل الأنواع»؛ والبحث يعطي تنبيهاً عند فراغ الصندوق',
+                      ] },
                     { ver: '26.11.2 stable', date: '2026-09-16', headline: 'إصدار نقطيّ · «نزّل وثبّت» من داخل البرنامج بموثوقيّة · إصلاح حوار «ما الجديد» · مقارنة الإصدار لأيّ تسلسل',
                       items: [
                         'خيار «نزّل وثبّت» من داخل البرنامج صار يظهر بموثوقيّة في نافذة واضحة — كان كشف نوع التثبيت يستعمل مسحاً بطيئاً لقوائم ملفّات الحزم (dpkg -S) قد ينتهي وقته على قرصٍ بارد الكاش أو مشغول فيُخفي الترقية بنقرة؛ صار يستعلم باسم الحزمة (سريع)، وصار عرض التحديث حواراً فيه زرّ تثبيت بارز',
@@ -709,8 +723,8 @@
             ];
 
             // ── Download data ──
-            // GT-STACER 26.11.2 STABLE — published 2026-09-16 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.2_STABLE
+            // GT-STACER 26.11.3 STABLE — published 2026-09-17 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.3_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
@@ -718,36 +732,36 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: '581e19991455e5337bd0c2539d7fce918d388fdd9baac910e0042e8b1a11ee43',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER-26.11.2-x86_64.AppImage',
-                filename: 'GT-STACER-26.11.2-x86_64.AppImage',
+                sha256: 'f261e5be8041186bc37cd7834cfc80c078efe552d68cd380d0cfe74d79e5eddc',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/GT-STACER-26.11.3-x86_64.AppImage',
+                filename: 'GT-STACER-26.11.3-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
                 size: '2.1 MB',
-                sha256: 'e666c6d4ebc31a35120bff29d76079c4eaebd5449a2c30c0be607dea46b74d15',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER_26.11.2_amd64.deb',
-                filename: 'GT-STACER_26.11.2_amd64.deb',
+                sha256: 'e23c3e61e245baa1b953ac4e7a23015b6c7395b4393273b6f24376fec87522f0',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/GT-STACER_26.11.3_amd64.deb',
+                filename: 'GT-STACER_26.11.3_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
-                size: '2.4 MB',
-                sha256: '5b913f9e56fcc8b756e99c638fd110c46844b4d3a586c3216dd430688e315f5b',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/gt-stacer-26.11.2-2.x86_64.rpm',
-                filename: 'gt-stacer-26.11.2-2.x86_64.rpm',
+                size: '2.5 MB',
+                sha256: '9aeba8dcb95c67a375310c876e808fd1e595d1886e5d9845523fb5cb2ce32fd7',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/gt-stacer-26.11.3-2.x86_64.rpm',
+                filename: 'gt-stacer-26.11.3-2.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
                 size: '2.2 MB',
-                sha256: '7daa843450e1cfb5533ea6e56b764917567a39891bf905c237c38aa7320eb440',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER-26.11.2-x86_64.flatpak',
-                filename: 'GT-STACER-26.11.2-x86_64.flatpak',
+                sha256: 'cae91ac04d80fce7b66514ec8164464f0c496c67aa0b32a7ecd3da13c0ba0860',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/GT-STACER-26.11.3-x86_64.flatpak',
+                filename: 'GT-STACER-26.11.3-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

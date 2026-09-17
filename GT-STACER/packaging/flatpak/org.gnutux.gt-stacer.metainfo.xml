@@ -86,6 +86,17 @@
   </provides>
 
   <releases>
+    <release version="26.11.3" date="2026-09-17">
+      <description>
+        <p>UX-focused point release:</p>
+        <ul>
+          <li>Checkbox selection (with Select all) in every action table and the Processes list — pick items for install/upgrade/remove/kill without holding Ctrl</li>
+          <li>A live progress-log window with a Stop button for package operations</li>
+          <li>Desktop notifications when a long task finishes (packages, System Cleaner, Home backup, File Recovery)</li>
+          <li>Recovery's file-type list fills the window and dims while "recover all types" is on</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.11.2" date="2026-09-16">
       <description>
         <p>Small point release following testing of 26.11.1:</p>

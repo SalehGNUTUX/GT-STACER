@@ -2,6 +2,7 @@
 #include "../../../gt-stacer-core/Utils/command_util.h"
 #include "../../Widgets/empty_state.h"
 #include "../../Widgets/sidebar_icons.h"
+#include "../../../gt-stacer-core/Tools/notification_tool.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDesktopServices>
@@ -82,7 +83,9 @@ RecoveryPage::RecoveryPage(QWidget *parent) : QWidget(parent)
     root->addLayout(optRow);
 
     m_typeList = new QListWidget;
-    m_typeList->setMaximumHeight(150);
+    // Fill the available height instead of a cramped fixed box. Disabled (dimmed)
+    // while "Recover all file types" is on — the dim is the cue that every format
+    // is already included; unticking it re-enables per-type selection.
     m_typeList->setEnabled(false);   // active only when "all types" is unchecked
     for (const FileFamily &f : RecoveryTool::fileFamilies()) {
         auto *it = new QListWidgetItem(QString("%1   ·   %2").arg(f.label, f.group), m_typeList);
@@ -90,7 +93,7 @@ RecoveryPage::RecoveryPage(QWidget *parent) : QWidget(parent)
         it->setCheckState(Qt::Unchecked);
         it->setData(Qt::UserRole, f.id);
     }
-    root->addWidget(m_typeList);
+    root->addWidget(m_typeList, 1);   // stretch to fill the window's spare space
     connect(m_allTypes, &QCheckBox::toggled, this, [this](bool all){ m_typeList->setEnabled(!all); });
 
     // Actions.
@@ -116,7 +119,7 @@ RecoveryPage::RecoveryPage(QWidget *parent) : QWidget(parent)
     m_status->setObjectName("infoValue");
     m_status->setWordWrap(true);
     root->addWidget(m_status);
-    root->addStretch();
+    // No trailing stretch: the type list above absorbs the spare vertical space.
 
     m_timer = new QTimer(this);
     m_timer->setInterval(1500);
@@ -230,6 +233,8 @@ void RecoveryPage::startRecovery()
         m_status->setText(msg);
         m_open->setEnabled(true);
         m_proc->deleteLater(); m_proc = nullptr;
+        NotificationTool::notify(tr("File Recovery — finished"), msg,
+                                 NotificationTool::Urgency::Normal, "gt-stacer");
     });
 
     setRunning(true);
