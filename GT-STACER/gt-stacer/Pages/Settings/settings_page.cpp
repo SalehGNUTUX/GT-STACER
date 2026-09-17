@@ -20,6 +20,7 @@
 #include <QFontDatabase>
 #include <QIcon>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QPainter>
 #include <QPixmap>
 #include <QShowEvent>
@@ -196,11 +197,37 @@ void SettingsPage::runUpdateCheck()
         });
         connect(m_updateChecker, &UpdateChecker::updateAvailable, this, [this](const QString &v, const QString &url){
             m_pendingVersion = v;
+            const bool canInstall = SelfUpdater::canAutoInstall();
+
+            // Inline summary in the settings label (keeps the links handy).
             QString msg = tr("A newer version is available: <b>%1</b>.").arg(v);
-            if (SelfUpdater::canAutoInstall())
+            if (canInstall)
                 msg += " <a href=\"gtstacer:install\">" + tr("Download && install") + "</a>";
             msg += " · <a href=\"" + url + "\">" + tr("release page") + "</a>";
             ui->updateStatusLabel->setText(msg);
+
+            // A proper window so the update is impossible to miss, with a clear
+            // one-click install when the install method supports it.
+            QMessageBox box(this);
+            box.setIcon(QMessageBox::Information);
+            box.setWindowTitle(tr("Update available"));
+            box.setText(tr("GT-STACER <b>%1</b> is available (you have %2).")
+                            .arg(v, QStringLiteral(APP_VERSION)));
+            if (canInstall)
+                box.setInformativeText(tr("GT-STACER can download, verify and install it "
+                                          "for you (%1 install).")
+                                       .arg(SelfUpdater::methodLabel(SelfUpdater::installMethod())));
+            else
+                box.setInformativeText(tr("Automatic install isn't available for this "
+                                          "install type — open the release page to update."));
+            QPushButton *installBtn = canInstall
+                ? box.addButton(tr("Download && install"), QMessageBox::AcceptRole) : nullptr;
+            QPushButton *pageBtn = box.addButton(tr("Release page"), QMessageBox::ActionRole);
+            box.addButton(tr("Later"), QMessageBox::RejectRole);
+            if (installBtn) box.setDefaultButton(installBtn);
+            box.exec();
+            if (installBtn && box.clickedButton() == installBtn) downloadAndInstall();
+            else if (box.clickedButton() == pageBtn) QDesktopServices::openUrl(QUrl(url));
         });
         connect(m_updateChecker, &UpdateChecker::upToDate, this, [this](const QString &v){
             ui->updateStatusLabel->setText(tr("You're on the latest version (%1).").arg(v));

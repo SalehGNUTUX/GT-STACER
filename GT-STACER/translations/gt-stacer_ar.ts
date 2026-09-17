@@ -3111,98 +3111,98 @@ Requires root privileges.</source>
 <context>
     <name>SelfUpdater</name>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="65"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="82"/>
         <source>This is a Flatpak install — update it with your software centre or &quot;flatpak update org.gnutux.gt-stacer&quot;.</source>
         <translation>هذا تثبيت Flatpak — حدّثه من مركز البرمجيّات أو بـ«flatpak update org.gnutux.gt-stacer».</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="67"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="84"/>
         <source>This build was not installed from a package (running from source?). Download the new version from the release page.</source>
         <translation>لم تُثبَّت هذه النسخة من حزمة (تعمل من المصدر؟). نزّل النسخة الجديدة من صفحة الإصدار.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="89"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="106"/>
         <source>The new release has no %1 package to install.</source>
         <translation>لا يحوي الإصدار الجديد حزمة %1 للتثبيت.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="104"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="121"/>
         <source>Downloading</source>
         <translation>جارٍ التنزيل</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="113"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="130"/>
         <source>Could not write to %1.</source>
         <translation>تعذّرت الكتابة إلى %1.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="134"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="151"/>
         <source>Update cancelled.</source>
         <translation>أُلغِيَ التحديث.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="135"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="152"/>
         <source>Download failed: %1</source>
         <translation>فشل التنزيل: %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="143"/>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="148"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="160"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="165"/>
         <source>Verifying</source>
         <translation>جارٍ التحقّق</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="162"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="179"/>
         <source>Downloaded file is unreadable.</source>
         <translation>الملفّ المُنزَّل غير قابل للقراءة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="163"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="180"/>
         <source>Could not read the downloaded file.</source>
         <translation>تعذّرت قراءة الملفّ المُنزَّل.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="168"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="185"/>
         <source>Could not verify the download (no checksum published). Aborted for safety.</source>
         <translation>تعذّر التحقّق من التنزيل (لا بصمة منشورة). أُوقِف للسلامة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="173"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="190"/>
         <source>Checksum mismatch — the download may be corrupt or tampered with. Aborted.</source>
         <translation>عدم تطابق البصمة — قد يكون التنزيل تالفاً أو مُتلاعَباً به. أُوقِف.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="177"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="194"/>
         <source>Installing</source>
         <translation>جارٍ التثبيت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="180"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="197"/>
         <source>Updated to %1. Restart GT-STACER to run the new version.</source>
         <translation>حُدِّث إلى %1. أعِد تشغيل GT-STACER لتعمل النسخة الجديدة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="182"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="199"/>
         <source>Installation failed.</source>
         <translation>فشل التثبيت.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="191"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="208"/>
         <source>Cannot locate the current AppImage.</source>
         <translation>تعذّر تحديد موضع AppImage الحاليّة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="199"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="216"/>
         <source>Cannot replace %1 (permission denied?).</source>
         <translation>تعذّر استبدال %1 (رُفِض الإذن؟).</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="203"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="220"/>
         <source>Could not put the new AppImage in place.</source>
         <translation>تعذّر وضع AppImage الجديدة في مكانها.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Managers/self_updater.cpp" line="213"/>
+        <location filename="../gt-stacer/Managers/self_updater.cpp" line="230"/>
         <source>Unsupported install type.</source>
         <translation>نوع تثبيت غير مدعوم.</translation>
     </message>
@@ -3444,7 +3444,7 @@ Requires root privileges.</source>
     </message>
     <message>
         <location filename="../gt-stacer/Pages/Settings/settings_page.ui" line="69"/>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="220"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="247"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
@@ -3554,18 +3554,18 @@ Requires root privileges.</source>
         <translation>primaryButton</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="412"/>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="413"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="439"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="440"/>
         <source>Auto (system language)</source>
         <translation>تلقائيّ (لغة النظام)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="247"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="274"/>
         <source>Unavailable</source>
         <translation>غير متاح</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="172"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="173"/>
         <source>GT-STACER — a free GNU/Linux system optimizer &amp; monitor with a modern Qt6 interface.
 
 Monitors CPU, memory, disk, network and temperatures; manages services and startup apps; cleans the system; and creates backups &amp; snapshots and recovers deleted files — no ads, no tracking.
@@ -3584,7 +3584,7 @@ https://salehgnutux.github.io/GT-STACER/
 #GT_STACER #GNUTUX #غنو_لينكس #برمجيات_حرة #FOSS #OpenSource #Linux #Qt6</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="183"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="184"/>
         <source>✓ Share text copied to the clipboard — paste it anywhere.</source>
         <translation>✓ نُسِخ نصّ المشاركة إلى الحافظة — الصقه أينما شئت.</translation>
     </message>
@@ -3593,79 +3593,110 @@ https://salehgnutux.github.io/GT-STACER/
         <translation type="vanished">تتوفّر نسخة أحدث: &lt;b&gt;%1&lt;/b&gt; — &lt;a href=&quot;%2&quot;&gt;افتح صفحة الإصدار&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="199"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="203"/>
         <source>A newer version is available: &lt;b&gt;%1&lt;/b&gt;.</source>
         <translation>تتوفّر نسخة أحدث: &lt;b&gt;%1&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="201"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="205"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="224"/>
         <source>Download &amp;&amp; install</source>
         <translation>نزّل وثبّت</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="202"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="206"/>
         <source>release page</source>
         <translation>صفحة الإصدار</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="206"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="213"/>
+        <source>Update available</source>
+        <translation>يتوفّر تحديث</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="214"/>
+        <source>GT-STACER &lt;b&gt;%1&lt;/b&gt; is available (you have %2).</source>
+        <translation>يتوفّر GT-STACER &lt;b&gt;%1&lt;/b&gt; (لديك %2).</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="217"/>
+        <source>GT-STACER can download, verify and install it for you (%1 install).</source>
+        <translation>يستطيع GT-STACER تنزيله والتحقّق منه وتثبيته لك (تثبيت %1).</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="221"/>
+        <source>Automatic install isn&apos;t available for this install type — open the release page to update.</source>
+        <translation>التثبيت التلقائيّ غير متاح لهذا النوع من التثبيت — افتح صفحة الإصدار للتحديث.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="225"/>
+        <source>Release page</source>
+        <translation>صفحة الإصدار</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="226"/>
+        <source>Later</source>
+        <translation>لاحقاً</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="233"/>
         <source>You&apos;re on the latest version (%1).</source>
         <translation>أنت على أحدث نسخة (%1).</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="209"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="236"/>
         <source>Could not check for updates: %1</source>
         <translation>تعذّر التحقّق من التحديثات: %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="212"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="239"/>
         <source>Checking for updates…</source>
         <translation>جارٍ التحقّق من التحديثات…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="220"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="247"/>
         <source>Downloading update…</source>
         <translation>جارٍ تنزيل التحديث…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="221"/>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="236"/>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="237"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="248"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="263"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="264"/>
         <source>Update GT-STACER</source>
         <translation>تحديث GT-STACER</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="248"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="275"/>
         <source>This power mode is not supported on this system (hibernate needs a swap area at least as large as your RAM).</source>
         <translation>وضع الطاقة هذا غير مدعوم على هذا النظام (يحتاج السُبات مساحة تبديل لا تقلّ عن حجم ذاكرتك).</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="256"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="283"/>
         <source>Schedule power action</source>
         <translation>جدولة إجراء الطاقة</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="257"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="284"/>
         <source>Schedule &lt;b&gt;%1&lt;/b&gt; in &lt;b&gt;%2 minutes&lt;/b&gt;?&lt;br&gt;&lt;br&gt;You may be asked to authorize the action when the timer fires.</source>
         <translation>جدولة &lt;b&gt;%1&lt;/b&gt; بعد &lt;b&gt;%2 دقيقة&lt;/b&gt;؟&lt;br&gt;&lt;br&gt;قد يُطلب منك التصريح بالإجراء عند انطلاق المؤقّت.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="276"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="303"/>
         <source>Timer cancelled.</source>
         <translation>أُلغِيَ المؤقّت.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="287"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="314"/>
         <source>Running the scheduled action now…</source>
         <translation>تنفيذ الإجراء المجدوَل الآن…</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="299"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="326"/>
         <source>%1 in %2</source>
         <translation>%1 خلال %2</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="363"/>
+        <location filename="../gt-stacer/Pages/Settings/settings_page.cpp" line="390"/>
         <source>GNU/Linux system optimizer &amp; monitor</source>
         <translation>محسّن ومراقب نظام غنو/لينكس</translation>
     </message>

@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QDebug>
 #include <functional>
 
 SelfUpdater::SelfUpdater(QObject *parent)
@@ -23,14 +24,30 @@ SelfUpdater::Method SelfUpdater::installMethod()
     if (qEnvironmentVariableIsSet("APPIMAGE")) return Method::AppImage;
     if (qEnvironmentVariableIsSet("FLATPAK_ID") || QFileInfo::exists("/.flatpak-info"))
         return Method::Flatpak;
+
+    // Prefer a fast, reliable query by PACKAGE NAME (reads a single status DB)
+    // over `dpkg -S <path>`, which greps every package's file list and can be
+    // slow on a spinning disk — slow enough to hit the timeout and be misread as
+    // "not a package install", which then hid the in-app "Download & install".
+    // A generous timeout guards the path-based fallback too.
     const QString bin = QCoreApplication::applicationFilePath();
-    if (CommandUtil::commandExists("dpkg")
-        && CommandUtil::execProgram("dpkg", {"-S", bin}, 6000) == 0)
-        return Method::Deb;
-    if (CommandUtil::commandExists("rpm")
-        && CommandUtil::execProgram("rpm", {"-qf", bin}, 6000) == 0)
-        return Method::Rpm;
-    return Method::Unsupported;
+    Method m = Method::Unsupported;
+    if (CommandUtil::commandExists("dpkg-query")
+        && CommandUtil::execProgram("dpkg-query", {"-W", "gt-stacer"}, 15000) == 0)
+        m = Method::Deb;
+    else if (CommandUtil::commandExists("rpm")
+        && CommandUtil::execProgram("rpm", {"-q", "gt-stacer"}, 15000) == 0)
+        m = Method::Rpm;
+    else if (CommandUtil::commandExists("dpkg")
+        && CommandUtil::execProgram("dpkg", {"-S", bin}, 15000) == 0)
+        m = Method::Deb;
+    else if (CommandUtil::commandExists("rpm")
+        && CommandUtil::execProgram("rpm", {"-qf", bin}, 15000) == 0)
+        m = Method::Rpm;
+
+    qInfo().noquote() << "[SelfUpdater] install method:" << methodLabel(m)
+                      << "(bin:" << bin << ")";
+    return m;
 }
 
 QString SelfUpdater::methodLabel(Method m)

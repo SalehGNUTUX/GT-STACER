@@ -288,9 +288,10 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
-                    { ver: '26.11.2 stable', date: '2026-09-16', headline: 'Point release · "What\'s new" dialog fixed · version compare works for any sequence',
+                    { ver: '26.11.2 stable', date: '2026-09-16', headline: 'Point release · reliable in-app "Download & install" · "What\'s new" dialog fixed · version compare works for any sequence',
                       items: [
-                        'The "What\'s new" dialog now lists the correct release (26.11 highlights + 26.11.1 fixes) instead of stale 26.10 content — its highlights were hard-coded and never refreshed',
+                        'In-app "Download & install" now appears reliably in a clear window — the install-type detection used a slow file-list scan (dpkg -S) that could time out on a cold cache or busy old disk and hide the one-click update; it now queries by package name (fast), and the update offer is a proper dialog with a prominent install button',
+                        'The "What\'s new" dialog now lists the correct release (26.11 highlights + 26.11.1 fixes) instead of stale 26.10 content, in English and Arabic — its highlights were hard-coded and never refreshed',
                         'The update check now compares versions across any number of components, so stable updates are recognised whatever the numbering and sequence (26.11 < 26.11.1 < 26.11.2 < 26.12 < 27.01) — the newest stable release is always fetched',
                       ] },
                     { ver: '26.11.1 stable', date: '2026-09-16', headline: 'Bug-fix point release · Firewall detection (PATH/sbin) · patch-version update check',
@@ -385,9 +386,10 @@
                       ] },
                 ],
                 ar: [
-                    { ver: '26.11.2 stable', date: '2026-09-16', headline: 'إصدار نقطيّ · إصلاح حوار «ما الجديد» · مقارنة الإصدار تعمل لأيّ تسلسل',
+                    { ver: '26.11.2 stable', date: '2026-09-16', headline: 'إصدار نقطيّ · «نزّل وثبّت» من داخل البرنامج بموثوقيّة · إصلاح حوار «ما الجديد» · مقارنة الإصدار لأيّ تسلسل',
                       items: [
-                        'حوار «ما الجديد» صار يعرض الإصدار الصحيح (أبرز مزايا 26.11 + إصلاحات 26.11.1) بدل محتوى 26.10 القديم — كان محتواه مُثبَّتاً في الكود ولم يُحدَّث',
+                        'خيار «نزّل وثبّت» من داخل البرنامج صار يظهر بموثوقيّة في نافذة واضحة — كان كشف نوع التثبيت يستعمل مسحاً بطيئاً لقوائم ملفّات الحزم (dpkg -S) قد ينتهي وقته على قرصٍ بارد الكاش أو مشغول فيُخفي الترقية بنقرة؛ صار يستعلم باسم الحزمة (سريع)، وصار عرض التحديث حواراً فيه زرّ تثبيت بارز',
+                        'حوار «ما الجديد» صار يعرض الإصدار الصحيح (أبرز مزايا 26.11 + إصلاحات 26.11.1) بدل محتوى 26.10 القديم، بالعربيّة والإنجليزيّة — كان محتواه مُثبَّتاً في الكود ولم يُحدَّث',
                         'فحص التحديث صار يقارن الإصدارات على أيّ عدد من المكوّنات، فتُكتشَف التحديثات المستقرّة أيّاً كان رقمها وتسلسلها (26.11 < 26.11.1 < 26.11.2 < 26.12 < 27.01) — ويُجلَب دائماً أحدث إصدار مستقرّ',
                       ] },
                     { ver: '26.11.1 stable', date: '2026-09-16', headline: 'إصدار إصلاحات · كشف جدار الحماية (PATH/sbin) · فحص تحديث يدعم رقم التصحيح',
@@ -716,7 +718,7 @@
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
                 size: '52 MB',
-                sha256: 'bb85d72985a673146603c6bbfd21ca9b7b4a744aa2a8ee040ed27c0dfa7be973',
+                sha256: '581e19991455e5337bd0c2539d7fce918d388fdd9baac910e0042e8b1a11ee43',
                 url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER-26.11.2-x86_64.AppImage',
                 filename: 'GT-STACER-26.11.2-x86_64.AppImage',
             }, {
@@ -725,7 +727,7 @@
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
                 size: '2.1 MB',
-                sha256: '2f2794dc156a625623476fa39851757ad732e00ae1b8bb515385d1b9aa40d44e',
+                sha256: 'e666c6d4ebc31a35120bff29d76079c4eaebd5449a2c30c0be607dea46b74d15',
                 url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER_26.11.2_amd64.deb',
                 filename: 'GT-STACER_26.11.2_amd64.deb',
             }, {
@@ -734,7 +736,7 @@
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
                 size: '2.4 MB',
-                sha256: '5b8c00add74a56fda87b63a9ac6d654c7b0aff6c91ff39ce392d2aff48085737',
+                sha256: '5b913f9e56fcc8b756e99c638fd110c46844b4d3a586c3216dd430688e315f5b',
                 url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/gt-stacer-26.11.2-2.x86_64.rpm',
                 filename: 'gt-stacer-26.11.2-2.x86_64.rpm',
             }, {
@@ -743,7 +745,7 @@
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
                 size: '2.2 MB',
-                sha256: '02455579e3aa7b3d2cf5b76a59c49d765fd5deb10985661ee8299b430ec05132',
+                sha256: '7daa843450e1cfb5533ea6e56b764917567a39891bf905c237c38aa7320eb440',
                 url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.2_STABLE/GT-STACER-26.11.2-x86_64.flatpak',
                 filename: 'GT-STACER-26.11.2-x86_64.flatpak',
             }, ];
