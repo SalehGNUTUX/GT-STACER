@@ -15,6 +15,16 @@ Another small point release, following testing of 26.11.1.
   hard-coded and never refreshed, so after updating to 26.11 / 26.11.1 the dialog
   listed the wrong release's changes (the title was correct). It now lists the
   26.11 highlights plus the 26.11.1 fixes, in English and Arabic.
+- **In-app "Download & install" could silently not appear.** The install-method
+  detection ran `dpkg -S <path>`, which scans every installed package's file list
+  — fast on a warm cache but slow enough on a cold cache or a busy old disk to hit
+  the 6 s timeout and be misread as "not a package install", hiding the one-click
+  update. Detection now queries by **package name** (`dpkg-query -W` / `rpm -q`,
+  a single fast DB lookup) with a path-based fallback and a longer timeout.
+- **The update offer is now a clear window.** When you check for updates and a
+  newer version exists, GT-STACER shows a dialog with a prominent **Download &
+  install** action (for DEB / RPM / AppImage installs) and a **Release page**
+  button — not just an easy-to-miss inline link. Translated to Arabic.
 
 ### Changed
 - **The update check now compares versions across any number of components.**
