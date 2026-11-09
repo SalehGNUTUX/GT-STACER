@@ -6,12 +6,31 @@
 #include <QStringList>
 
 namespace {
-const char *kTsConf = "/etc/timeshift/default.json";
+// Timeshift's REAL settings live in timeshift.json. default.json is only the
+// template it ships (always present, always "btrfs_mode": "false"); 26.11 read
+// that one, so it reported "rsync" on btrfs-mode systems and called Timeshift
+// "configured" before the user had ever set it up.
+const char *kTsConf = "/etc/timeshift/timeshift.json";
 SnapshotTool::Backend s_active = SnapshotTool::None;
+
+QString tsConfText()
+{
+    QFile f(kTsConf);
+    return f.open(QIODevice::ReadOnly | QIODevice::Text) ? QString::fromUtf8(f.readAll()) : QString();
+}
+
+QString tsValue(const QString &key)   // flat "key" : "value" of timeshift.json
+{
+    const auto m = QRegularExpression("\"" + QRegularExpression::escape(key) + "\"\\s*:\\s*\"([^\"]*)\"")
+                       .match(tsConfText());
+    return m.hasMatch() ? m.captured(1) : QString();
+}
 
 bool timeshiftConfigured()
 {
-    return CommandUtil::commandExists("timeshift") && QFile::exists(kTsConf);
+    // Set up = the first-run wizard was completed and a device was chosen.
+    return CommandUtil::commandExists("timeshift") && QFile::exists(kTsConf)
+        && tsValue("do_first_run") != "true" && !tsValue("backup_device_uuid").isEmpty();
 }
 
 QString snapperConfig()   // first configured snapper config name, else "root"
@@ -124,7 +143,7 @@ SnapshotTool::Backend SnapshotTool::idealBackend()
     if (fs == "zfs"   && av.contains(Zfs))       return Zfs;
     if (fs == "btrfs") {
         // Prefer a copy-on-write-native engine (instant snapshots).
-        if (av.contains(Timeshift) && mode() == "btrfs") return Timeshift;
+        if (av.contains(Timeshift) && mode() == "btrfs" && timeshiftBtrfsLayoutOk()) return Timeshift;
         if (av.contains(Snapper))                        return Snapper;
         if (av.contains(Timeshift))                      return Timeshift;
     }
@@ -160,44 +179,96 @@ bool    SnapshotTool::canRestore()  { const Backend b = backend(); return b == T
 QString SnapshotTool::mode()
 {
     if (!timeshiftConfigured()) return {};
-    QFile f(kTsConf);
-    if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) return "rsync";
-    return QString::fromUtf8(f.readAll())
-        .contains(QRegularExpression("\"btrfs_mode\"\\s*:\\s*\"true\"")) ? "btrfs" : "rsync";
+    return tsValue("btrfs_mode") == "true" ? "btrfs" : "rsync";
+}
+
+QString SnapshotTool::rootSubvolume()
+{
+    if (rootFsType() != "btrfs") return {};
+    const QString opts = CommandUtil::execProgramOutput("findmnt", {"-n", "-o", "OPTIONS", "/"}, 4000);
+    const auto m = QRegularExpression("(?:^|,)subvol=([^,]*)").match(opts);
+    return m.hasMatch() ? m.captured(1) : QStringLiteral("/");
+}
+
+bool SnapshotTool::timeshiftBtrfsLayoutOk()
+{
+    const QString sv = rootSubvolume();
+    return sv == "/@" || sv == "@";
+}
+
+SnapshotTool::Location SnapshotTool::timeshiftLocation()
+{
+    Location loc;
+    const QString uuid = tsValue("backup_device_uuid");
+    if (uuid.isEmpty() || !QRegularExpression("^[A-Za-z0-9-]+$").match(uuid).hasMatch()) return loc;
+    const QString dev = CommandUtil::execProgramOutput("blkid", {"-U", uuid}, 4000).trimmed();
+    if (dev.isEmpty()) return loc;
+    loc.device = dev;
+    const QStringList f = CommandUtil::execProgramOutput(
+        "lsblk", {"-n", "-d", "-o", "FSTYPE,LABEL", "-P", dev}, 4000).split('"');
+    // -P → FSTYPE="ext4" LABEL="DATA"
+    if (f.size() >= 4) { loc.fsType = f[1]; loc.label = f[3]; }
+    loc.mount = CommandUtil::execProgramOutput("findmnt", {"-n", "-o", "TARGET", "-S", dev}, 4000)
+                    .section('\n', 0, 0).trimmed();
+    const QString rootDev = CommandUtil::execProgramOutput("findmnt", {"-n", "-o", "SOURCE", "/"}, 4000)
+                                .trimmed().section('[', 0, 0);
+    loc.sameAsRoot = (rootDev == dev);
+    return loc;
+}
+
+SnapshotTool::TsIssue SnapshotTool::timeshiftIssue()
+{
+    if (!timeshiftConfigured()) return TsIssue::None;
+    const Location loc = timeshiftLocation();
+    if (loc.device.isEmpty()) return TsIssue::NoDevice;
+    if (mode() == "btrfs") {
+        if (rootFsType() != "btrfs" || !timeshiftBtrfsLayoutOk()) return TsIssue::BtrfsModeWithoutLayout;
+        if (loc.fsType != "btrfs") return TsIssue::BtrfsModeOnNonBtrfsDevice;
+    }
+    return TsIssue::None;
 }
 
 // ── operations (use the active backend) ──────────────────────────────────────
+// list(): runCommand (not execProgramOutput) so CommandUtil::lastResult()
+// can explain an empty list that is really a failure.
 QVector<Snapshot> SnapshotTool::list()
 {
     switch (backend()) {
     case Timeshift:
-        return parseTimeshift(CommandUtil::execProgramOutput("pkexec", {"timeshift", "--list"}, 30000));
+        return parseTimeshift(CommandUtil::runCommand("pkexec", {"timeshift", "--list"}, 180000).output);
     case Snapper:
-        return parseSnapper(CommandUtil::execProgramOutput(
-            "pkexec", {"snapper", "-c", snapperConfig(), "list"}, 15000));
+        return parseSnapper(CommandUtil::runCommand(
+            "pkexec", {"snapper", "-c", snapperConfig(), "list"}, 60000).output);
     case Zfs:
-        return parseZfs(CommandUtil::execProgramOutput(
-            "pkexec", {"zfs", "list", "-t", "snapshot", "-H", "-o", "name,creation,used"}, 15000));
+        return parseZfs(CommandUtil::runCommand(
+            "pkexec", {"zfs", "list", "-t", "snapshot", "-H", "-s", "creation", "-o", "name,creation,used"}, 60000).output);
     default:
         return {};
     }
 }
+
+// Timeouts: a snapshot or restore must NEVER be timed out — the first
+// Timeshift rsync snapshot of a large system easily takes over 5 minutes, and
+// the old 300 s limit reported "could not create" while Timeshift (running as
+// root, beyond our reach) carried on in the background. -1 = wait until done.
+// These run off the UI thread, so waiting doesn't freeze the window.
+constexpr int kNoTimeout = -1;
 
 bool SnapshotTool::create(const QString &comment)
 {
     switch (backend()) {
     case Timeshift:
         return CommandUtil::execProgram(
-            "pkexec", {"timeshift", "--create", "--comments", comment, "--scripted"}, 300000) == 0;
+            "pkexec", {"timeshift", "--create", "--comments", comment, "--scripted"}, kNoTimeout) == 0;
     case Snapper:
         return CommandUtil::execProgram(
-            "pkexec", {"snapper", "-c", snapperConfig(), "create", "-d", comment}, 60000) == 0;
+            "pkexec", {"snapper", "-c", snapperConfig(), "create", "-d", comment}, kNoTimeout) == 0;
     case Zfs: {
         const QString ds = CommandUtil::execProgramOutput("zfs", {"list", "-H", "-o", "name", "/"}, 5000).trimmed();
         if (ds.isEmpty()) return false;
         const QString name = ds + "@gt-stacer-" +
             QString::fromUtf8(comment.toUtf8().toBase64()).left(12).remove(QRegularExpression("[^A-Za-z0-9]"));
-        return CommandUtil::execProgram("pkexec", {"zfs", "snapshot", name}, 15000) == 0;
+        return CommandUtil::execProgram("pkexec", {"zfs", "snapshot", name}, kNoTimeout) == 0;
     }
     default:
         return false;
@@ -210,12 +281,12 @@ bool SnapshotTool::remove(const Snapshot &s)
     switch (backend()) {
     case Timeshift:
         return CommandUtil::execProgram(
-            "pkexec", {"timeshift", "--delete", "--snapshot", s.id, "--scripted"}, 120000) == 0;
+            "pkexec", {"timeshift", "--delete", "--snapshot", s.id, "--scripted"}, kNoTimeout) == 0;
     case Snapper:
         return CommandUtil::execProgram(
-            "pkexec", {"snapper", "-c", snapperConfig(), "delete", s.id}, 60000) == 0;
+            "pkexec", {"snapper", "-c", snapperConfig(), "delete", s.id}, kNoTimeout) == 0;
     case Zfs:
-        return CommandUtil::execProgram("pkexec", {"zfs", "destroy", s.id}, 30000) == 0;
+        return CommandUtil::execProgram("pkexec", {"zfs", "destroy", s.id}, kNoTimeout) == 0;
     default:
         return false;
     }
@@ -227,9 +298,12 @@ bool SnapshotTool::restore(const Snapshot &s)
     switch (backend()) {
     case Timeshift:
         return CommandUtil::execProgram(
-            "pkexec", {"timeshift", "--restore", "--snapshot", s.id, "--scripted"}, 600000) == 0;
+            "pkexec", {"timeshift", "--restore", "--snapshot", s.id, "--scripted"}, kNoTimeout) == 0;
     case Zfs:
-        return CommandUtil::execProgram("pkexec", {"zfs", "rollback", "-r", s.id}, 60000) == 0;
+        // Live rollback — the UI says so and asks for an explicit confirmation
+        // (26.12: it used to promise a reboot-time restore). -r = also destroy
+        // the newer snapshots, which ZFS requires to roll back past them.
+        return CommandUtil::execProgram("pkexec", {"zfs", "rollback", "-r", s.id}, kNoTimeout) == 0;
     case Snapper:   // rollback is btrfs-boot-specific; not wired into the GUI yet
     default:
         return false;

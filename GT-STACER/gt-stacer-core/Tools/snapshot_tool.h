@@ -42,6 +42,25 @@ public:
     static bool    hasSnapper();
     static bool    hasZfs();               // zfs tools + a pool
 
+    // ── Where & how Timeshift really works here (26.12) ──
+    // Timeshift's btrfs mode needs the Ubuntu-style layout: the root filesystem
+    // mounted from a subvolume named "@" (and /home from "@home"). A system
+    // installed at the btrfs top level (subvol=/, subvolid=5) can only use
+    // rsync mode — and rsync snapshots go to whatever device is selected.
+    static QString rootSubvolume();        // "/@", "/" … ("" if not btrfs)
+    static bool    timeshiftBtrfsLayoutOk(); // root on btrfs subvolume "@"
+    struct Location {
+        QString device;    // e.g. "/dev/sda2"
+        QString fsType;    // e.g. "ext4"
+        QString label;     // e.g. "DATA"
+        QString mount;     // where it is mounted, if it is
+        bool    sameAsRoot = false;   // the system partition itself
+    };
+    static Location timeshiftLocation();   // the device Timeshift writes to
+    // Problems in Timeshift's own settings that make btrfs mode impossible.
+    enum class TsIssue { None, BtrfsModeWithoutLayout, BtrfsModeOnNonBtrfsDevice, NoDevice };
+    static TsIssue timeshiftIssue();
+
     static QVector<Snapshot> list();       // pkexec (prompts)
     static bool create(const QString &comment);
     static bool remove(const Snapshot &s);

@@ -1,4 +1,5 @@
 #include "cleaner_card.h"
+#include "bidi_text.h"
 #include "../Managers/theme.h"
 #include <QPainter>
 #include <QPainterPath>
@@ -109,7 +110,7 @@ void CleanerCard::paintEvent(QPaintEvent *)
     p.setFont(labelFont);
     p.setPen(m_checked ? Theme::text() : Theme::subtext());
     QRectF labelRect(0, 76, width(), 22);
-    p.drawText(labelRect, Qt::AlignCenter, m_label);
+    p.drawText(labelRect, Qt::AlignCenter, Bidi::isolate(m_label));
 
     // Size text (after scan)
     if (!m_sizeText.isEmpty()) {
@@ -118,7 +119,7 @@ void CleanerCard::paintEvent(QPaintEvent *)
         p.setFont(sizeFont);
         p.setPen(Theme::blue());
         QRectF sizeRect(0, 98, width(), 18);
-        p.drawText(sizeRect, Qt::AlignCenter, m_sizeText);
+        p.drawText(sizeRect, Qt::AlignCenter, Bidi::isolate(m_sizeText));
     }
 
     // Info badge in the top-right corner for categories that support drill-down.
@@ -134,7 +135,7 @@ void CleanerCard::paintEvent(QPaintEvent *)
         p.setFont(infoFont);
         p.setPen(Theme::isDark() ? QColor(0x11, 0x11, 0x1b) : QColor(0xef, 0xf1, 0xf5));
         p.drawText(QRectF(c.x() - br, c.y() - br, br * 2, br * 2),
-                   Qt::AlignCenter, QStringLiteral("ⓘ"));
+                   Qt::AlignCenter, Bidi::isolate(QStringLiteral("ⓘ")));
     }
 
     // Checkmark circle at the bottom

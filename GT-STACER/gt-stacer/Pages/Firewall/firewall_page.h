@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <QVector>
+#include <functional>
 #include "../../../gt-stacer-core/Tools/firewall_tool.h"
 
 class QTableWidget;
@@ -31,6 +32,8 @@ private slots:
 private:
     void updateStatus();     // cheap enabled/disabled readout
     void populateTable();    // fill the table from m_rules
+    void runFirewall(const QString &title, const QString &detail,
+                     std::function<QVector<FwRule>()> work);
 
     QLabel       *m_status    = nullptr;
     QLabel       *m_badge     = nullptr;
@@ -44,4 +47,5 @@ private:
     QPushButton  *m_delBtn    = nullptr;
 
     QVector<FwRule> m_rules;
+    bool            m_working = false;
 };

@@ -7,7 +7,13 @@
 #include <QList>
 #include <QHash>
 #include <QElapsedTimer>
+#include <QDir>
+#include <QSaveFile>
+#include <QStandardPaths>
+#include <QTextStream>
+#include <csignal>
 #include <QRegularExpression>
+#include <QThread>
 #include <algorithm>
 #include <unistd.h>
 #include <sys/types.h>
@@ -145,11 +151,140 @@ bool isTerminalOrShell(const QString &nameLower)
 
 } // namespace
 
-QVector<ReliefCandidate> ReliefTool::candidates(qint64 minMemoryKB)
+// ── App trees & activity (26.12) ─────────────────────────────────────────────
+namespace {
+
+using Activity = ReliefCandidate::Activity;
+
+// comm + ppid of every process, from /proc/<pid>/stat.
+struct ProcNode { QString comm; int ppid = 0; QString user; };
+
+// Parents that END an app tree: the session, the service manager, the desktop
+// shell, a terminal/shell. Everything below one of these is "one app".
+bool isTreeBoundary(const QString &nameLower)
+{
+    static const QStringList names = {
+        "systemd", "init", "(sd-pam)", "dbus-daemon", "dbus-broker", "dbus-broker-lau",
+        "kdeinit5", "kdeinit6", "ksmserver", "plasmashell", "krunner", "kded5", "kded6",
+        "startplasma-way", "startplasma-x11", "plasma_session", "kwin_wayland", "kwin_x11",
+        "kwin_wayland_wr", "gnome-session-b", "gnome-shell", "xfce4-session", "lxqt-session",
+        "mate-session", "cinnamon-sessio", "budgie-daemon", "sddm-helper", "gdm-session-wor",
+        "lightdm", "xdg-desktop-por", "plasma-browser-", "flatpak-portal", "flatpak-session"
+    };
+    return names.contains(nameLower) || isTerminalOrShell(nameLower) || isDesktopShell(nameLower);
+}
+
+QHash<int, ProcNode> procTable(const QVector<ProcessData> &procs)
+{
+    QHash<int, ProcNode> t;
+    t.reserve(procs.size());
+    for (const ProcessData &p : procs) {
+        QFile f(QString("/proc/%1/stat").arg(p.pid));
+        if (!f.open(QIODevice::ReadOnly)) continue;
+        const QByteArray raw = f.readAll();
+        const int l = raw.indexOf('('), r = raw.lastIndexOf(')');
+        if (l < 0 || r < l) continue;
+        ProcNode n;
+        n.comm = QString::fromLocal8Bit(raw.mid(l + 1, r - l - 1));
+        const QList<QByteArray> fields = raw.mid(r + 1).simplified().split(' ');
+        n.ppid = fields.size() > 1 ? fields[1].toInt() : 0;
+        n.user = p.user;
+        t.insert(p.pid, n);
+    }
+    return t;
+}
+
+// Top process of `pid`'s app: walk up while the parent is still "inside" the
+// app (same user, not a session/terminal boundary).
+int appRootOf(int pid, const QHash<int, ProcNode> &t, const QString &me)
+{
+    int cur = pid;
+    for (int guard = 0; guard < 64; ++guard) {
+        const auto it = t.constFind(cur);
+        if (it == t.constEnd()) break;
+        const int pp = it->ppid;
+        const auto pit = t.constFind(pp);
+        if (pp <= 1 || pit == t.constEnd() || pit->user != me
+            || isTreeBoundary(pit->comm.toLower()))
+            break;
+        cur = pp;
+    }
+    return cur;
+}
+
+// PIDs of streams that are PLAYING sound (not paused/corked), via pactl —
+// works with both PulseAudio and PipeWire (pipewire-pulse). Cached 4 s.
+QSet<int> audioPids()
+{
+    static QSet<int> s_cache;
+    static QElapsedTimer s_age;
+    if (s_age.isValid() && s_age.elapsed() < 4000) return s_cache;
+    s_age.start();
+    s_cache.clear();
+    if (!CommandUtil::commandExists("pactl")) return s_cache;
+    const QString out = CommandUtil::execProgramC("pactl", {"list", "sink-inputs"}, 3000);
+    static const QRegularExpression pidRe("application\\.process\\.id = \"(\\d+)\"");
+    for (const QString &block : out.split("Sink Input #", Qt::SkipEmptyParts)) {
+        if (block.contains("Corked: yes")) continue;          // paused
+        const auto m = pidRe.match(block);
+        if (m.hasMatch()) s_cache.insert(m.captured(1).toInt());
+    }
+    return s_cache;
+}
+
+// PIDs holding a logind sleep/idle "block" inhibitor (a download, a video,
+// a presentation …). Cached 4 s.
+QSet<int> inhibitorPids()
+{
+    static QSet<int> s_cache;
+    static QElapsedTimer s_age;
+    if (s_age.isValid() && s_age.elapsed() < 4000) return s_cache;
+    s_age.start();
+    s_cache.clear();
+    const QString out = CommandUtil::execProgramC("systemd-inhibit", {"--list", "--no-legend"}, 3000);
+    // WHO UID USER PID COMM WHAT WHY MODE — WHO and WHY may contain spaces.
+    static const QRegularExpression row("^(.*?)\\s+(\\d+)\\s+(\\S+)\\s+(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+.*\\s(block|delay)\\s*$");
+    for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+        const auto m = row.match(line);
+        if (!m.hasMatch() || m.captured(7) != "block") continue;
+        const QString what = m.captured(6);
+        if (what.contains("sleep") || what.contains("idle")) s_cache.insert(m.captured(4).toInt());
+    }
+    return s_cache;
+}
+
+// Strength order — the strongest reason is the one shown.
+int rank(Activity a)
+{
+    switch (a) {
+    case Activity::Focused:   return 6;
+    case Activity::Audio:     return 5;
+    case Activity::Inhibitor: return 4;
+    case Activity::Cpu:       return 3;
+    case Activity::Disk:      return 2;
+    case Activity::Recent:    return 1;
+    default:                  return 0;
+    }
+}
+
+constexpr double kBusyCpuPerCore = 10.0;    // % of ONE core
+constexpr double kBusyIoKBps     = 256.0;
+constexpr qint64 kGraceMs        = 20000;   // "was active" memory
+// Main workload: an app must load at least half a core (or ~5 MB/s of disk) to
+// be "the" workload, and a challenger must load TWICE as much to take over —
+// so the choice doesn't flip between two similar apps every second.
+constexpr double kMainMinLoad    = 50.0;
+constexpr double kMainTakeover   = 2.0;
+QString          s_mainName;
+
+} // namespace
+
+QVector<ReliefCandidate> ReliefTool::candidates(qint64 minMemoryKB, int focusedPid)
 {
     QVector<ReliefCandidate> out;
     const QString me = currentUserName();
     const int selfPid = static_cast<int>(getpid());
+    static const int ncpu = qMax(1, QThread::idealThreadCount());
 
     // Never suspend our own ancestor chain (the terminal + shell + node/claude
     // that launched gt-stacer) nor anything sharing our controlling-terminal
@@ -158,7 +293,91 @@ QVector<ReliefCandidate> ReliefTool::candidates(qint64 minMemoryKB)
     const QSet<int> ancestors = ancestorPids(selfPid);
     const int mySid = static_cast<int>(getsid(0));
 
-    for (const auto &p : ProcessInfo::processes()) {
+    const QVector<ProcessData> procs = ProcessInfo::processes();
+    const QHash<int, ProcNode> table = procTable(procs);
+
+    // ── Disk I/O rate of every process of ours (delta since the previous call).
+    static QHash<int, qint64> s_prevIo;
+    static QElapsedTimer s_ioClock;
+    const double dtSec = s_ioClock.isValid() ? s_ioClock.restart() / 1000.0 : 0.0;
+    if (!s_ioClock.isValid()) s_ioClock.start();
+    QHash<int, qint64> curIo;
+    QHash<int, double> ioRate;
+    for (const ProcessData &p : procs) {
+        if (p.user != me) continue;
+        const qint64 bytes = procIoBytes(p.pid);
+        if (bytes < 0) continue;
+        curIo.insert(p.pid, bytes);
+        // Guard against a tiny interval (two back-to-back calls) turning a small
+        // byte delta into an absurd rate; real refreshes are ~1-2 s apart.
+        if (dtSec > 0.2 && s_prevIo.contains(p.pid)) {
+            const qint64 delta = bytes - s_prevIo.value(p.pid);
+            if (delta > 0) ioRate.insert(p.pid, double(delta) / 1024.0 / dtSec);
+        }
+    }
+    s_prevIo = curIo;
+
+    // ── Which APPS are in use: the strongest reason per app root.
+    struct Why { Activity a = Activity::None; QString via; int pid = 0; };
+    QHash<int, Why> appWhy;
+    auto mark = [&](int pid, Activity a) {
+        if (!table.contains(pid) || table.value(pid).user != me) return;
+        const int root = appRootOf(pid, table, me);
+        Why &w = appWhy[root];
+        if (rank(a) > rank(w.a)) { w.a = a; w.pid = pid; w.via = table.value(pid).comm; }
+    };
+    if (focusedPid > 0 && focusedPid != selfPid) mark(focusedPid, Activity::Focused);
+    for (int pid : audioPids())     mark(pid, Activity::Audio);
+    for (int pid : inhibitorPids()) mark(pid, Activity::Inhibitor);
+    for (const ProcessData &p : procs) {
+        if (p.user != me || p.status == "T" || p.status == "t") continue;
+        if (p.cpuPercent * ncpu >= kBusyCpuPerCore)       mark(p.pid, Activity::Cpu);
+        else if (ioRate.value(p.pid) >= kBusyIoKBps)      mark(p.pid, Activity::Disk);
+    }
+
+    // Remember when each app was last active, so a short pause in a busy job
+    // (linking, waiting for the network) doesn't make it look idle.
+    static QHash<int, qint64> s_lastActive;
+    static QElapsedTimer s_clock;
+    if (!s_clock.isValid()) s_clock.start();
+    const qint64 now = s_clock.elapsed();
+    for (auto it = appWhy.cbegin(); it != appWhy.cend(); ++it)
+        if (it->a != Activity::None && it->a != Activity::Focused) s_lastActive.insert(it.key(), now);
+    for (auto it = s_lastActive.begin(); it != s_lastActive.end();) {
+        if (!table.contains(it.key()) || now - it.value() > kGraceMs) it = s_lastActive.erase(it);
+        else ++it;
+    }
+
+    // ── Load per APP (all of our running processes, not only the freezable
+    // ones: a compile in a terminal can be the main workload too).
+    QHash<int, double> appLoad;
+    QHash<int, QPair<double, QString>> heaviest;   // app root → its heaviest process
+    for (const ProcessData &p : procs) {
+        if (p.user != me || p.status == "T" || p.status == "t" || p.pid == selfPid) continue;
+        const double load = p.cpuPercent * ncpu + ioRate.value(p.pid) / 1024.0 * 10.0;
+        if (load <= 0) continue;
+        const int root = appRootOf(p.pid, table, me);
+        appLoad[root] += load;
+        if (load > heaviest.value(root).first) heaviest[root] = {load, p.name};
+    }
+    int best = 0;
+    for (auto it = appLoad.cbegin(); it != appLoad.cend(); ++it)
+        if (!best || it.value() > appLoad.value(best)) best = it.key();
+    static int s_mainApp = 0;
+    const bool mainAlive = s_mainApp && table.contains(s_mainApp);
+    const double cur = mainAlive ? appLoad.value(s_mainApp) : 0.0;
+    const double top = best ? appLoad.value(best) : 0.0;
+    if (mainAlive && cur >= kMainMinLoad && cur * kMainTakeover >= top) {
+        // the current main workload keeps its place
+    } else if (mainAlive && s_lastActive.contains(s_mainApp) && top < kMainMinLoad * kMainTakeover) {
+        // a short pause (linking, waiting for the network) — still the main job
+    } else {
+        s_mainApp = top >= kMainMinLoad ? best : 0;
+    }
+    s_mainName = s_mainApp ? heaviest.value(s_mainApp).second : QString();
+    if (s_mainApp && s_mainName.isEmpty() && table.contains(s_mainApp)) s_mainName = table.value(s_mainApp).comm;
+
+    for (const auto &p : procs) {
         if (p.pid <= 1)                      continue;   // init / kernel
         if (p.pid == selfPid)                continue;   // never freeze ourselves
         if (p.user != me)                    continue;   // only our own processes
@@ -179,33 +398,38 @@ QVector<ReliefCandidate> ReliefTool::candidates(qint64 minMemoryKB)
         c.memoryKB   = p.memoryKB;
         c.cpuPercent = p.cpuPercent;
         c.status     = p.status;
+        c.ioKBps     = ioRate.value(p.pid);
+        c.appRoot    = appRootOf(p.pid, table, me);
+        const Why w  = appWhy.value(c.appRoot);
+        if (w.a != Activity::None) {
+            c.activity  = w.a;
+            c.activeVia = w.pid == c.pid ? QString() : w.via;
+        } else if (s_lastActive.contains(c.appRoot)) {
+            c.activity  = Activity::Recent;
+        }
+        c.appLoad      = appLoad.value(c.appRoot);
+        c.mainWorkload = s_mainApp && c.appRoot == s_mainApp;
         out << c;
     }
-
-    // Disk I/O rate per candidate: delta of block-layer bytes since the previous
-    // call, divided by the wall time between calls. First call reads 0 (no prior
-    // sample). State is process-static so successive refreshes give a live rate.
-    static QHash<int, qint64> s_prevIo;
-    static QElapsedTimer s_ioClock;
-    const double dtSec = s_ioClock.isValid() ? s_ioClock.restart() / 1000.0 : 0.0;
-    if (!s_ioClock.isValid()) s_ioClock.start();
-    QHash<int, qint64> curIo;
-    for (ReliefCandidate &c : out) {
-        const qint64 bytes = procIoBytes(c.pid);
-        if (bytes < 0) continue;
-        curIo.insert(c.pid, bytes);
-        // Guard against a tiny interval (two back-to-back calls) turning a small
-        // byte delta into an absurd rate; real refreshes are ~1-2 s apart.
-        if (dtSec > 0.2 && s_prevIo.contains(c.pid)) {
-            const qint64 delta = bytes - s_prevIo.value(c.pid);
-            if (delta > 0) c.ioKBps = double(delta) / 1024.0 / dtSec;
-        }
-    }
-    s_prevIo = curIo;
 
     std::sort(out.begin(), out.end(), [](const ReliefCandidate &a, const ReliefCandidate &b) {
         return a.memoryKB > b.memoryKB;
     });
+    return out;
+}
+
+QString ReliefTool::mainWorkloadName() { return s_mainName; }
+
+QVector<int> ReliefTool::appTreePids(int pid)
+{
+    const QString me = currentUserName();
+    const QVector<ProcessData> procs = ProcessInfo::processes();
+    const QHash<int, ProcNode> table = procTable(procs);
+    if (!table.contains(pid)) return {};
+    const int root = appRootOf(pid, table, me);
+    QVector<int> out;
+    for (auto it = table.cbegin(); it != table.cend(); ++it)
+        if (it->user == me && appRootOf(it.key(), table, me) == root) out << it.key();
     return out;
 }
 
@@ -308,4 +532,78 @@ bool ReliefTool::setScheduler(const QString &disk, const QString &sched)
     const QString cmd = QString("modprobe %1 2>/dev/null; echo %1 > /sys/block/%2/queue/scheduler")
                             .arg(sched, disk);
     return CommandUtil::execProgram("pkexec", {"sh", "-c", cmd}, 10000) == 0;
+}
+
+// ── Frozen-process journal ───────────────────────────────────────────────────
+namespace {
+
+QString journalDir()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/gt-stacer";
+}
+
+// /proc/<pid>/stat → {state letter, start time in clock ticks}; {} if gone.
+// Fields after the ")" of the command name: [0]=state (field 3) … [19]=starttime (field 22).
+QPair<QChar, QString> procStateAndStart(int pid)
+{
+    QFile f(QStringLiteral("/proc/%1/stat").arg(pid));
+    if (!f.open(QIODevice::ReadOnly)) return {};
+    const QByteArray s = f.readAll();
+    const int close = s.lastIndexOf(')');
+    if (close < 0) return {};
+    const QList<QByteArray> fields = s.mid(close + 2).split(' ');
+    if (fields.size() < 20) return {};
+    return {QChar(fields[0].isEmpty() ? ' ' : fields[0][0]), QString::fromLatin1(fields[19])};
+}
+
+} // namespace
+
+void ReliefTool::saveFrozenJournal(const QVector<int> &pids)
+{
+    const int self = static_cast<int>(getpid());
+    const QString path = journalDir() + QStringLiteral("/relief-frozen-%1").arg(self);
+    if (pids.isEmpty()) { QFile::remove(path); return; }
+    QDir().mkpath(journalDir());
+    QSaveFile f(path);
+    if (!f.open(QIODevice::WriteOnly)) return;
+    QTextStream out(&f);
+    out << "owner " << self << ' ' << procStateAndStart(self).second << '\n';
+    for (int pid : pids) {
+        const auto st = procStateAndStart(pid);
+        if (!st.second.isEmpty()) out << pid << ' ' << st.second << '\n';
+    }
+    out.flush();
+    f.commit();
+}
+
+int ReliefTool::recoverFrozenJournal()
+{
+    int thawed = 0;
+    const QDir dir(journalDir());
+    for (const QString &name : dir.entryList({"relief-frozen-*"}, QDir::Files)) {
+        QFile f(dir.filePath(name));
+        if (!f.open(QIODevice::ReadOnly)) continue;
+        const QStringList lines = QString::fromLatin1(f.readAll()).split('\n', Qt::SkipEmptyParts);
+        f.close();
+        if (lines.isEmpty()) { QFile::remove(f.fileName()); continue; }
+        // Is the instance that wrote it still running? Then its freezes are its own.
+        const QStringList owner = lines.first().split(' ');
+        if (owner.size() >= 3 && owner[0] == "owner") {
+            const int opid = owner[1].toInt();
+            if (opid == static_cast<int>(getpid())) continue;
+            if (opid > 0 && procStateAndStart(opid).second == owner[2]) continue;   // alive
+        }
+        for (int i = 1; i < lines.size(); ++i) {
+            const QStringList e = lines[i].split(' ');
+            if (e.size() < 2) continue;
+            const int pid = e[0].toInt();
+            const auto st = procStateAndStart(pid);
+            // Same process (start time matches) and still stopped → thaw it.
+            if (pid > 1 && st.second == e[1] && (st.first == 'T' || st.first == 't')
+                && ::kill(pid, SIGCONT) == 0)
+                ++thawed;
+        }
+        QFile::remove(f.fileName());
+    }
+    return thawed;
 }

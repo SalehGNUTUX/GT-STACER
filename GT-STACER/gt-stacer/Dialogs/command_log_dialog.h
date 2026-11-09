@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QStringList>
 #include <QProcess>
+#include "../../gt-stacer-core/Utils/command_failure.h"
 
 class QPlainTextEdit;
 class QProgressBar;
@@ -34,6 +35,8 @@ public:
     void run();
 
     bool succeeded() const { return m_allOk && !m_cancelled; }
+    // Plain-language reason for the failure ("" if none / stopped).
+    QString failureReason() const { return m_failureTitle; }
 
 signals:
     void completed(bool ok);
@@ -54,6 +57,8 @@ private:
     bool     m_cancelled = false;
     bool     m_running   = false;
     QProcess *m_proc     = nullptr;
+    CommandResult m_stepResult;      // current step's output, for explaining a failure
+    QString       m_failureTitle;
 
     QPlainTextEdit *m_log    = nullptr;
     QProgressBar   *m_bar    = nullptr;

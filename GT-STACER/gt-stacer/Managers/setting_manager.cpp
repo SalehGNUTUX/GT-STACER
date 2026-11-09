@@ -110,6 +110,9 @@ void    SettingManager::setCheckUpdatesOnStartup(bool v) { cfg().setValue("app/c
 int  SettingManager::reliefHoldSeconds()     const { return cfg().value("relief/holdSecs", 8).toInt(); }
 void SettingManager::setReliefHoldSeconds(int v)   { cfg().setValue("relief/holdSecs", v); }
 
+bool SettingManager::reliefPrioritizeMain()  const { return cfg().value("relief/prioritizeMain", true).toBool(); }
+void SettingManager::setReliefPrioritizeMain(bool v) { cfg().setValue("relief/prioritizeMain", v); }
+
 bool SettingManager::reliefDropCaches()      const { return cfg().value("relief/dropCaches", false).toBool(); }
 void SettingManager::setReliefDropCaches(bool v)   { cfg().setValue("relief/dropCaches", v); }
 

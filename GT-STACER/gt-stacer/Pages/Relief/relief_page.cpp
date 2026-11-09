@@ -1,10 +1,12 @@
 #include "relief_page.h"
 #include "../../Widgets/table_util.h"
+#include "../../Widgets/bidi_text.h"
 #include "../../../gt-stacer-core/Tools/relief_tool.h"
 #include "../../../gt-stacer-core/Info/memory_info.h"
 #include "../../../gt-stacer-core/Info/cpu_info.h"
 #include "../../Managers/setting_manager.h"
 #include "../../Managers/theme.h"
+#include "../../Managers/focus_tracker.h"
 #include "../../Widgets/status_pill.h"
 #include <QBrush>
 #include <QCheckBox>
@@ -19,6 +21,7 @@
 #include <QSpinBox>
 #include <QTableWidget>
 #include <QTimer>
+#include <QToolButton>
 #include <QVBoxLayout>
 #include <algorithm>
 
@@ -28,6 +31,28 @@ QString humanKB(qint64 kb)
     double mb = kb / 1024.0;
     if (mb >= 1024.0) return QString::number(mb / 1024.0, 'f', 2) + " GB";
     return QString::number(mb, 'f', 0) + " MB";
+}
+
+// Why an app counts as "in use" (26.12) — never frozen automatically.
+QString activityText(const ReliefCandidate &c)
+{
+    using A = ReliefCandidate::Activity;
+    QString t;
+    if (c.mainWorkload && c.activity != A::Focused && c.activity != A::Audio
+        && c.activity != A::Inhibitor)
+        return ReliefPage::tr("Main workload — kept running");
+    switch (c.activity) {
+    case A::Focused:   t = ReliefPage::tr("In use — active window"); break;
+    case A::Audio:     t = ReliefPage::tr("In use — playing sound"); break;
+    case A::Inhibitor: t = ReliefPage::tr("In use — keeping the system awake"); break;
+    case A::Cpu:       t = ReliefPage::tr("In use — working (CPU)"); break;
+    case A::Disk:      t = ReliefPage::tr("In use — working (disk)"); break;
+    case A::Recent:    t = ReliefPage::tr("In use — active a moment ago"); break;
+    default:           return ReliefPage::tr("Idle");
+    }
+    if (!c.activeVia.isEmpty() && c.activity != A::Recent)
+        t += " " + ReliefPage::tr("(via %1)").arg(c.activeVia);
+    return t;
 }
 
 // Warm-cool color for the memory bar: heavier processes (the ones most worth
@@ -53,7 +78,10 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     auto *intro = new QLabel(tr(
         "Under heavy load, temporarily freeze idle background apps so the "
         "foreground gets the RAM and CPU it needs. Freezing is fully reversible "
-        "— no data is lost — and everything is thawed when you resume or quit."));
+        "— no data is lost — and everything is thawed when you resume or quit. "
+        "Apps that are in use (the active window, playing sound, working on the CPU "
+        "or disk, or keeping the system awake) are never frozen automatically, and "
+        "a frozen app is thawed as soon as you switch to it."));
     intro->setWordWrap(true);
     intro->setObjectName("introText");
     root->addWidget(intro);
@@ -89,13 +117,20 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     root->addWidget(m_banner);
 
     // Candidate table.
-    m_table = new QTableWidget(0, 5, this);
-    m_table->setHorizontalHeaderLabels({tr("Process"), tr("User"), tr("Memory"), tr("CPU %"), tr("Disk")});
+    m_table = new QTableWidget(0, 6, this);
+    m_table->setHorizontalHeaderLabels({tr("Process"), tr("User"), tr("Memory"), tr("CPU %"),
+                                        tr("Disk"), tr("State")});
     setupResizableTable(m_table, 0);   // primary column fills; all resizable
     m_table->setSelectionMode(QAbstractItemView::NoSelection);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_table->verticalHeader()->setVisible(false);
     m_table->setAlternatingRowColors(true);
+    m_table->setColumnWidth(5, 240);
+    // Remember only the choices the USER makes; the pre-ticks are recomputed
+    // on every refresh (an app's "in use" state is only known after a sample).
+    connect(m_table, &QTableWidget::itemChanged, this, [this](QTableWidgetItem *it){
+        if (!m_populating && it && it->column() == 0) m_userTicked.insert(it->data(Qt::UserRole).toInt());
+    });
     root->addWidget(m_table, 1);
 
     // Action row.
@@ -129,9 +164,16 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
         m_bfqBtn->setToolTip(tr("BFQ keeps the desktop responsive while the disk is busy, "
                                 "and makes lowering I/O priority actually take effect. "
                                 "Applies until reboot; needs authorization."));
+        auto *bfqInfo = new QToolButton;
+        bfqInfo->setObjectName("infoButton");
+        bfqInfo->setText(QStringLiteral("i"));
+        bfqInfo->setToolTip(tr("What is BFQ?"));
+        bfqInfo->setCursor(Qt::PointingHandCursor);
+        connect(bfqInfo, &QToolButton::clicked, this, &ReliefPage::showBfqInfo);
         schedRow->addWidget(m_schedLabel);
         schedRow->addSpacing(12);
         schedRow->addWidget(m_bfqBtn);
+        schedRow->addWidget(bfqInfo);
         schedRow->addStretch();
         root->addLayout(schedRow);
         connect(m_bfqBtn, &QPushButton::clicked, this, &ReliefPage::switchToBfq);
@@ -161,6 +203,15 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     }
     autoRow->addWidget(new QLabel(tr("for")));
     autoRow->addWidget(m_holdSecs);
+    autoRow->addSpacing(12);
+    m_prioritize = new QCheckBox(tr("Prioritise the heaviest app"));
+    m_prioritize->setToolTip(tr(
+        "On: if freezing the idle apps is not enough, the busy apps in the background are "
+        "frozen too, so the app using the most CPU and disk (with everything it runs) gets "
+        "the machine. The active window, apps playing sound and apps keeping the system "
+        "awake are never frozen. Everything is thawed step by step once the load drops.\n"
+        "Off: only idle apps are ever frozen."));
+    autoRow->addWidget(m_prioritize);
     autoRow->addStretch();
     root->addWidget(autoGroup);
 
@@ -174,6 +225,20 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     // Persist every setting the moment it changes.
     connect(m_autoRefresh, &QCheckBox::toggled, this, [this](bool){ m_refreshAccum = 0; saveSettings(); });
     connect(m_dropCaches,  &QCheckBox::toggled, this, [this](bool){ saveSettings(); });
+    connect(m_prioritize,  &QCheckBox::toggled, this, [this](bool on){
+        saveSettings();
+        // Switched off while busy apps are frozen → give them back now.
+        if (!on && !m_frozenBusy.isEmpty()) {
+            const QVector<int> pids(m_frozenBusy.begin(), m_frozenBusy.end());
+            ReliefTool::resumePids(pids);
+            for (int p : pids) m_suspended.remove(p);
+            m_frozenBusy.clear();
+            if (m_stage > 1) m_stage = 1;
+            if (isVisible()) refreshCandidates();
+            updateStatusBadge();
+            updateBanner();
+        }
+    });
     auto persist = [this](int){ saveSettings(); };
     connect(m_cpuThresh,   QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
     connect(m_ramThresh,   QOverload<int>::of(&QSpinBox::valueChanged), this, persist);
@@ -190,6 +255,11 @@ ReliefPage::ReliefPage(QWidget *parent) : QWidget(parent)
     m_monitor->setInterval(1000);
     connect(m_monitor, &QTimer::timeout, this, &ReliefPage::tickMonitor);
 
+    // Know the active window (KDE/X11) so it is never frozen, and thaw a frozen
+    // app the moment the user switches to it.
+    FocusTracker::instance()->acquire();
+    connect(FocusTracker::instance(), &FocusTracker::focusChanged, this, &ReliefPage::onFocusChanged);
+
     loadSettings();
     refreshCandidates();
     updateLiveLabels();
@@ -203,6 +273,8 @@ ReliefPage::~ReliefPage()
     // Safety net: never leave a process frozen behind us.
     if (!m_suspended.isEmpty())
         ReliefTool::resumePids(QVector<int>(m_suspended.begin(), m_suspended.end()));
+    ReliefTool::saveFrozenJournal({});        // nothing left frozen → no journal
+    FocusTracker::instance()->release();
 }
 
 void ReliefPage::changeEvent(QEvent *event)
@@ -234,6 +306,7 @@ void ReliefPage::loadSettings()
     if (m_ioThresh) m_ioThresh->setValue(s->reliefIoThreshold());
     m_holdSecs->setValue(s->reliefHoldSeconds());
     m_dropCaches->setChecked(s->reliefDropCaches());
+    m_prioritize->setChecked(s->reliefPrioritizeMain());
     m_autoRefresh->setChecked(s->reliefAutoRefresh());
     m_refreshSecs->setValue(s->reliefRefreshSeconds());
     m_autoCheck->setChecked(s->reliefAutoMode());   // last: onAutoToggled runs live
@@ -250,6 +323,7 @@ void ReliefPage::saveSettings()
     if (m_ioThresh) s->setReliefIoThreshold(m_ioThresh->value());
     s->setReliefHoldSeconds(m_holdSecs->value());
     s->setReliefDropCaches(m_dropCaches->isChecked());
+    s->setReliefPrioritizeMain(m_prioritize->isChecked());
     s->setReliefAutoRefresh(m_autoRefresh->isChecked());
     s->setReliefRefreshSeconds(m_refreshSecs->value());
 }
@@ -274,7 +348,7 @@ void ReliefPage::applyMonitorCadence()
 
 void ReliefPage::refreshCandidates()
 {
-    const auto cands = ReliefTool::candidates();
+    const auto cands = ReliefTool::candidates(30 * 1024, FocusTracker::instance()->focusedPid());
 
     qint64 maxKB = 1;
     for (const auto &c : cands) maxKB = std::max(maxKB, c.memoryKB);
@@ -286,6 +360,7 @@ void ReliefPage::refreshCandidates()
             prev.insert(it->data(Qt::UserRole).toInt(), it->checkState());
 
     m_table->setUpdatesEnabled(false);
+    m_populating = true;
     m_table->setRowCount(cands.size());
 
     auto ensure = [this](int r, int c) -> QTableWidgetItem * {
@@ -305,10 +380,11 @@ void ReliefPage::refreshCandidates()
         }
         nameItem->setText(c.name);
         nameItem->setData(Qt::UserRole, c.pid);
-        // Keep an existing choice; otherwise pre-check the heavier processes.
-        const Qt::CheckState cs = prev.contains(c.pid)
+        // Keep an existing choice; otherwise pre-check the heavier IDLE processes
+        // (an app in use is left for the user to tick deliberately).
+        const Qt::CheckState cs = (m_userTicked.contains(c.pid) && prev.contains(c.pid))
             ? prev.value(c.pid)
-            : (c.memoryKB >= 150 * 1024 ? Qt::Checked : Qt::Unchecked);
+            : (!c.active() && c.memoryKB >= 150 * 1024 ? Qt::Checked : Qt::Unchecked);
         if (nameItem->checkState() != cs) nameItem->setCheckState(cs);
 
         ensure(r, 1)->setText(c.user);
@@ -343,8 +419,28 @@ void ReliefPage::refreshCandidates()
         ioItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         if (c.ioKBps >= 1024.0) ioItem->setForeground(Theme::red());     // heavy disk user
         else if (c.ioKBps >= 200.0) ioItem->setForeground(Theme::yellow());
+
+        auto *stateItem = ensure(r, 5);
+        stateItem->setText(activityText(c));
+        stateItem->setForeground(c.mainWorkload ? Theme::blue()
+                                 : c.active() ? Theme::green() : Theme::subtext());
+        QString tip;
+        if (c.mainWorkload)
+            tip = tr("The app using the most CPU and disk right now — automatic relief keeps it "
+                     "running, with everything it runs in the background.");
+        else if (c.isProtected())
+            tip = tr("This app is in use, so automatic relief will not freeze it.");
+        else if (c.active())
+            tip = m_prioritize->isChecked()
+                ? tr("Busy, but not the main workload — if the load stays high after the idle "
+                     "apps are frozen, automatic relief freezes it too (thawed when you switch to it).")
+                : tr("This app is in use, so automatic relief will not freeze it.");
+        else
+            tip = tr("Idle — automatic relief may freeze it under heavy load.");
+        stateItem->setToolTip(tip);
     }
 
+    m_populating = false;
     m_table->setUpdatesEnabled(true);
     updateStatusBadge();
     updateBanner();
@@ -355,6 +451,8 @@ void ReliefPage::toggleSelectAll()
     const Qt::CheckState cs = m_allSelected ? Qt::Checked : Qt::Unchecked;
     for (int r = 0; r < m_table->rowCount(); ++r)
         if (auto *it = m_table->item(r, 0)) it->setCheckState(cs);
+    for (int r = 0; r < m_table->rowCount(); ++r)          // an explicit user choice
+        if (auto *it = m_table->item(r, 0)) m_userTicked.insert(it->data(Qt::UserRole).toInt());
     m_allSelected = !m_allSelected;
     m_selectAllBtn->setText(m_allSelected ? tr("Select all") : tr("Deselect all"));
 }
@@ -369,7 +467,7 @@ void ReliefPage::suspendSelected()
     }
     if (pids.isEmpty()) {
         QMessageBox::information(this, tr("Nothing selected"),
-            tr("Tick the processes you want to freeze first."));
+            Bidi::isolate(tr("Tick the processes you want to freeze first.")));
         return;
     }
 
@@ -382,8 +480,8 @@ void ReliefPage::suspendSelected()
         else                          extra = tr(" (cache drop was not authorized)");
     }
     refreshCandidates();
-    m_banner->setText(tr("Froze %1 process(es) to relieve pressure.%2 "
-                         "Use “Resume all” to thaw them.").arg(frozen).arg(extra));
+    m_banner->setText(Bidi::isolate(tr("Froze %1 process(es) to relieve pressure.%2 "
+                         "Use “Resume all” to thaw them.").arg(frozen).arg(extra)));
     m_banner->setVisible(true);
     updateStatusBadge();
     updateBanner();
@@ -395,9 +493,11 @@ void ReliefPage::resumeAll()
     const QVector<int> pids(m_suspended.begin(), m_suspended.end());
     ReliefTool::resumePids(pids);
     m_suspended.clear();
+    m_frozenBusy.clear();
+    m_stage = 0;
     m_overSeconds = m_underSeconds = 0;
     refreshCandidates();
-    m_banner->setText(tr("All frozen processes have been resumed."));
+    m_banner->setText(Bidi::isolate(tr("All frozen processes have been resumed.")));
     m_banner->setVisible(true);
     updateStatusBadge();
 }
@@ -418,15 +518,15 @@ void ReliefPage::easeSelected()
     const QVector<int> pids = checkedPids();
     if (pids.isEmpty()) {
         QMessageBox::information(this, tr("Nothing selected"),
-            tr("Tick the processes whose disk usage you want to de-prioritize first."));
+            Bidi::isolate(tr("Tick the processes whose disk usage you want to de-prioritize first.")));
         return;
     }
     const int n = ReliefTool::easeIoPids(pids);
     QString extra;
     if (m_disk.isEmpty() || ReliefTool::ioScheduler(m_disk) != "bfq")
         extra = " " + tr("Tip: switch the disk to BFQ below to make this take full effect.");
-    m_banner->setText(tr("Lowered disk-I/O priority of %1 process(es) to idle — they keep "
-                         "running, the foreground gets the disk.%2").arg(n).arg(extra));
+    m_banner->setText(Bidi::isolate(tr("Lowered disk-I/O priority of %1 process(es) to idle — they keep "
+                         "running, the foreground gets the disk.%2").arg(n).arg(extra)));
     m_banner->setVisible(true);
 }
 
@@ -434,11 +534,11 @@ void ReliefPage::switchToBfq()
 {
     if (m_disk.isEmpty()) return;
     if (ReliefTool::setScheduler(m_disk, "bfq")) {
-        m_banner->setText(tr("Disk %1 switched to the BFQ scheduler — the desktop should stay "
-                             "responsive under disk load. (Resets to the default on reboot.)").arg(m_disk));
+        m_banner->setText(Bidi::isolate(tr("Disk %1 switched to the BFQ scheduler — the desktop should stay "
+                             "responsive under disk load. (Resets to the default on reboot.)").arg(m_disk)));
     } else {
-        m_banner->setText(tr("Could not switch to BFQ — the kernel may not provide it "
-                             "(module 'bfq'), or authorization was declined."));
+        m_banner->setText(Bidi::isolate(tr("Could not switch to BFQ — the kernel may not provide it "
+                             "(module 'bfq'), or authorization was declined.")));
     }
     m_banner->setVisible(true);
     updateSchedulerUi();
@@ -448,7 +548,7 @@ void ReliefPage::updateSchedulerUi()
 {
     if (!m_schedLabel || m_disk.isEmpty()) return;
     const QString active = ReliefTool::ioScheduler(m_disk);
-    m_schedLabel->setText(tr("Disk %1 scheduler: %2").arg(m_disk, active));
+    m_schedLabel->setText(Bidi::isolate(tr("Disk %1 scheduler: %2").arg(m_disk, active)));
     // Offer BFQ whenever it is not already active — setScheduler tries to load
     // the module, so the option must appear even when it is not yet listed.
     if (m_bfqBtn) m_bfqBtn->setVisible(active != "bfq");
@@ -460,8 +560,8 @@ void ReliefPage::onAutoToggled(bool on)
     saveSettings();
     applyMonitorCadence();
     if (on) {
-        m_banner->setText(tr("Automatic mode is watching. Idle apps will be "
-                             "frozen under sustained pressure and thawed when it clears."));
+        m_banner->setText(Bidi::isolate(tr("Automatic mode is watching. Idle apps will be "
+                             "frozen under sustained pressure and thawed when it clears.")));
         m_banner->setVisible(true);
     }
     updateStatusBadge();
@@ -500,34 +600,144 @@ void ReliefPage::tickMonitor()
     const bool over    = overCpu || overRam || overIo;
     const int  hold    = m_holdSecs->value();
 
+    // Keep the activity picture fresh: every tick while under pressure (the
+    // CPU/disk rates are deltas between samples), every ~10 s otherwise so a
+    // job that was busy just before the pressure started is still known.
+    QVector<ReliefCandidate> cands;
+    if (over || ++m_sampleAccum >= 5) {
+        m_sampleAccum = 0;
+        cands = ReliefTool::candidates(30 * 1024, FocusTracker::instance()->focusedPid());
+    }
+
+    // Clearly below every threshold (a margin of 10 points) — thawing only
+    // then keeps freeze → thaw → freeze from oscillating around the line.
+    constexpr int kMargin = 10;
+    auto calmFor = [&](const QSpinBox *t, double v) { return !t || t->value() <= 0 || v < t->value() - kMargin; };
+    const bool calm = calmFor(m_cpuThresh, m_lastCpu) && calmFor(m_ramThresh, ram)
+                   && (io < 0 || calmFor(m_ioThresh, io));
+
     if (over) {
         m_underSeconds = 0;
         if (++m_overSeconds >= hold) {
-            m_overSeconds = 0;
-            // Freeze every current candidate that isn't already frozen.
-            QVector<int> pids;
-            for (const auto &c : ReliefTool::candidates())
-                if (!m_suspended.contains(c.pid)) pids << c.pid;
-            if (!pids.isEmpty()) {
-                ReliefTool::suspendPids(pids);
-                for (int pid : pids) m_suspended.insert(pid);
-                if (m_dropCaches->isChecked()) ReliefTool::dropCaches();
-                if (isVisible()) refreshCandidates();
-                m_banner->setText(tr("⚡ Auto relief: froze %1 idle app(s) under load.")
-                                      .arg(pids.size()));
-                m_banner->setVisible(true);
-                updateStatusBadge();
+            m_overSeconds = 0;     // the next stage needs another full hold period
+            if (m_stage < 1) {
+                // Stage 1: freeze the IDLE apps — never one the user is working with,
+                // nor one that is doing work, nor the main workload.
+                QVector<int> pids;
+                QStringList names;
+                for (const auto &c : cands) {
+                    if (m_suspended.contains(c.pid) || c.active() || c.isProtected()) continue;
+                    pids << c.pid;
+                    if (!names.contains(c.name)) names << c.name;
+                }
+                m_stage = 1;
+                if (!pids.isEmpty()) {
+                    ReliefTool::suspendPids(pids);
+                    for (int pid : pids) m_suspended.insert(pid);
+                    if (m_dropCaches->isChecked()) ReliefTool::dropCaches();
+                    const QString main = ReliefTool::mainWorkloadName();
+                    m_banner->setText(Bidi::isolate(
+                        tr("⚡ Auto relief: froze %1 idle process(es) under load: %2.").arg(pids.size())
+                            .arg(names.mid(0, 6).join(", "))
+                        + (main.isEmpty() ? QString() : " " + tr("Main workload kept running: %1.").arg(main))));
+                    m_banner->setVisible(true);
+                }
+            } else if (m_stage == 1 && m_prioritize->isChecked()) {
+                // Stage 2: still overloaded → the BUSY side apps step aside too, so
+                // the main workload (and what the user looks at / listens to) gets
+                // the machine. They thaw first when the load drops, or the moment
+                // the user switches to one of them.
+                const QString main = ReliefTool::mainWorkloadName();
+                QVector<int> pids;
+                QStringList names;
+                if (!main.isEmpty()) {          // without a clear main workload, freezing busy apps helps no one
+                    for (const auto &c : cands) {
+                        if (m_suspended.contains(c.pid) || !c.active() || c.isProtected()) continue;
+                        pids << c.pid;
+                        if (!names.contains(c.name)) names << c.name;
+                    }
+                }
+                m_stage = 2;
+                if (!pids.isEmpty()) {
+                    ReliefTool::suspendPids(pids);
+                    for (int pid : pids) { m_suspended.insert(pid); m_frozenBusy.insert(pid); }
+                    m_banner->setText(Bidi::isolate(
+                        tr("⚡ Load is still high: also froze %1 busy background process(es): %2 — "
+                           "so %3 gets the machine. Switch to any of them to thaw it.")
+                            .arg(pids.size()).arg(names.mid(0, 6).join(", "), main)));
+                    m_banner->setVisible(true);
+                }
             }
+            if (isVisible()) refreshCandidates();
+            updateStatusBadge();
         }
     } else {
         m_overSeconds = 0;
-        if (!m_suspended.isEmpty() && ++m_underSeconds >= hold) {
+        if (m_suspended.isEmpty()) { m_stage = 0; m_underSeconds = 0; return; }
+        if (!calm) { m_underSeconds = 0; return; }    // under the line, but not clearly
+        if (++m_underSeconds >= hold) {
             m_underSeconds = 0;
-            resumeAll();
-            m_banner->setText(tr("⚡ Pressure cleared — resumed all frozen apps."));
-            m_banner->setVisible(true);
+            if (!m_frozenBusy.isEmpty()) {
+                // Step back: the busy apps first; the idle ones after another calm period.
+                const QVector<int> pids(m_frozenBusy.begin(), m_frozenBusy.end());
+                ReliefTool::resumePids(pids);
+                for (int p : pids) m_suspended.remove(p);
+                m_frozenBusy.clear();
+                m_stage = 1;
+                if (isVisible()) refreshCandidates();
+                m_banner->setText(Bidi::isolate(tr("⚡ Load dropped — resumed the busy background apps. "
+                                                   "Idle apps follow if it stays low.")));
+                m_banner->setVisible(true);
+                updateStatusBadge();
+            } else {
+                resumeAll();
+                m_banner->setText(Bidi::isolate(tr("⚡ Pressure cleared — resumed all frozen apps.")));
+                m_banner->setVisible(true);
+            }
         }
     }
+}
+
+void ReliefPage::onFocusChanged(int pid)
+{
+    if (m_suspended.isEmpty() || pid <= 1) return;
+    // The user switched to an app we froze → thaw that whole app right away,
+    // or its window would sit there unresponsive.
+    QVector<int> thaw;
+    for (int p : ReliefTool::appTreePids(pid))
+        if (m_suspended.contains(p)) thaw << p;
+    if (thaw.isEmpty()) return;
+    ReliefTool::resumePids(thaw);
+    for (int p : thaw) { m_suspended.remove(p); m_frozenBusy.remove(p); }
+    m_banner->setText(Bidi::isolate(tr("Thawed %1 process(es) because you switched to that app.").arg(thaw.size())));
+    m_banner->setVisible(true);
+    if (isVisible()) refreshCandidates();
+    updateStatusBadge();
+    updateBanner();
+}
+
+void ReliefPage::showBfqInfo()
+{
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Information);
+    box.setWindowTitle(tr("What is BFQ?"));
+    box.setTextFormat(Qt::RichText);
+    box.setText(tr("<b>BFQ — Budget Fair Queueing</b>"));
+    box.setInformativeText(tr(
+        "<p>The <b>I/O scheduler</b> decides in which order the kernel sends read/write "
+        "requests to a disk.</p>"
+        "<p><b>BFQ</b> (<i>Budget Fair Queueing</i>) gives every program a fair "
+        "<i>budget</i> of disk time and favours interactive apps. Result: while a big "
+        "copy, update or backup is running, the desktop, menus and apps still open "
+        "quickly instead of freezing.</p>"
+        "<p><b>When it helps most:</b> hard disks (HDD), SD cards, USB sticks and slower "
+        "SATA SSDs. It also makes “Ease disk I/O” (low I/O priority) actually take "
+        "effect — other schedulers mostly ignore it.</p>"
+        "<p><b>When it doesn't:</b> on a fast NVMe SSD the default (<i>none</i> or "
+        "<i>mq-deadline</i>) is usually as good and uses slightly less CPU.</p>"
+        "<p>The change applies until the next reboot and needs your password. Nothing "
+        "on the disk is modified.</p>"));
+    box.exec();
 }
 
 void ReliefPage::updateLiveLabels()
@@ -555,6 +765,9 @@ void ReliefPage::updateLiveLabels()
 
 void ReliefPage::updateStatusBadge()
 {
+    // Every change to the frozen set passes through here: keep the journal in
+    // step, so a crash or SIGKILL never strands a frozen app (next start thaws it).
+    ReliefTool::saveFrozenJournal(QVector<int>(m_suspended.begin(), m_suspended.end()));
     QString text; QColor color;
     if (!m_suspended.isEmpty()) {
         text  = tr("Frozen %1 app(s)").arg(m_suspended.size());

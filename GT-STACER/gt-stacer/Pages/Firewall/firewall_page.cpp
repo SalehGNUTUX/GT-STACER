@@ -2,6 +2,10 @@
 #include "../../Widgets/table_util.h"
 #include "../../Managers/theme.h"
 #include "../../Widgets/status_pill.h"
+#include "../../Widgets/loading_overlay.h"
+#include <QFutureWatcher>
+#include <QPointer>
+#include <QtConcurrent/QtConcurrent>
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -119,27 +123,49 @@ void FirewallPage::populateTable()
     }
 }
 
+// Every change runs ufw / firewall-cmd through pkexec: off the UI thread, so
+// the window keeps drawing (and shows the waiting card) while polkit asks for
+// the password — it used to freeze until the prompt was answered (26.12).
+void FirewallPage::runFirewall(const QString &title, const QString &detail,
+                               std::function<QVector<FwRule>()> work)
+{
+    if (m_working) return;
+    m_working = true;
+    LoadingOverlay::on(this)->start(title, detail);
+    auto *w = new QFutureWatcher<QVector<FwRule>>(this);
+    connect(w, &QFutureWatcher<QVector<FwRule>>::finished, this, [this, w]{
+        m_rules = w->result();
+        w->deleteLater();
+        m_working = false;
+        LoadingOverlay::on(this)->stop();
+        populateTable();
+        updateStatus();
+    });
+    w->setFuture(QtConcurrent::run(std::move(work)));
+}
+
 void FirewallPage::toggleEnabled()
 {
     const bool wantOn = !FirewallTool::isEnabled();
-    m_rules = FirewallTool::setEnabled(wantOn);   // one prompt: toggle + re-list
-    populateTable();
-    updateStatus();
+    runFirewall(wantOn ? tr("Turning the firewall on") : tr("Turning the firewall off"),
+                tr("Your password will be asked."),
+                [wantOn]{ return FirewallTool::setEnabled(wantOn); });   // one prompt: toggle + re-list
 }
 
 void FirewallPage::refreshRules()
 {
-    m_rules = FirewallTool::rules();
-    populateTable();
-    updateStatus();
+    runFirewall(tr("Loading the firewall rules"), tr("Your password will be asked."),
+                []{ return FirewallTool::rules(); });
 }
 
 void FirewallPage::addRule()
 {
     const bool allow = m_action->currentData().toString() == "allow";
-    m_rules = FirewallTool::addRule(m_port->value(), m_proto->currentText(), allow);
-    populateTable();
-    updateStatus();
+    const int port = m_port->value();
+    const QString proto = m_proto->currentText();
+    runFirewall(tr("Adding the rule"),
+                QString("%1 %2/%3").arg(allow ? tr("Allow") : tr("Deny")).arg(port).arg(proto),
+                [port, proto, allow]{ return FirewallTool::addRule(port, proto, allow); });
 }
 
 void FirewallPage::deleteSelected()
@@ -154,9 +180,8 @@ void FirewallPage::deleteSelected()
             tr("Delete rule: %1 %2 (%3)?").arg(rule.to, rule.action, rule.from))
         != QMessageBox::Yes)
         return;
-    m_rules = FirewallTool::deleteRule(rule);   // one prompt: delete + re-list
-    populateTable();
-    updateStatus();
+    runFirewall(tr("Deleting the rule"), QString("%1 %2 (%3)").arg(rule.to, rule.action, rule.from),
+                [rule]{ return FirewallTool::deleteRule(rule); });   // one prompt: delete + re-list
 }
 
 void FirewallPage::changeEvent(QEvent *event)

@@ -381,3 +381,28 @@ QFrame#startupRow:hover  { background: #dce0e8; border-color: #bcc0cc; }
 #startupEdit:hover    { background: #dce0e8; }
 #startupRemove        { color: #d20f39; }
 #startupRemove:hover  { background: #f2d5dc; }
+
+/* ── Local package install dialog (26.12) ── */
+#pkgName     { color: #4c4f69; font-size: 18px; font-weight: bold; }
+#pkgProblem  { color: #d20f39; background: #f9dde3; border: 1px solid #d20f39; border-radius: 6px; padding: 8px; }
+#pkgWarning  { color: #8a5a0b; background: #fbeed6; border: 1px solid #bcc0cc; border-radius: 6px; padding: 8px; }
+#localDrop   { background: #e6e9ef; border: 2px dashed #bcc0cc; border-radius: 12px; }
+#localAdd    { background: #1e66f5; color: #eff1f5; border: none; border-radius: 36px; font-size: 40px; font-weight: bold; }
+#localAdd:hover { background: #7287fd; }
+
+/* Small round "i" (more information) button — 26.12 */
+#infoButton {
+    background-color: transparent;
+    border: 1px solid #1e66f5;
+    border-radius: 11px;
+    color: #1e66f5;
+    font-weight: bold;
+    font-style: italic;
+    min-width: 22px; max-width: 22px;
+    min-height: 22px; max-height: 22px;
+    padding: 0;
+}
+#infoButton:hover {
+    background-color: #1e66f5;
+    color: #ffffff;
+}

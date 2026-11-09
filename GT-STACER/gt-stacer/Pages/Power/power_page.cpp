@@ -1,4 +1,6 @@
 #include "power_page.h"
+#include "../../Widgets/failure_text.h"
+#include "../../../gt-stacer-core/Utils/command_util.h"
 #include "../../../gt-stacer-core/Tools/power_profile_tool.h"
 #include "../../../gt-stacer-core/Tools/battery_tool.h"
 #include "../../../gt-stacer-core/Tools/power_tool.h"
@@ -232,7 +234,10 @@ void PowerPage::toggleSleepBlock()
     } else {
         m_inhibitor.block();
         if (!m_inhibitor.blockedByUs())
-            QMessageBox::warning(this, tr("Power"), tr("Could not block automatic sleep."));
+            QMessageBox::warning(this, tr("Power"),
+                tr("Could not block automatic sleep: neither the desktop's power service nor "
+                   "systemd-logind accepted the request. Your desktop may not provide a "
+                   "power-management service in this session."));
     }
 
     // Notify the desktop when the state actually changed.
@@ -248,12 +253,12 @@ void PowerPage::toggleSleepBlock()
 
 void PowerPage::selectProfile(const QString &id)
 {
+    CommandUtil::clearLastResult();
     const bool ok = m_usePpd ? PowerProfileTool::setProfile(id)
                              : PowerProfileTool::setGovernor(id);
     if (!ok)
-        QMessageBox::warning(this, tr("Power"),
-            tr("Could not change the power profile. It may require authorization "
-               "that was declined."));
+        FailureText::show(this, tr("Power"), tr("The power profile was not changed."),
+                          CommandUtil::lastResult());
     refreshState();
 }
 
@@ -301,10 +306,14 @@ void PowerPage::applyChargeLimit()
 {
     const int end   = m_endSpin ? m_endSpin->value() : 100;
     const int start = m_startSpin ? m_startSpin->value() : -1;
+    CommandUtil::clearLastResult();
     if (BatteryTool::setThresholds(start, end)) {
         m_limitStatus->setText(tr("Charge limit applied."));
     } else {
-        m_limitStatus->setText(tr("Could not apply the charge limit (authorization declined?)."));
+        const QString why = FailureText::lastReason();
+        m_limitStatus->setText(why.isEmpty()
+            ? tr("The charge limit was not applied — this laptop may not support it.")
+            : tr("The charge limit was not applied: %1").arg(why));
     }
     refreshState();
 }

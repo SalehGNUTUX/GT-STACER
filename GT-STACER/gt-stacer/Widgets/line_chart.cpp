@@ -1,4 +1,5 @@
 #include "line_chart.h"
+#include "bidi_text.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QtMath>
@@ -115,7 +116,7 @@ void LineChart::paintEvent(QPaintEvent *)
         if (!m_ySuffix.isEmpty()) txt += " " + m_ySuffix;
         double y = plot.top() + (plot.height() * i) / 4.0;
         QRectF labelRect(0, y - fm.height()/2.0, leftPad - 4, fm.height());
-        p.drawText(labelRect, Qt::AlignRight | Qt::AlignVCenter, txt);
+        p.drawText(labelRect, Qt::AlignRight | Qt::AlignVCenter, Bidi::isolate(txt));
     }
     p.setFont(font());
 
@@ -145,7 +146,7 @@ void LineChart::paintEvent(QPaintEvent *)
             p.drawLine(QPointF(x, y + fm.height()/2.0),
                        QPointF(x + 14, y + fm.height()/2.0));
             p.setPen(m_labelColor);
-            p.drawText(QPointF(x + 18, y + fm.ascent()), s.name);
+            p.drawText(QPointF(x + 18, y + fm.ascent()), Bidi::isolate(s.name));
             x += 24 + fm.horizontalAdvance(s.name);
         }
     }

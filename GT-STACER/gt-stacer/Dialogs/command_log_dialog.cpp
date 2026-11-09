@@ -1,5 +1,7 @@
 #include "command_log_dialog.h"
 #include "../../gt-stacer-core/Utils/command_util.h"
+#include "../Widgets/failure_text.h"
+#include <QProcessEnvironment>
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -98,13 +100,34 @@ void CommandLogDialog::startNext()
 
     QString prog = step.argv.first();
     QStringList args = step.argv.mid(1);
-    CommandUtil::wrapForHost(prog, args);   // no-op outside Flatpak
     appendLine("$ " + prog + " " + args.join(' '));
+    // Remember who ran it, for explaining a failure (pkexec codes, program name).
+    m_stepResult = CommandResult{};
+    m_stepResult.viaPkexec = (prog == "pkexec");
+    m_stepResult.program   = (m_stepResult.viaPkexec && !args.isEmpty()) ? args.first() : prog;
 
     m_proc = new QProcess(this);
     m_proc->setProcessChannelMode(QProcess::MergedChannels);
+    // English tool messages, so a failure can be recognised and explained in
+    // the user's language below (the explanation is translated; the raw log
+    // stays as the tool printed it).
+    if (CommandUtil::inFlatpak()) {
+        args.prepend(prog);
+        args.prepend("--env=LANGUAGE=C");
+        args.prepend("--env=LC_MESSAGES=C");
+        args.prepend("--host");
+        prog = "flatpak-spawn";
+    } else {
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("LC_MESSAGES", "C");
+        env.insert("LANGUAGE", "C");
+        if (!env.value("LC_ALL").isEmpty()) env.insert("LC_ALL", "C.UTF-8");
+        m_proc->setProcessEnvironment(env);
+    }
     connect(m_proc, &QProcess::readyReadStandardOutput, this, [this]{
         const QString out = QString::fromUtf8(m_proc->readAllStandardOutput());
+        m_stepResult.output += out;
+        if (m_stepResult.output.size() > 200000) m_stepResult.output = m_stepResult.output.right(100000);
         for (const QString &line : out.split('\n')) {
             if (line.isEmpty()) continue;
             appendLine(line);
@@ -116,7 +139,17 @@ void CommandLogDialog::startNext()
         if (!ok) {
             m_allOk = false;
             if (m_cancelled) appendLine(tr("  ⏹ Stopped."));
-            else appendLine(tr("  ✗ Command failed (exit %1).").arg(code));
+            else {
+                appendLine(tr("  ✗ Command failed (exit %1).").arg(code));
+                // Say WHY, in plain words, with what to do about it.
+                m_stepResult.started  = true;
+                m_stepResult.exitCode = (st == QProcess::NormalExit) ? code : -1;
+                const auto f = CommandFailure::classify(m_stepResult);
+                m_failureTitle = FailureText::title(f);
+                appendLine("  ⚠ " + m_failureTitle);
+                const QString advice = FailureText::advice(f);
+                if (!advice.isEmpty()) appendLine("  → " + advice);
+            }
         } else {
             appendLine(tr("  ✓ Done."));
         }
@@ -162,6 +195,7 @@ void CommandLogDialog::finishAll(bool ok)
     m_close->setFocus();
     if (m_cancelled)   m_status->setText(tr("Stopped."));
     else if (ok)       m_status->setText(tr("✓ Finished successfully."));
+    else if (!m_failureTitle.isEmpty()) m_status->setText("✗ " + m_failureTitle);
     else               m_status->setText(tr("✗ Finished with errors — see the log above."));
     emit completed(ok);
 }

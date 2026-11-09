@@ -29,6 +29,7 @@ public:
 protected:
     void changeEvent(QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
 private slots:
     void onBackendChanged();
@@ -36,6 +37,8 @@ private slots:
     void createSnapshot();
     void deleteSnapshot();
     void restoreSnapshot();
+    void restoreZfs(int row);
+    QString snapshotIssueHint() const;
     void browseDest();
     void startBackup();
     void cancelBackup();
@@ -45,12 +48,17 @@ private:
     void buildBackupSection();
     void setBackupRunning(bool running);
     void updateSnapStatus();
+    void watchSnapshotConfig();          // follow Timeshift / Snapper settings changes
+    void onSnapshotConfigChanged();
 
     // Snapshots
     QGroupBox    *m_snapBox     = nullptr;
     QComboBox    *m_engineCombo = nullptr;
     QLabel       *m_snapBadge   = nullptr;
     QLabel       *m_snapStatus  = nullptr;
+    QLabel       *m_snapIssue  = nullptr;   // Timeshift misconfiguration / layout advice
+    class QFileSystemWatcher *m_snapWatch = nullptr;   // /etc/timeshift, /etc/snapper
+    class QTimer *m_snapDebounce = nullptr;
     QTableWidget *m_snapTable   = nullptr;
     QLineEdit    *m_snapComment = nullptr;
     QPushButton  *m_snapLoad    = nullptr;
@@ -69,4 +77,8 @@ private:
     QProgressBar *m_progress    = nullptr;
     QLabel       *m_backupStatus= nullptr;
     QProcess     *m_proc        = nullptr;
+    bool          m_stopRequested = false;
+    QStringList   m_rsyncErrors;      // "rsync: …" error lines of the current run
+    QString       m_runDest;
+    QString       m_outTail;          // unscanned rsync output (partial line)
 };

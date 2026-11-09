@@ -1,4 +1,5 @@
 #include "app_cache_dialog.h"
+#include "../Widgets/loading_overlay.h"
 #include "../../gt-stacer-core/Utils/file_util.h"
 #include "../../gt-stacer-core/Utils/format_util.h"
 #include <QCheckBox>
@@ -159,11 +160,14 @@ void AppCacheDialog::scan()
     m_cleanButton->setEnabled(false);
     m_summary->setText(tr("Scanning…"));
     m_model->setRowCount(0);
+    LoadingOverlay::on(this)->start(tr("Measuring app caches"),
+                                    tr("Adding up each folder in ~/.cache…"));
 
     auto *watcher = new QFutureWatcher<QVector<CacheEntry>>(this);
     connect(watcher, &QFutureWatcher<QVector<CacheEntry>>::finished, this,
             [this, watcher]() {
         watcher->deleteLater();
+        LoadingOverlay::on(this)->stop();
         m_entries = watcher->result();
         populateModel(m_entries);
         refreshSummary();
@@ -277,6 +281,8 @@ void AppCacheDialog::cleanSelected()
 
     m_cleanButton->setEnabled(false);
     m_rescanButton->setEnabled(false);
+    LoadingOverlay::on(this)->start(tr("Cleaning app caches"),
+                                    tr("Removing %1 entries from ~/.cache…").arg(targets.size()));
 
     auto *watcher = new QFutureWatcher<int>(this);
     connect(watcher, &QFutureWatcher<int>::finished, this, [this, watcher]() {

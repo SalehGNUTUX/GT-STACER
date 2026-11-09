@@ -31,6 +31,7 @@ private slots:
     void browseDest();
     void startRecovery();
     void cancelRecovery();
+    void forceStopRecovery();   // fallback: signal PhotoRec as root (second prompt)
     void openFolder();
     void tickCount();
 
@@ -52,6 +53,8 @@ private:
     QLabel       *m_status   = nullptr;
 
     QProcess     *m_proc     = nullptr;
+    bool          m_stopRequested = false;
+    QString       m_procOutput;      // tail of PhotoRec's output, to explain a failure
     QTimer       *m_timer    = nullptr;
     QString       m_destUsed;    // destination of the active/last run
 

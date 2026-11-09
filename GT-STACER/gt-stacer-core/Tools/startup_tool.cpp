@@ -5,7 +5,9 @@
 #include <QFileInfo>
 #include <QRegularExpression>
 #include <QSet>
-#include <QSettings>
+#include <QSaveFile>
+#include <QLocale>
+#include "../Utils/desktop_entry.h"
 #include <QStandardPaths>
 #include <QTextStream>
 
@@ -20,41 +22,18 @@ QString stripFieldCodes(QString exec)
     return exec.simplified();
 }
 
-// Read a .desktop file's [Desktop Entry] group into an ordered key→value map.
-// QSettings parses freedesktop files fine for *reading*; the trouble is only
-// on write (it re-quotes/escapes values in a way desktops reject), so all
-// writing below goes through writeDesktopEntry() as plain UTF-8 text instead.
-QMap<QString, QString> readDesktopEntry(const QString &path)
-{
-    QMap<QString, QString> map;
-    QSettings ini(path, QSettings::IniFormat);
-    ini.beginGroup("Desktop Entry");
-    for (const QString &key : ini.childKeys())
-        map.insert(key, ini.value(key).toString());
-    return map;
-}
+// .desktop files are read and written with Utils/desktop_entry (26.12), never
+// QSettings: its INI parser treats ';' as a comment, re-joins quoted Exec
+// values and turns ',' into lists — and the old writer dropped every group
+// except [Desktop Entry] (e.g. [Desktop Action …]) on each enable/disable.
+bool isTrue(const QString &v) { return v.trimmed().compare("true", Qt::CaseInsensitive) == 0; }
 
-// Write a freedesktop-compliant .desktop file as plain UTF-8 text. This is the
-// fix for "Add didn't work": QSettings mangled Exec/Name (quoting, unicode
-// escapes) so desktop environments silently ignored the generated entry.
-bool writeDesktopEntry(const QString &path, const QMap<QString, QString> &map)
+bool writeEntry(const QString &path, const DesktopEntry &de)
 {
-    QFile f(path);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-        return false;
-    QTextStream out(&f);
-    out.setEncoding(QStringConverter::Utf8);
-    out << "[Desktop Entry]\n";
-    // Type first for readability; the rest in insertion/sorted order.
-    if (map.contains("Type"))
-        out << "Type=" << map.value("Type") << "\n";
-    for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
-        if (it.key() == "Type") continue;
-        out << it.key() << "=" << it.value() << "\n";
-    }
-    out.flush();
-    f.close();
-    return true;
+    QSaveFile f(path);                   // atomic: never a half-written launcher
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) return false;
+    f.write(de.serialize());
+    return f.commit();
 }
 
 // Wrap a command so it launches `delay` seconds after login. Portable across
@@ -85,22 +64,27 @@ QVector<StartupEntry> StartupTool::entries()
 
     for (const auto &file : dir.entryList({"*.desktop"}, QDir::Files)) {
         QString path = dir.filePath(file);
-        const auto map = readDesktopEntry(path);
+        const DesktopEntry de = DesktopEntry::read(path);
+        if (!de.isValid()) continue;
+        const QString loc = QLocale().name();
 
         StartupEntry e;
         e.filePath = path;
-        e.name     = map.value("Name");
-        e.comment  = map.value("Comment");
-        e.icon     = map.value("Icon");
-        // X-GNOME-Autostart-enabled defaults to true when absent.
-        e.enabled  = map.value("X-GNOME-Autostart-enabled", "true").toLower() != "false";
+        e.name     = de.localized("Name", loc);
+        e.comment  = de.localized("Comment", loc);
+        e.icon     = de.value("Icon");
+        if (e.name.isEmpty()) e.name = QFileInfo(file).completeBaseName();
+        // X-GNOME-Autostart-enabled defaults to true when absent; Hidden=true
+        // means "disabled" for every desktop (freedesktop autostart spec).
+        e.enabled  = (!de.contains("X-GNOME-Autostart-enabled") || isTrue(de.value("X-GNOME-Autostart-enabled")))
+                  && !isTrue(de.value("Hidden"));
         // If we wrote a delayed wrapper, prefer the stored original command +
         // delay so the row shows the real program, not the sh -c wrapper.
-        if (map.contains("X-GTStacer-Exec")) {
-            e.exec         = map.value("X-GTStacer-Exec");
-            e.delaySeconds = map.value("X-GTStacer-Delay", "0").toInt();
+        if (de.contains("X-GTStacer-Exec")) {
+            e.exec         = de.value("X-GTStacer-Exec");
+            e.delaySeconds = de.value("X-GTStacer-Delay").toInt();
         } else {
-            e.exec = map.value("Exec");
+            e.exec = de.value("Exec");
         }
         result << e;
     }
@@ -109,16 +93,19 @@ QVector<StartupEntry> StartupTool::entries()
 
 bool StartupTool::enable(const QString &filePath)
 {
-    auto map = readDesktopEntry(filePath);
-    map["X-GNOME-Autostart-enabled"] = "true";
-    return writeDesktopEntry(filePath, map);
+    DesktopEntry de = DesktopEntry::read(filePath);
+    if (!de.isValid()) return false;
+    de.set("X-GNOME-Autostart-enabled", "true");
+    if (isTrue(de.value("Hidden"))) de.removeKey("Hidden");   // Hidden=true also disables
+    return writeEntry(filePath, de);
 }
 
 bool StartupTool::disable(const QString &filePath)
 {
-    auto map = readDesktopEntry(filePath);
-    map["X-GNOME-Autostart-enabled"] = "false";
-    return writeDesktopEntry(filePath, map);
+    DesktopEntry de = DesktopEntry::read(filePath);
+    if (!de.isValid()) return false;
+    de.set("X-GNOME-Autostart-enabled", "false");
+    return writeEntry(filePath, de);
 }
 
 bool StartupTool::remove(const QString &filePath)
@@ -128,25 +115,30 @@ bool StartupTool::remove(const QString &filePath)
 
 bool StartupTool::add(const StartupEntry &entry)
 {
-    QString base = entry.name.simplified().replace(' ', '-');
+    // A plain, portable file name (no quotes, slashes or spaces) that never
+    // overwrites another entry with the same name.
+    QString base = entry.name.simplified();
+    base.replace(QRegularExpression("[^A-Za-z0-9._-]+"), "-");
+    base.remove(QRegularExpression("^[-.]+|-+$"));
     if (base.isEmpty()) base = "gt-stacer-entry";
     QString path = autostartDir() + "/" + base + ".desktop";
+    for (int n = 2; QFile::exists(path); ++n)
+        path = autostartDir() + "/" + base + "-" + QString::number(n) + ".desktop";
 
-    QMap<QString, QString> map;
-    map["Type"]    = "Application";
-    map["Name"]    = entry.name;
-    map["Exec"]    = buildDelayedExec(entry.exec, entry.delaySeconds);
-    map["Comment"] = entry.comment;
-    if (!entry.icon.isEmpty())
-        map["Icon"] = entry.icon;
-    map["Terminal"] = "false";
-    map["X-GNOME-Autostart-enabled"] = entry.enabled ? "true" : "false";
+    DesktopEntry de = DesktopEntry::parse("[Desktop Entry]\n");
+    de.set("Type", "Application");
+    de.set("Name", entry.name);
+    de.set("Exec", buildDelayedExec(entry.exec, entry.delaySeconds));
+    if (!entry.comment.isEmpty()) de.set("Comment", entry.comment);
+    if (!entry.icon.isEmpty())    de.set("Icon", entry.icon);
+    de.set("Terminal", "false");
+    de.set("X-GNOME-Autostart-enabled", entry.enabled ? "true" : "false");
     // Round-trip metadata so entries() can restore the clean command + delay.
     if (entry.delaySeconds > 0) {
-        map["X-GTStacer-Exec"]  = entry.exec;
-        map["X-GTStacer-Delay"] = QString::number(entry.delaySeconds);
+        de.set("X-GTStacer-Exec",  entry.exec);
+        de.set("X-GTStacer-Delay", QString::number(entry.delaySeconds));
     }
-    return writeDesktopEntry(path, map);
+    return writeEntry(path, de);
 }
 
 QVector<StartupEntry> StartupTool::systemApplications()
@@ -182,20 +174,21 @@ QVector<StartupEntry> StartupTool::systemApplications()
             seen.insert(f);
 
             QString path = d.filePath(f);
-            QSettings ini(path, QSettings::IniFormat);
-            ini.beginGroup("Desktop Entry");
+            const DesktopEntry de = DesktopEntry::read(path);
+            if (!de.isValid()) continue;
 
             // Skip hidden / no-display entries — they're not user-launchable.
-            if (ini.value("NoDisplay").toBool())  continue;
-            if (ini.value("Hidden").toBool())     continue;
-            if (ini.value("Type").toString() != "Application") continue;
+            if (isTrue(de.value("NoDisplay")))  continue;
+            if (isTrue(de.value("Hidden")))     continue;
+            if (de.value("Type") != "Application") continue;
 
+            const QString loc = QLocale().name();
             StartupEntry e;
             e.filePath = path;
-            e.name     = ini.value("Name").toString();
-            e.exec     = ini.value("Exec").toString();
-            e.comment  = ini.value("Comment").toString();
-            e.icon     = ini.value("Icon").toString();
+            e.name     = de.localized("Name", loc);
+            e.exec     = de.value("Exec");
+            e.comment  = de.localized("Comment", loc);
+            e.icon     = de.value("Icon");
             e.enabled  = true;
             if (e.name.isEmpty()) e.name = QFileInfo(f).baseName();
             result << e;

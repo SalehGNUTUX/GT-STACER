@@ -30,6 +30,8 @@ private slots:
     void resumeAll();
     void easeSelected();                     // ionice idle — gentle disk relief
     void switchToBfq();                      // change the disk I/O scheduler to BFQ
+    void showBfqInfo();                      // "i": what BFQ is and when it helps
+    void onFocusChanged(int pid);            // thaw a frozen app the user switched to
     void tickMonitor();
     void onAutoToggled(bool on);
     void toggleSelectAll();
@@ -67,12 +69,17 @@ private:
     QSpinBox     *m_ramThresh    = nullptr;
     QSpinBox     *m_ioThresh     = nullptr;
     QSpinBox     *m_holdSecs     = nullptr;
+    QCheckBox    *m_prioritize   = nullptr;  // smart: keep only the heaviest app busy
     QString       m_disk;                    // disk backing "/", for scheduler control
     double        m_lastIo       = 0.0;      // last PSI I/O pressure reading
 
     QTimer       *m_monitor      = nullptr;  // live labels + auto-mode watchdog
 
     QSet<int>     m_suspended;               // PIDs we have frozen
+    // Auto relief escalates in stages (26.12): 1 = idle apps frozen, 2 = also
+    // the busy apps that are not the main workload. Thawing goes back down.
+    int           m_stage        = 0;
+    QSet<int>     m_frozenBusy;              // stage-2 PIDs (thawed first)
     CpuStat       m_prevStat{};
     bool          m_haveStat     = false;
     bool          m_allSelected  = true;     // select-all toggle state
@@ -81,4 +88,7 @@ private:
     int           m_underSeconds = 0;        // consecutive seconds back under threshold
     int           m_refreshAccum = 0;        // seconds accumulated toward auto-refresh
     double        m_lastCpu      = 0.0;
+    int           m_sampleAccum  = 0;        // background activity-sampling cadence
+    QSet<int>     m_userTicked;              // rows whose checkbox the USER changed
+    bool          m_populating   = false;    // ignore our own setCheckState calls
 };

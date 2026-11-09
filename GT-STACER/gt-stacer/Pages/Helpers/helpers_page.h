@@ -22,6 +22,10 @@ private:
     void loadBootParams();
     void loadLocale();
     void loadSwappiness();
+    void retranslateTabs();
 
     Ui::HelpersPage *ui;
+    int m_diskImageTab = -1;
+    int m_removableTab = -1;
+    int m_bootTab = -1;
 };

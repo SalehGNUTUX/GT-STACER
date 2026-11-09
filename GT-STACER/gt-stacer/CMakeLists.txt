@@ -11,6 +11,8 @@ set(APP_SOURCES
     Managers/update_checker.cpp
     Managers/self_updater.cpp
     Managers/language_util.cpp
+    Managers/focus_tracker.cpp
+    Managers/bidi_fixer.cpp
     Widgets/circular_gauge.cpp
     Widgets/cleaner_card.cpp
     Widgets/empty_state.cpp
@@ -29,6 +31,8 @@ set(APP_SOURCES
     Dialogs/universal_apps_dialog.cpp
     Dialogs/startup_add_dialog.cpp
     Dialogs/command_log_dialog.cpp
+    Dialogs/local_package_dialog.cpp
+    Widgets/failure_text.cpp
     Pages/Dashboard/dashboard_page.cpp
     Pages/Resources/resources_page.cpp
     Pages/Processes/processes_page.cpp
@@ -39,6 +43,9 @@ set(APP_SOURCES
     Pages/AptSourceManager/apt_source_page.cpp
     Pages/Settings/settings_page.cpp
     Pages/Helpers/helpers_page.cpp
+    Pages/Helpers/disk_image_tab.cpp
+    Pages/Helpers/removable_tab.cpp
+    Pages/Helpers/boot_tab.cpp
     Pages/Connections/connections_page.cpp
     Pages/Power/power_page.cpp
     Pages/Firewall/firewall_page.cpp
@@ -54,6 +61,8 @@ set(APP_HEADERS
     Managers/tool_manager.h
     Managers/info_manager.h
     Managers/alert_manager.h
+    Managers/focus_tracker.h
+    Managers/bidi_fixer.h
     Widgets/circular_gauge.h
     Widgets/cleaner_card.h
     Widgets/cleaner_icons.h
@@ -65,6 +74,8 @@ set(APP_HEADERS
     Widgets/sidebar_icons.h
     Widgets/skeleton_rows.h
     Dialogs/command_log_dialog.h
+    Dialogs/local_package_dialog.h
+    Widgets/failure_text.h
     Dialogs/welcome_dialog.h
     Dialogs/edit_source_dialog.h
     Dialogs/about_dialog.h
@@ -83,6 +94,9 @@ set(APP_HEADERS
     Pages/AptSourceManager/apt_source_page.h
     Pages/Settings/settings_page.h
     Pages/Helpers/helpers_page.h
+    Pages/Helpers/disk_image_tab.h
+    Pages/Helpers/removable_tab.h
+    Pages/Helpers/boot_tab.h
     Pages/Relief/relief_page.h
 )
 
@@ -195,6 +209,11 @@ target_link_libraries(gt-stacer PRIVATE
 )
 
 target_compile_features(gt-stacer PRIVATE cxx_std_17)
+
+# Crash record (main.cpp): export the app's own symbols so backtrace_symbols_fd
+# names our functions (e.g. RemovableTab::surfaceScan) in crash.log instead of
+# bare offsets. No other effect on the binary's behaviour.
+target_link_options(gt-stacer PRIVATE -rdynamic)
 
 # Set properties for Linux
 set_target_properties(gt-stacer PROPERTIES

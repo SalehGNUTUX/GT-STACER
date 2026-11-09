@@ -33,6 +33,7 @@
 #include <QThread>
 #include <QElapsedTimer>
 #include <QTimer>
+#include <QTabWidget>
 #include <QImage>
 #include <QPixmap>
 #include <QDebug>
@@ -311,7 +312,7 @@ void App::navigateTo(int index)
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void App::captureAllPages(const QString &dir, int onlyPage)
+void App::captureAllPages(const QString &dir, int onlyPage, int onlyTab)
 {
     QDir().mkpath(dir);
     // Two constraints:
@@ -346,6 +347,11 @@ void App::captureAllPages(const QString &dir, int onlyPage)
     for (int i = 0; i < kNumPages; ++i) {
         if (onlyPage >= 0 && i != onlyPage) continue;
         navigateTo(i);
+        // --tab N: show tab N of the page's first QTabWidget (e.g. Helpers' tools).
+        QString suffix;
+        if (onlyTab >= 0)
+            if (auto *tabs = m_pageStack->currentWidget()->findChild<QTabWidget *>())
+                if (onlyTab < tabs->count()) { tabs->setCurrentIndex(onlyTab); suffix = QString("-tab%1").arg(onlyTab); }
         // Base 5s lets most pages settle; the two that load a big list off-thread
         // get much longer so nothing is captured mid-"Loading…". The Uninstaller
         // scans 4000+ packages on a cold cache (>5s first-run), so give it 30s.
@@ -361,7 +367,7 @@ void App::captureAllPages(const QString &dir, int onlyPage)
         render(&pm);
         QImage img = pm.toImage();
         img.setDevicePixelRatio(1.0);
-        const QString out = QString("%1/%2.png").arg(dir).arg(i);
+        const QString out = QString("%1/%2%3.png").arg(dir).arg(i).arg(suffix);
         if (!img.save(out))
             qWarning() << "capture: failed to write" << out;
     }

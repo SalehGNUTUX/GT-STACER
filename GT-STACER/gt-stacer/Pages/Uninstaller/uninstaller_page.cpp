@@ -1,4 +1,6 @@
 #include "uninstaller_page.h"
+#include "../../Widgets/failure_text.h"
+#include "../../../gt-stacer-core/Utils/command_util.h"
 #include "ui_uninstaller_page.h"
 #include "../../Widgets/empty_state.h"
 #include "../../Widgets/skeleton_rows.h"
@@ -86,7 +88,7 @@ UninstallerPage::UninstallerPage(QWidget *parent)
     setDisplayState(Initial);
 
     ui->managerCombo->addItem(tr("All"), -1);
-    auto available = PackageTool::availableManagers();
+    auto available = PackageTool::listingManagers();   // one per package DB
     for (PkgMgr mgr : available) {
         ui->managerCombo->addItem(PackageTool::managerName(mgr),
                                    static_cast<int>(mgr));
@@ -149,6 +151,8 @@ void UninstallerPage::loadPackages()
     ui->statusLabel->setText(tr("Loading packages..."));
     m_model->setRowCount(0);
     setDisplayState(Loading);
+    m_overlay->start(tr("Loading installed packages"),
+                     tr("Reading the list from every package manager…"));
 
     // Run the scan off the UI thread — allPackages() shells out to dpkg-query
     // / rpm -qa / pacman -Q, which can each take several seconds on a busy
@@ -170,6 +174,7 @@ void UninstallerPage::loadPackages()
         }
         ui->statusLabel->setText(tr("%1 packages").arg(pkgs.size()));
         ui->loadButton->setEnabled(true);
+        m_overlay->stop();
         setDisplayState(pkgs.isEmpty() ? Initial : Results);
     });
     watcher->setFuture(QtConcurrent::run([]() {
@@ -230,7 +235,8 @@ void UninstallerPage::uninstallSelected()
     ui->removeButton->setEnabled(false);
     m_overlay->start(targets.size() == 1
         ? tr("Uninstalling %1…").arg(targets.first().first)
-        : tr("Uninstalling %1 packages…").arg(targets.size()));
+        : tr("Uninstalling %1 packages…").arg(targets.size()),
+        tr("Your password may be asked."));
 
     // Each removal runs sequentially on the worker thread. We report progress
     // back to the UI thread via QMetaObject::invokeMethod so the status label
@@ -252,10 +258,8 @@ void UninstallerPage::uninstallSelected()
             ui->statusLabel->setText(tr("Removed %1 package(s).").arg(ok));
         } else {
             QMessageBox::warning(this, tr("Some removals failed"),
-                tr("Removed %1 of %2 packages. Failed:\n\n%3\n\n"
-                   "Possible causes: authorization denied, package is a "
-                   "system dependency, or the manager rejected the operation.")
-                    .arg(ok).arg(results.size()).arg(failed.join(", ")));
+                tr("Removed %1 of %2 packages. Not removed:\n\n%3")
+                    .arg(ok).arg(results.size()).arg(failed.join("\n")));
         }
         loadPackages();
     });
@@ -272,9 +276,13 @@ void UninstallerPage::uninstallSelected()
             QMetaObject::invokeMethod(ui->statusLabel, "setText",
                                        Qt::QueuedConnection, Q_ARG(QString, label));
             QMetaObject::invokeMethod(this, [this, label]() {
-                m_overlay->setMessage(label);
+                m_overlay->setDetail(label);
             }, Qt::QueuedConnection);
-            out.append({t.first, PackageTool::remove(t.first, t.second)});
+            CommandUtil::clearLastResult();
+            const bool removed = PackageTool::remove(t.first, t.second);
+            // A failed removal carries its plain-language reason.
+            const QString why = removed ? QString() : FailureText::lastReason();
+            out.append({why.isEmpty() ? t.first : t.first + " — " + why, removed});
         }
         return out;
     }));

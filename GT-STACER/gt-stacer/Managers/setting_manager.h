@@ -70,6 +70,9 @@ public:
     int  reliefHoldSeconds() const;         // sustained seconds before acting
     void setReliefHoldSeconds(int v);
 
+    bool reliefPrioritizeMain() const;      // smart: freeze busy side apps too, keep the heaviest
+    void setReliefPrioritizeMain(bool v);
+
     bool reliefDropCaches() const;          // also drop file caches on freeze
     void setReliefDropCaches(bool v);
 

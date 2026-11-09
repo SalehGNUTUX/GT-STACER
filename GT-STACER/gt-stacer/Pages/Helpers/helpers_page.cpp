@@ -1,14 +1,25 @@
 #include "helpers_page.h"
+#include "disk_image_tab.h"
+#include "removable_tab.h"
+#include "boot_tab.h"
+#include "../../Widgets/failure_text.h"
 #include "ui_helpers_page.h"
 #include "../../../gt-stacer-core/Utils/file_util.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
 #include <QMessageBox>
+#include <QTabWidget>
 #include <QProcessEnvironment>
 
 HelpersPage::HelpersPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::HelpersPage)
 {
     ui->setupUi(this);
+    // 26.12: Helpers is tabbed — the user's tools are rewritten natively here
+    // (Disk images = GT-IMT; USB/SD = gt-usdr and Bootloader = GT-GMT follow).
+    m_diskImageTab = ui->helpersTabs->addTab(new DiskImageTab(ui->helpersTabs), QString());
+    m_removableTab = ui->helpersTabs->addTab(new RemovableTab(ui->helpersTabs), QString());
+    m_bootTab      = ui->helpersTabs->addTab(new BootTab(ui->helpersTabs), QString());
+    retranslateTabs();
     connect(ui->loadHostsButton,        &QPushButton::clicked, this, &HelpersPage::loadHosts);
     connect(ui->saveHostsButton,        &QPushButton::clicked, this, &HelpersPage::saveHosts);
     connect(ui->dnsFlushButton,         &QPushButton::clicked, this, &HelpersPage::flushDns);
@@ -31,11 +42,12 @@ void HelpersPage::loadHosts()
 void HelpersPage::saveHosts()
 {
     QString content = ui->hostsEditor->toPlainText();
+    CommandUtil::clearLastResult();
     bool ok = CommandUtil::pkexecWriteFile("/etc/hosts", content.toUtf8(),
                                             "root", "root", "0644");
     if (ok) QMessageBox::information(this, tr("Saved"), tr("/etc/hosts saved successfully."));
-    else    QMessageBox::warning(this, tr("Error"),
-                tr("Could not save /etc/hosts. Authorization may have been denied."));
+    else    FailureText::show(this, tr("Error"), tr("/etc/hosts was not saved."),
+                              CommandUtil::lastResult());
 }
 
 // ── DNS flush ───────────────────────────────────────────────────────────
@@ -90,8 +102,8 @@ void HelpersPage::applySwappiness()
                "add it to /etc/sysctl.conf or /etc/sysctl.d/.").arg(v));
         loadSwappiness();
     } else {
-        QMessageBox::warning(this, tr("Swappiness"),
-            tr("Could not change vm.swappiness (authorization denied?)."));
+        FailureText::show(this, tr("Swappiness"), tr("vm.swappiness was not changed."),
+                          CommandUtil::lastResult());
     }
 }
 
@@ -111,9 +123,25 @@ void HelpersPage::loadLocale()
     ui->localeLabel->setText(lang);
 }
 
+// Short, clear tab names; the details are in each tab's tooltip.
+void HelpersPage::retranslateTabs()
+{
+    QTabWidget *t = ui->helpersTabs;
+    t->setTabText(0, tr("System"));
+    t->setTabToolTip(0, tr("hosts file, DNS cache, swappiness, kernel boot parameters, locale"));
+    t->setTabText(m_diskImageTab, tr("Disk images"));
+    t->setTabToolTip(m_diskImageTab, tr("Mount, browse and extract ISO and IMG disk images"));
+    t->setTabText(m_removableTab, tr("USB drives"));
+    t->setTabToolTip(m_removableTab, tr("Check, repair, format and back up USB sticks and memory cards"));
+    t->setTabText(m_bootTab, tr("Boot"));
+    t->setTabToolTip(m_bootTab, tr("Boot menu (GRUB): settings, restore points and repair"));
+}
+
 void HelpersPage::changeEvent(QEvent *event)
 {
-    if (event->type() == QEvent::LanguageChange && ui)
+    if (event->type() == QEvent::LanguageChange && ui) {
         ui->retranslateUi(this);
+        retranslateTabs();
+    }
     QWidget::changeEvent(event);
 }

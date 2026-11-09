@@ -1,4 +1,5 @@
 #include "universal_apps_dialog.h"
+#include "../Widgets/loading_overlay.h"
 #include "../../gt-stacer-core/Utils/format_util.h"
 #include <QCheckBox>
 #include <QComboBox>
@@ -141,12 +142,15 @@ void UniversalAppsDialog::rescan()
     m_cleanButton->setEnabled(false);
     m_summary->setText(tr("Loading…"));
     m_model->setRowCount(0);
+    LoadingOverlay::on(this)->start(tr("Loading %1 applications").arg(m_managerLabel),
+                                    tr("Asking %1 for its installed apps and their sizes…").arg(m_managerLabel));
 
     PkgMgr mgr = m_manager;
     auto *watcher = new QFutureWatcher<QVector<PackageTool::UniversalApp>>(this);
     connect(watcher, &QFutureWatcher<QVector<PackageTool::UniversalApp>>::finished, this,
             [this, watcher]() {
         watcher->deleteLater();
+        LoadingOverlay::on(this)->stop();
         populateModel(watcher->result());
         refreshSummary();
         m_rescanButton->setEnabled(true);
@@ -228,10 +232,13 @@ void UniversalAppsDialog::cleanSelected()
     m_cleanButton->setEnabled(false);
     m_rescanButton->setEnabled(false);
 
+    LoadingOverlay::on(this)->start(tr("Removing %1 application(s)").arg(targets.size()),
+                                    tr("Your password may be asked."));
     PkgMgr mgr = m_manager;
     auto *watcher = new QFutureWatcher<int>(this);
     connect(watcher, &QFutureWatcher<int>::finished, this, [this, watcher]() {
         watcher->deleteLater();
+        LoadingOverlay::on(this)->stop();
         rescan();
     });
     watcher->setFuture(QtConcurrent::run([mgr, targets]() -> int {

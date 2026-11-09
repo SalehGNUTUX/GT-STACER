@@ -34,6 +34,28 @@ void CommandUtil::wrapForHost(QString &program, QStringList &args)
     wrapForHostImpl(program, args);
 }
 
+bool CommandUtil::inFlatpak()
+{
+    return runningInFlatpak();
+}
+
+void CommandUtil::guardForStop(QString &program, QStringList &args, bool asRoot)
+{
+    // fd 3 = our pipe; the program gets /dev/null as stdin. `read` returns on
+    // EOF *or* a line, then the guard stops the program; when the program
+    // ends by itself, the guard drops its watcher and exits with its code.
+    static const QString kGuard = QStringLiteral(
+        "exec 3<&0 0</dev/null; "
+        "\"$@\" & p=$!; "
+        "{ read _ <&3; kill -TERM \"$p\" 2>/dev/null; } & w=$!; "
+        "wait \"$p\"; rc=$?; kill \"$w\" 2>/dev/null; exit $rc");
+    QStringList a{"/bin/sh", "-c", kGuard, "gt-stacer-guard", program};
+    a += args;
+    if (asRoot) { program = "pkexec"; args = a; }
+    else        { program = a.takeFirst(); args = a; }
+    wrapForHostImpl(program, args);
+}
+
 QString CommandUtil::exec(const QString &command)
 {
     QProcess process;
@@ -77,16 +99,63 @@ QString CommandUtil::execSudo(const QString &command)
     return exec(QString("pkexec %1").arg(command));
 }
 
-int CommandUtil::execProgram(const QString &program, const QStringList &args, int timeoutMs)
+namespace {
+thread_local CommandResult t_last;
+
+// Run with English MESSAGES (so failures can be classified on any UI
+// language) — only the message language changes, not the charset, so file
+// names and parsers are unaffected.
+void englishMessages(QProcess &p, QString &prog, QStringList &args)
 {
+    if (runningInFlatpak()) {
+        // flatpak-spawn doesn't forward our environment to the host process.
+        args.prepend(prog);
+        args.prepend("--env=LANGUAGE=C");
+        args.prepend("--env=LC_MESSAGES=C");
+        args.prepend("--host");
+        prog = "flatpak-spawn";
+        return;
+    }
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert("LC_MESSAGES", "C");
+    env.insert("LANGUAGE", "C");
+    if (!env.value("LC_ALL").isEmpty()) env.insert("LC_ALL", "C.UTF-8");   // LC_ALL would override
+    p.setProcessEnvironment(env);
+}
+} // namespace
+
+CommandResult CommandUtil::runCommand(const QString &program, const QStringList &args, int timeoutMs)
+{
+    CommandResult r;
+    r.viaPkexec = (program == "pkexec");
+    r.program   = (r.viaPkexec && !args.isEmpty()) ? args.first() : program;
     QString prog = program;
     QStringList a = args;
-    wrapForHostImpl(prog, a);     // no-op outside Flatpak
     QProcess p;
+    p.setProcessChannelMode(QProcess::MergedChannels);
+    englishMessages(p, prog, a);
     p.start(prog, a);
-    if (!p.waitForStarted(timeoutMs)) return -1;
-    if (!p.waitForFinished(timeoutMs)) { p.kill(); return -1; }
-    return p.exitCode();
+    if (!p.waitForStarted(timeoutMs < 0 ? 30000 : timeoutMs)) { t_last = r; return r; }
+    r.started = true;
+    if (!p.waitForFinished(timeoutMs)) {
+        r.timedOut = true;
+        p.kill();
+        p.waitForFinished(2000);
+    }
+    r.output = QString::fromUtf8(p.readAll());
+    r.exitCode = (p.exitStatus() == QProcess::NormalExit) ? p.exitCode() : -1;
+    t_last = r;
+    return r;
+}
+
+CommandResult CommandUtil::lastResult() { return t_last; }
+void CommandUtil::clearLastResult() { t_last = CommandResult{}; }
+
+int CommandUtil::execProgram(const QString &program, const QStringList &args, int timeoutMs)
+{
+    const CommandResult r = runCommand(program, args, timeoutMs);
+    if (!r.started || r.timedOut) return -1;
+    return r.exitCode;
 }
 
 QString CommandUtil::execProgramOutput(const QString &program, const QStringList &args, int timeoutMs)
@@ -99,6 +168,31 @@ QString CommandUtil::execProgramOutput(const QString &program, const QStringList
     if (!p.waitForStarted(timeoutMs)) return {};
     if (!p.waitForFinished(timeoutMs)) { p.kill(); return {}; }
     return QString::fromUtf8(p.readAllStandardOutput()).trimmed();
+}
+
+QString CommandUtil::execProgramC(const QString &program, const QStringList &args,
+                                  int timeoutMs, int *exitCode)
+{
+    QString prog = program;
+    QStringList a = args;
+    QProcess p;
+    if (runningInFlatpak()) {
+        // flatpak-spawn does not forward our environment to the host process.
+        a.prepend(prog);
+        a.prepend("--env=LC_ALL=C");
+        a.prepend("--host");
+        prog = "flatpak-spawn";
+    } else {
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("LC_ALL", "C");
+        p.setProcessEnvironment(env);
+    }
+    if (exitCode) *exitCode = -1;
+    p.start(prog, a);
+    if (!p.waitForStarted(timeoutMs)) return {};
+    if (!p.waitForFinished(timeoutMs)) { p.kill(); p.waitForFinished(1000); return {}; }
+    if (exitCode) *exitCode = (p.exitStatus() == QProcess::NormalExit) ? p.exitCode() : -1;
+    return QString::fromUtf8(p.readAllStandardOutput());
 }
 
 bool CommandUtil::pkexecWriteFile(const QString &destPath, const QByteArray &content,
@@ -147,7 +241,11 @@ bool CommandUtil::pkexecWriteFile(const QString &destPath, const QByteArray &con
 bool CommandUtil::isSafeIdentifier(const QString &s)
 {
     if (s.isEmpty() || s.size() > 256) return false;
-    // Allow common package/service name chars only.
-    static const QRegularExpression rx("^[A-Za-z0-9._@:+/-]+$");
+    // Allow common package/service name chars only — and never a leading '-':
+    // these values are passed as argv to apt/dnf/pacman/systemctl (often as
+    // root), and a name like "-oAPT::…" or "--config=…" would be parsed as an
+    // OPTION, not a name (argument injection). No real package, service or
+    // source name starts with '-'.
+    static const QRegularExpression rx("^[A-Za-z0-9._@:+/][A-Za-z0-9._@:+/-]*$");
     return rx.match(s).hasMatch();
 }

@@ -1,4 +1,5 @@
 #include "circular_gauge.h"
+#include "bidi_text.h"
 #include "../Managers/theme.h"
 #include <QPainter>
 #include <QPainterPath>
@@ -108,7 +109,7 @@ void CircularGauge::paintEvent(QPaintEvent *)
     QString valStr = (m_unit == "%")
         ? QString::number(static_cast<int>(m_value)) + "%"
         : QString::number(m_value, 'f', 1) + " " + m_unit;
-    p.drawText(gaugeRect, Qt::AlignCenter, valStr);
+    p.drawText(gaugeRect, Qt::AlignCenter, Bidi::isolate(valStr));
 
     // ── الاسم (Label) ─────────────────────────────────────────────────
     int labelY = H - footH;          // يبدأ مباشرة أسفل الدائرة
@@ -117,7 +118,7 @@ void CircularGauge::paintEvent(QPaintEvent *)
     labelFont.setBold(true);
     p.setFont(labelFont);
     p.setPen(Theme::subtext());
-    p.drawText(QRect(0, labelY, W, labelH), Qt::AlignCenter, m_label);
+    p.drawText(QRect(0, labelY, W, labelH), Qt::AlignCenter, Bidi::isolate(m_label));
 
     // ── النص الفرعي (مثل "4.6 GB / 7.65 GB") — أسفل الاسم ───────────
     if (!m_subText.isEmpty()) {
@@ -126,6 +127,6 @@ void CircularGauge::paintEvent(QPaintEvent *)
         p.setFont(subFont);
         p.setPen(Theme::faint());
         p.drawText(QRect(4, labelY + labelH, W - 8, subH),
-                   Qt::AlignCenter, m_subText);
+                   Qt::AlignCenter, Bidi::isolate(m_subText));
     }
 }

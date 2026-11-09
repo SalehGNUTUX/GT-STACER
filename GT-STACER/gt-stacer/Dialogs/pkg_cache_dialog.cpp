@@ -1,4 +1,5 @@
 #include "pkg_cache_dialog.h"
+#include "../Widgets/loading_overlay.h"
 #include "../../gt-stacer-core/Tools/package_tool.h"
 #include "../../gt-stacer-core/Utils/command_util.h"
 #include "../../gt-stacer-core/Utils/format_util.h"
@@ -163,12 +164,14 @@ void PkgCacheDialog::scan()
     m_cleanButton->setEnabled(false);
     m_summary->setText(tr("Scanning…"));
     m_model->setRowCount(0);
+    LoadingOverlay::on(this)->start(tr("Reading the package cache"), m_cacheDir);
 
     QString dir = m_cacheDir;
     auto *watcher = new QFutureWatcher<QVector<CacheFile>>(this);
     connect(watcher, &QFutureWatcher<QVector<CacheFile>>::finished, this,
             [this, watcher]() {
         watcher->deleteLater();
+        LoadingOverlay::on(this)->stop();
         populateModel(watcher->result());
         refreshSummary();
         m_rescanButton->setEnabled(true);
@@ -280,9 +283,12 @@ void PkgCacheDialog::cleanSelected()
     for (const auto &p : targets)
         if (p.startsWith(cacheDir + "/")) safe << p;
 
+    LoadingOverlay::on(this)->start(tr("Cleaning the package cache"),
+        tr("Removing %1 file(s) — your password will be asked.").arg(safe.size()));
     auto *watcher = new QFutureWatcher<int>(this);
     connect(watcher, &QFutureWatcher<int>::finished, this, [this, watcher]() {
         watcher->deleteLater();
+        LoadingOverlay::on(this)->stop();
         scan();
     });
     watcher->setFuture(QtConcurrent::run([safe]() -> int {

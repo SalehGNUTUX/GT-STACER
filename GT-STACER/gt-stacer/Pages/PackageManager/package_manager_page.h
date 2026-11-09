@@ -1,9 +1,11 @@
 #pragma once
+#include <QMap>
 #include <QWidget>
 #include <QVector>
 #include <functional>
 #include "../../../gt-stacer-core/Tools/package_tool.h"
 
+class QCheckBox;
 class QTabWidget;
 class QStandardItemModel;
 class QSortFilterProxyModel;
@@ -19,6 +21,8 @@ class LoadingOverlay;
 //   • Installed      — browse & remove installed software (all detected managers)
 //   • Search & Install — search a manager's repos and install
 //   • Upgrades        — list & apply available upgrades
+//   • Local packages  — install a .deb/.rpm/.pkg.tar.*/Flatpak/Snap/AppImage
+//                       FILE, with its info and a dependency check (26.12)
 //   • Store add-ons   — manage opendesktop.org / KNewStuff content
 // Every privileged operation goes through PackageTool (execProgram, no shell;
 // names validated with isSafeIdentifier). Long operations run off the UI thread
@@ -32,6 +36,7 @@ public:
 protected:
     void changeEvent(QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;   // drag & drop on the Local tab
 
 private:
     // ── Installed tab ──
@@ -46,9 +51,15 @@ private:
 
     // ── Upgrades tab ──
     QWidget *buildUpgradesTab();
-    void loadUpgrades();
-    void upgradeSelected();
-    void upgradeEverything();
+    void loadUpgrades(bool refresh = true);   // refresh = bring package lists up to date first
+    void upgradeTicked();                     // one command per source, after a summary
+    void rebuildUpgradeSources();             // the per-source tick boxes above the list
+    void syncUpgradeSourceBoxes();            // their state follows the ticked rows
+
+    // ── Local packages tab ──
+    QWidget *buildLocalTab();
+    void chooseLocalPackage();
+    void openLocalPackage(const QString &path);
 
     // ── Store add-ons tab ──
     QWidget *buildStoreTab();
@@ -60,9 +71,11 @@ private:
     QWidget *buildAppImagesTab();
     void loadAppImages();
     void addAppImage();
+    void integrateAppImage(const QString &file, const std::function<void(bool)> &done);
     void removeSelectedAppImage();
 
     // Run a blocking op set off the UI thread behind the overlay, then `after`.
+    LoadingOverlay *tabOverlay(QWidget *inside) const;
     void runOff(const QString &msg, const std::function<void()> &work,
                 const std::function<void()> &after);
 
@@ -98,9 +111,15 @@ private:
     QStandardItemModel *m_upModel = nullptr;
     QTableView  *m_upTable  = nullptr;
     QPushButton *m_upCheck  = nullptr;
-    QPushButton *m_upOne    = nullptr;
-    QPushButton *m_upAll    = nullptr;
+    QPushButton *m_upAll    = nullptr;     // "Upgrade…" — the ticked updates
     QLabel      *m_upStatus = nullptr;
+    QWidget     *m_upSources = nullptr;    // "Sources: [x] APT (79) [x] Flatpak (1)"
+    QMap<int, QCheckBox *> m_upSourceBoxes;  // PkgMgr → its box
+    bool         m_upSyncing = false;      // ignore our own check-state changes
+
+    // Local packages
+    QWidget     *m_lpDrop   = nullptr;
+    QLabel      *m_lpStatus = nullptr;
 
     // Store add-ons
     QStandardItemModel *m_stModel = nullptr;

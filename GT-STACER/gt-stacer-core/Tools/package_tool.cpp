@@ -135,6 +135,38 @@ QVector<PkgMgr> PackageTool::availableManagers()
     return s_available;
 }
 
+QVector<PkgMgr> PackageTool::listingManagers()
+{
+    detectManagers();
+    // Several front-ends read the SAME package database: the rpm family
+    // (DNF/DNF5/YUM/TDNF/Zypper/rpm-ostree) and the pacman family (pacman +
+    // the yay/paru AUR helpers, which all list `pacman -Q`). Keep one entry per
+    // database, or every package shows up once per front-end (issue #1:
+    // pacman + yay + paru listed each package three times).
+    QVector<PkgMgr> out;
+    bool rpmDone = false, pacmanDone = false;
+    for (PkgMgr mgr : s_available) {
+        const bool isRpm = (mgr == PkgMgr::DNF || mgr == PkgMgr::DNF5 ||
+                            mgr == PkgMgr::YUM || mgr == PkgMgr::TDNF ||
+                            mgr == PkgMgr::Zypper || mgr == PkgMgr::RpmOstree);
+        const bool isPacman = (mgr == PkgMgr::Pacman || mgr == PkgMgr::Yay ||
+                               mgr == PkgMgr::Paru);
+        if (isRpm) {
+            if (rpmDone) continue;
+            rpmDone = true;
+        }
+        if (isPacman) {
+            if (pacmanDone) continue;
+            pacmanDone = true;
+            // pacmanPackages() always tags rows PkgMgr::Pacman, so the filter
+            // entry must be Pacman too, whichever front-end was detected first.
+            mgr = PkgMgr::Pacman;
+        }
+        out << mgr;
+    }
+    return out;
+}
+
 PkgMgr PackageTool::primaryManager()
 {
     detectManagers();
@@ -405,18 +437,8 @@ QVector<PackageInfo> PackageTool::allPackages()
 {
     detectManagers();
     QVector<PackageInfo> result;
-    // Show each manager only once (no duplicates for rpm-family)
-    bool rpmDone = false;
-    for (PkgMgr mgr : s_available) {
-        bool isRpm = (mgr == PkgMgr::DNF || mgr == PkgMgr::DNF5 ||
-                      mgr == PkgMgr::YUM || mgr == PkgMgr::TDNF ||
-                      mgr == PkgMgr::Zypper || mgr == PkgMgr::RpmOstree);
-        if (isRpm) {
-            if (rpmDone) continue;
-            rpmDone = true;
-        }
+    for (PkgMgr mgr : listingManagers())
         result += packages(mgr);
-    }
     // Always append externally/manually installed apps — these belong to no
     // manager in s_available but are exactly what users can't otherwise remove.
     result += manualPackages();
@@ -533,6 +555,18 @@ bool PackageTool::install(const QString &name, PkgMgr mgr)
 }
 
 // ─── Upgrade ──────────────────────────────────────────────────────────────
+namespace {
+// apt-get runs through pkexec WITHOUT a terminal: a dpkg question ("keep your
+// modified config file?") or a debconf prompt would fail or hang the upgrade.
+// Answer them the safe way: keep the local config file, take defaults.
+QStringList aptNonInteractive(const QStringList &aptArgs)
+{
+    return QStringList{"pkexec", "env", "DEBIAN_FRONTEND=noninteractive", "apt-get", "-y",
+                       "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold"}
+           + aptArgs;
+}
+} // namespace
+
 QStringList PackageTool::upgradeCommand(const QString &name, PkgMgr mgr)
 {
     if (!CommandUtil::isSafeIdentifier(name)) return {};
@@ -542,12 +576,14 @@ QStringList PackageTool::upgradeCommand(const QString &name, PkgMgr mgr)
     bool needsRoot = true;
 
     switch (mgr) {
-    case PkgMgr::APT:       prog = "apt-get"; args = {"install", "--only-upgrade", "-y", name}; break;
+    case PkgMgr::APT:       return aptNonInteractive({"install", "--only-upgrade", name});
     case PkgMgr::DNF:
     case PkgMgr::DNF5:      prog = "dnf";     args = {"upgrade", "-y", name}; break;
     case PkgMgr::YUM:       prog = "yum";     args = {"update", "-y", name}; break;
-    case PkgMgr::Zypper:    prog = "zypper";  args = {"update", "-y", name}; break;
-    case PkgMgr::Pacman:    prog = "pacman";  args = {"-S", "--noconfirm", name}; break;
+    case PkgMgr::Zypper:    prog = "zypper";  args = {"--non-interactive", "update", name}; break;
+    // Pacman: upgrading ONE package is a partial upgrade — unsupported on Arch
+    // (it can leave the system with mismatched libraries). Only -Syu.
+    case PkgMgr::Pacman:    return {};
     case PkgMgr::XBPS:      prog = "xbps-install"; args = {"-u", "-y", name}; break;
     case PkgMgr::APK:       prog = "apk";     args = {"upgrade", name}; break;
     case PkgMgr::Flatpak:   prog = "flatpak"; args = {"update", "-y", name}; needsRoot = false; break;
@@ -576,15 +612,17 @@ QStringList PackageTool::upgradeAllCommand(PkgMgr mgr)
     bool needsRoot = true;
 
     switch (mgr) {
-    case PkgMgr::APT:       prog = "apt-get"; args = {"upgrade", "-y"}; break;
+    // --with-new-pkgs: also take updates that need a NEW dependency (plain
+    // `apt-get upgrade` holds them back; nothing is removed either way).
+    case PkgMgr::APT:       return aptNonInteractive({"upgrade", "--with-new-pkgs"});
     case PkgMgr::DNF:
     case PkgMgr::DNF5:      prog = "dnf";     args = {"upgrade", "-y"}; break;
     case PkgMgr::YUM:       prog = "yum";     args = {"update", "-y"}; break;
-    case PkgMgr::Zypper:    prog = "zypper";  args = {"update", "-y"}; break;
+    case PkgMgr::Zypper:    prog = "zypper";  args = {"--non-interactive", "update"}; break;
     case PkgMgr::Pacman:    prog = "pacman";  args = {"-Syu", "--noconfirm"}; break;
     case PkgMgr::XBPS:      prog = "xbps-install"; args = {"-Su", "-y"}; break;
     case PkgMgr::APK:       prog = "apk";     args = {"upgrade"}; break;
-    case PkgMgr::Flatpak:   prog = "flatpak"; args = {"update", "-y"}; needsRoot = false; break;
+    case PkgMgr::Flatpak:   prog = "flatpak"; args = {"update", "-y", "--noninteractive"}; needsRoot = false; break;
     case PkgMgr::Snap:      prog = "snap";    args = {"refresh"}; break;
     case PkgMgr::Brew:      prog = "brew";    args = {"upgrade"}; needsRoot = false; break;
     default:                return {};
@@ -593,6 +631,35 @@ QStringList PackageTool::upgradeAllCommand(PkgMgr mgr)
     if (needsRoot) { args.prepend(prog); prog = "pkexec"; }
     args.prepend(prog);
     return args;
+}
+
+QStringList PackageTool::upgradeBatchCommand(PkgMgr mgr, const QStringList &ids, bool everything)
+{
+    if (everything) return upgradeAllCommand(mgr);
+    if (ids.isEmpty()) return {};
+    for (const QString &id : ids) if (!CommandUtil::isSafeIdentifier(id)) return {};
+    switch (mgr) {
+    case PkgMgr::APT:     return aptNonInteractive(QStringList{"install", "--only-upgrade"} + ids);
+    case PkgMgr::DNF:
+    case PkgMgr::DNF5:    return QStringList{"pkexec", "dnf", "upgrade", "-y"} + ids;
+    case PkgMgr::YUM:     return QStringList{"pkexec", "yum", "update", "-y"} + ids;
+    case PkgMgr::Zypper:  return QStringList{"pkexec", "zypper", "--non-interactive", "update"} + ids;
+    case PkgMgr::Flatpak: return QStringList{"flatpak", "update", "-y", "--noninteractive"} + ids;
+    case PkgMgr::Snap:    return QStringList{"pkexec", "snap", "refresh"} + ids;
+    case PkgMgr::Pacman:  return {};     // partial upgrade — refused (see upgradeCommand)
+    default:              return {};
+    }
+}
+
+bool PackageTool::canListUpgrades(PkgMgr mgr)
+{
+    switch (mgr) {
+    case PkgMgr::APT: case PkgMgr::DNF: case PkgMgr::DNF5: case PkgMgr::Pacman:
+    case PkgMgr::Zypper: case PkgMgr::Flatpak: case PkgMgr::Snap:
+        return true;
+    default:
+        return false;
+    }
 }
 
 bool PackageTool::upgradeAll(PkgMgr mgr)
@@ -850,13 +917,18 @@ QVector<PackageInfo> PackageTool::search(const QString &query, PkgMgr mgr)
 // ─── Upgradable packages ──────────────────────────────────────────────────
 // Packages with a newer version available. Read-only (no root for the query on
 // most managers); all through execProgramOutput (no shell).
-QVector<PackageInfo> PackageTool::upgradable(PkgMgr mgr)
+QVector<PackageInfo> PackageTool::upgradable(PkgMgr mgr, bool refresh)
 {
     QVector<PackageInfo> result;
     switch (mgr) {
     case PkgMgr::APT: {
+        // Fresh lists first: PackageKit lets the desktop user refresh without a
+        // password (verified on Debian 13 / MX). No pkcon → the lists on disk.
+        if (refresh && CommandUtil::commandExists("pkcon"))
+            CommandUtil::execProgram("pkcon", {"refresh", "--noninteractive"}, 300000);
         // apt list --upgradable: "name/repo NEWVER arch [upgradable from: OLDVER]"
-        const QString out = CommandUtil::execProgramOutput("apt", {"list", "--upgradable"}, 30000);
+        const QString out = CommandUtil::execProgramOutput("apt", {"list", "--upgradable"}, 60000);
+        static const QRegularExpression from("\\[upgradable from: ([^\\]]+)\\]");
         for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
             const int slash = line.indexOf('/');
             if (slash <= 0 || line.startsWith("Listing")) continue;
@@ -864,48 +936,78 @@ QVector<PackageInfo> PackageTool::upgradable(PkgMgr mgr)
             PackageInfo p; p.manager = mgr;
             p.name    = line.left(slash);
             p.version = parts.value(1);
+            p.arch    = parts.value(2);
+            const auto m = from.match(line);
+            if (m.hasMatch()) p.currentVersion = m.captured(1);
             result << p;
         }
         break;
     }
     case PkgMgr::DNF:
     case PkgMgr::DNF5: {
-        const QString out = CommandUtil::execProgramOutput("dnf", {"--quiet", "check-update"}, 60000);
+        // check-update refreshes its metadata itself; exit 100 = updates exist.
+        const QString out = CommandUtil::execProgramOutput("dnf", {"--quiet", "check-update"}, 180000);
         for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            if (line.startsWith("Obsoleting")) break;          // a different list follows
             const QStringList c = line.split(' ', Qt::SkipEmptyParts);
-            if (c.size() < 3 || line.startsWith("Last metadata")) continue;
+            if (c.size() < 3 || line.startsWith("Last metadata") || line.startsWith(' ')) continue;
             PackageInfo p; p.manager = mgr;
-            p.name    = c.value(0).split('.').first();
+            p.name    = c.value(0).section('.', 0, -2);          // strip ".arch" (names may contain dots)
+            if (p.name.isEmpty()) p.name = c.value(0);
             p.version = c.value(1);
-            if (!p.name.isEmpty()) result << p;
-        }
-        break;
-    }
-    case PkgMgr::Pacman: {
-        const QString out = CommandUtil::execProgramOutput("pacman", {"-Qu"}, 30000);
-        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
-            const QStringList c = line.split(' ', Qt::SkipEmptyParts);
-            if (c.isEmpty()) continue;
-            PackageInfo p; p.manager = mgr;
-            p.name    = c.value(0);
-            p.version = c.value(3);   // "name old -> new"
             result << p;
         }
         break;
     }
+    case PkgMgr::Pacman: {
+        // checkupdates (pacman-contrib) syncs into a temporary database — fresh,
+        // no root, and no partial-upgrade risk. Without it: the last sync.
+        const bool fresh = refresh && CommandUtil::commandExists("checkupdates");
+        const QString out = fresh ? CommandUtil::execProgramOutput("checkupdates", {}, 300000)
+                                  : CommandUtil::execProgramOutput("pacman", {"-Qu"}, 30000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const QStringList c = line.split(' ', Qt::SkipEmptyParts);   // "name old -> new"
+            if (c.size() < 4) continue;
+            PackageInfo p; p.manager = mgr;
+            p.name = c.value(0);
+            p.currentVersion = c.value(1);
+            p.version = c.value(3);
+            result << p;
+        }
+        break;
+    }
+    case PkgMgr::Zypper: {
+        // "v | Repository | Name | Current Version | Available Version | Arch"
+        const QString out = CommandUtil::execProgramOutput("zypper", {"--non-interactive", "--no-refresh", "list-updates"}, 120000);
+        for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
+            const QStringList c = line.split('|');
+            if (c.size() < 6 || c.value(0).trimmed() != "v") continue;
+            PackageInfo p; p.manager = mgr;
+            p.name = c.value(2).trimmed();
+            p.currentVersion = c.value(3).trimmed();
+            p.version = c.value(4).trimmed();
+            if (!p.name.isEmpty()) result << p;
+        }
+        break;
+    }
     case PkgMgr::Flatpak: {
-        const QString out = CommandUtil::execProgramOutput("flatpak", {"remote-ls", "--updates", "--columns=application,version"}, 30000);
+        // The ref ("app/org.x.Y/x86_64/stable", "runtime/…") names exactly what
+        // to update; runtimes often have no version, show their branch then.
+        const QString out = CommandUtil::execProgramOutput("flatpak",
+            {"remote-ls", "--updates", "--columns=application,version,branch,ref"}, 120000);
         for (const QString &line : out.split('\n', Qt::SkipEmptyParts)) {
             const QStringList c = line.split('\t');
             PackageInfo p; p.manager = mgr;
             p.name    = c.value(0).trimmed();
             p.version = c.value(1).trimmed();
+            if (p.version.isEmpty()) p.version = c.value(2).trimmed();
+            p.id      = c.value(3).trimmed();
             if (!p.name.isEmpty() && p.name != "Application ID") result << p;
         }
         break;
     }
     case PkgMgr::Snap: {
-        const QString out = CommandUtil::execProgramOutput("snap", {"refresh", "--list"}, 30000);
+        const QString out = CommandUtil::execProgramOutput("snap", {"refresh", "--list"}, 60000);
         const QStringList lines = out.split('\n', Qt::SkipEmptyParts);
         for (int i = 1; i < lines.size(); ++i) {
             const QStringList c = lines[i].split(QRegularExpression("\\s{2,}"), Qt::SkipEmptyParts);

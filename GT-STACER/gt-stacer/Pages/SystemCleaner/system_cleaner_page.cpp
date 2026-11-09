@@ -1,4 +1,5 @@
 #include "system_cleaner_page.h"
+#include "../../Widgets/failure_text.h"
 #include "../../Dialogs/app_cache_dialog.h"
 #include "../../Dialogs/pkg_cache_dialog.h"
 #include "../../Dialogs/universal_apps_dialog.h"
@@ -269,7 +270,7 @@ void SystemCleanerPage::scan()
     m_scanButton->setEnabled(false);
     m_cleanButton->setEnabled(false);
     m_statusLabel->setText(tr("Scanning…"));
-    m_overlay->start(tr("Scanning selected categories…"));
+    m_overlay->start(tr("Looking for junk"), tr("Measuring the selected categories…"));
 
     // Clear any previous sizes from cards not in this scan.
     for (auto &c : m_categories) if (c.card) c.card->setSizeText("");
@@ -450,8 +451,9 @@ void SystemCleanerPage::clean()
     m_scanButton->setEnabled(false);
     m_cleanButton->setEnabled(false);
     m_statusLabel->setText(tr("Cleaning…"));
-    m_overlay->start(makeSnapshot ? tr("Creating a restore point, then cleaning…")
-                                  : tr("Cleaning selected categories…"));
+    m_overlay->start(tr("Cleaning"),
+                     makeSnapshot ? tr("Creating a restore point first, then removing the selected files…")
+                                  : tr("Removing the selected files…"));
 
     auto *watcher = new QFutureWatcher<QVector<QPair<QString, bool>>>(this);
     connect(watcher, &QFutureWatcher<QVector<QPair<QString, bool>>>::finished, this,
@@ -462,8 +464,10 @@ void SystemCleanerPage::clean()
 
         // If a requested restore point failed, we aborted before cleaning.
         if (makeSnapshot && !results.isEmpty() && !results.first().second) {
-            m_statusLabel->setText(tr("Could not create a restore point — nothing was "
-                                      "cleaned. Authorization may have been denied."));
+            const QString why = results.first().first.section(" — ", 1);
+            m_statusLabel->setText(why.isEmpty()
+                ? tr("Could not create a restore point — nothing was cleaned.")
+                : tr("Could not create a restore point — nothing was cleaned. %1").arg(why));
             m_scanButton->setEnabled(true);
             refreshSelectionUi();
             return;
@@ -479,8 +483,8 @@ void SystemCleanerPage::clean()
             m_statusLabel->setText(tr("Cleaning complete — %1 categories processed.").arg(ok));
         else
             m_statusLabel->setText(
-                tr("Cleaned %1, failed %2 (%3). Authorization may have been denied.")
-                    .arg(ok).arg(failed).arg(failedNames.join(", ")));
+                tr("Cleaned %1, failed %2: %3")
+                    .arg(ok).arg(failed).arg(failedNames.join("; ")));
         // Notify on completion so a user who navigated away still learns it's done.
         NotificationTool::notify(tr("System Cleaner — finished"),
             failed == 0 ? tr("Cleaning complete — %1 categories processed.").arg(ok)
@@ -498,14 +502,23 @@ void SystemCleanerPage::clean()
     watcher->setFuture(QtConcurrent::run([this, toClean, makeSnapshot, snapLabel]() {
         QVector<QPair<QString, bool>> out;
         out.reserve(toClean.size() + 1);
+        // On failure, the item's label carries the plain-language reason
+        // (captured here, on the thread that ran the command).
+        auto labelled = [](const QString &name, bool ok) {
+            const QString why = ok ? QString() : FailureText::lastReason();
+            return QPair<QString, bool>(why.isEmpty() ? name : name + " — " + why, ok);
+        };
         if (makeSnapshot) {
+            CommandUtil::clearLastResult();
             const bool snapOk = SnapshotTool::create(
                 QStringLiteral("GT-STACER: before System Cleaner"));
-            out.append({snapLabel, snapOk});
+            out.append(labelled(snapLabel, snapOk));
             if (!snapOk) return out;   // abort — never clean without the safety net
         }
-        for (const auto &c : toClean)
-            out.append({c.name, cleanCategory(c)});
+        for (const auto &c : toClean) {
+            CommandUtil::clearLastResult();
+            out.append(labelled(c.name, cleanCategory(c)));
+        }
         return out;
     }));
 }

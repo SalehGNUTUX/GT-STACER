@@ -1,4 +1,5 @@
 #include "recovery_page.h"
+#include "../../Widgets/failure_text.h"
 #include "../../../gt-stacer-core/Utils/command_util.h"
 #include "../../Widgets/empty_state.h"
 #include "../../Widgets/sidebar_icons.h"
@@ -209,22 +210,42 @@ void RecoveryPage::startRecovery()
     }
 
     m_destUsed = dest;
-    QString prog = "pkexec";
-    QStringList args = QStringList{"photorec"} + RecoveryTool::photorecArgs(src.path, dest, typeIds);
-    CommandUtil::wrapForHost(prog, args);
+    // PhotoRec runs as root, so GT-STACER can't signal it (EPERM) — that is why
+    // Stop did nothing and why a force-closed GT-STACER left PhotoRec running.
+    // The root guard (CommandUtil::guardForStop) stops it when our pipe closes:
+    // on Stop (closeWriteChannel, no second password) or when GT-STACER exits
+    // in any way, even SIGKILL.
+    QString prog = "photorec";
+    QStringList args = RecoveryTool::photorecArgs(src.path, dest, typeIds);
+    CommandUtil::guardForStop(prog, args, /*asRoot=*/true);
+    m_stopRequested = false;
 
     m_proc = new QProcess(this);
     m_proc->setProcessChannelMode(QProcess::MergedChannels);
+    m_procOutput.clear();
     connect(m_proc, &QProcess::readyRead, this, [this]{
-        const QStringList lines = QString::fromUtf8(m_proc->readAll()).split('\n', Qt::SkipEmptyParts);
+        const QString chunk = QString::fromUtf8(m_proc->readAll());
+        m_procOutput = (m_procOutput + chunk).right(20000);   // for explaining a failure
+        const QStringList lines = chunk.split('\n', Qt::SkipEmptyParts);
         if (!lines.isEmpty()) m_status->setText(lines.last().trimmed());
     });
     connect(m_proc, &QProcess::finished, this, [this](int code, QProcess::ExitStatus){
         m_timer->stop();
         const int n = recoveredCount();
-        QString msg = code == 0
+        QString msg = m_stopRequested
+            ? tr("Recovery stopped — %1 file(s) recovered so far in %2").arg(n).arg(m_destUsed)
+            : code == 0
             ? tr("Recovery finished — %1 file(s) recovered to %2").arg(n).arg(m_destUsed)
             : tr("Recovery stopped (exit %1) — %2 file(s) recovered so far").arg(code).arg(n);
+        if (!m_stopRequested && code != 0) {
+            // Why? (cancelled password prompt, PhotoRec missing, disk gone …)
+            CommandResult r;
+            r.program = "photorec"; r.viaPkexec = true; r.started = true;
+            r.exitCode = code; r.output = m_procOutput;
+            const QString why = FailureText::brief(r);
+            if (!why.isEmpty())
+                msg = tr("Recovery did not complete — %1 file(s) recovered.").arg(n) + " " + why;
+        }
         if (m_organize->isChecked() && n > 0) {
             const int org = RecoveryTool::organizeByType(m_destUsed);
             msg += tr("  ·  sorted %1 file(s) into per-type folders").arg(org);
@@ -245,11 +266,58 @@ void RecoveryPage::startRecovery()
 
 void RecoveryPage::cancelRecovery()
 {
-    if (m_proc && m_proc->state() != QProcess::NotRunning) {
-        m_proc->terminate();
-        m_proc->waitForFinished(2000);
-        if (m_proc->state() != QProcess::NotRunning) m_proc->kill();
-    }
+    if (!(m_proc && m_proc->state() != QProcess::NotRunning)) return;
+
+    // Closing our end of the pipe tells the root guard to stop PhotoRec
+    // (see startRecovery). m_proc's finished-handler then tidies up the UI.
+    m_stopRequested = true;
+    m_cancel->setEnabled(false);
+    m_timer->stop();                        // keep the status message visible
+    m_status->setText(tr("Stopping recovery…"));
+    m_proc->closeWriteChannel();
+
+    // PhotoRec normally exits within a second or two. If it doesn't, offer
+    // the hard way: signal it as root (this one may ask for the password).
+    QTimer::singleShot(10000, this, [this]{
+        if (!m_proc || m_proc->state() == QProcess::NotRunning) return;
+        if (QMessageBox::question(this, tr("Recovery"),
+                tr("PhotoRec has not stopped yet. Force it to stop now? "
+                   "You may be asked for your password.")) == QMessageBox::Yes)
+            forceStopRecovery();
+        else
+            m_cancel->setEnabled(true);
+    });
+}
+
+void RecoveryPage::forceStopRecovery()
+{
+    if (!(m_proc && m_proc->state() != QProcess::NotRunning)) return;
+    // pkexec execv()s in place, so m_proc's PID is the root guard shell and
+    // PhotoRec is its child: signal exactly that child, never another
+    // photorec the user runs elsewhere. (The PID can't be recycled: QProcess
+    // hasn't reaped it.) Inside Flatpak the PID is the sandbox's flatpak-spawn
+    // and means nothing on the host, so fall back to the host's photorec.
+    QString prog = "pkexec";
+    QStringList args;
+    if (CommandUtil::inFlatpak())
+        args = {"pkill", "-TERM", "-x", "photorec"};
+    else
+        args = {"pkill", "-TERM", "-P", QString::number(m_proc->processId()), "-x", "photorec"};
+    CommandUtil::wrapForHost(prog, args);   // no-op outside Flatpak
+
+    auto *killer = new QProcess(this);
+    connect(killer, &QProcess::finished, this,
+            [this, killer](int code, QProcess::ExitStatus st) {
+        killer->deleteLater();
+        if (!m_proc || m_proc->state() == QProcess::NotRunning) return;  // stopped
+        if (st != QProcess::NormalExit || code != 0) {
+            // Authorization dismissed/denied (pkexec 126/127) or kill failed.
+            m_cancel->setEnabled(true);
+            m_status->setText(tr("Recovery is still running — stopping it needs "
+                                 "administrator authorization."));
+        }
+    });
+    killer->start(prog, args);
 }
 
 void RecoveryPage::openFolder()

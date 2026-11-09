@@ -2,12 +2,19 @@
 #include "../../Widgets/loading_overlay.h"
 #include "../../Widgets/table_util.h"
 #include "../../Dialogs/command_log_dialog.h"
+#include "../../Dialogs/local_package_dialog.h"
+#include "../../../gt-stacer-core/Tools/local_package_tool.h"
 #include "../../../gt-stacer-core/Tools/package_tool.h"
 #include "../../../gt-stacer-core/Tools/store_addon_tool.h"
 #include "../../../gt-stacer-core/Tools/appimage_tool.h"
 #include "../../../gt-stacer-core/Utils/format_util.h"
 #include "../../../gt-stacer-core/Tools/notification_tool.h"
+#include "../../Managers/setting_manager.h"
 #include <QCheckBox>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QFrame>
+#include <QMimeData>
 #include <QFileDialog>
 #include <QTabWidget>
 #include <QStandardItemModel>
@@ -31,6 +38,9 @@
 #include <QFutureWatcher>
 #include <QtConcurrent/QtConcurrent>
 #include <functional>
+#include <memory>
+#include <QIcon>
+#include <QLocale>
 
 namespace {
 // Managers we can install FROM: the distro's primary system manager plus the
@@ -145,8 +155,8 @@ PackageManagerPage::PackageManagerPage(QWidget *parent) : QWidget(parent)
 
     auto *intro = new QLabel(tr(
         "Install, upgrade and remove software from your system package manager, "
-        "Flatpak and Snap — and manage desktop store add-ons. Changes that touch "
-        "the system ask for your password."));
+        "Flatpak and Snap, install package files you downloaded, and manage desktop "
+        "store add-ons. Changes that touch the system ask for your password."));
     intro->setWordWrap(true);
     intro->setObjectName("introText");
     root->addWidget(intro);
@@ -154,6 +164,7 @@ PackageManagerPage::PackageManagerPage(QWidget *parent) : QWidget(parent)
     m_tabs = new QTabWidget(this);
     m_tabs->addTab(buildInstalledTab(), tr("Installed"));
     m_tabs->addTab(buildSearchTab(),    tr("Search && Install"));
+    m_tabs->addTab(buildLocalTab(),     tr("Local packages"));
     m_tabs->addTab(buildUpgradesTab(),  tr("Upgrades"));
     m_tabs->addTab(buildStoreTab(),     tr("Store add-ons"));
     m_tabs->addTab(buildAppImagesTab(), tr("AppImages"));
@@ -179,6 +190,16 @@ void PackageManagerPage::resizeEvent(QResizeEvent *e)
 
 void PackageManagerPage::changeEvent(QEvent *e) { QWidget::changeEvent(e); }
 
+// The waiting card of the TAB that holds `inside` — a list loading in one tab
+// never blocks the others (the first-visit loads run together at start).
+LoadingOverlay *PackageManagerPage::tabOverlay(QWidget *inside) const
+{
+    QWidget *w = inside;
+    while (w && w->parentWidget() && w->parentWidget()->parentWidget() != m_tabs)
+        w = w->parentWidget();
+    return LoadingOverlay::on(w ? w : const_cast<PackageManagerPage *>(this));
+}
+
 void PackageManagerPage::runOff(const QString &msg, const std::function<void()> &work,
                                 const std::function<void()> &after)
 {
@@ -201,14 +222,16 @@ void PackageManagerPage::runCommands(const QString &title,
 {
     auto *dlg = new CommandLogDialog(title, this);
     for (const auto &s : steps) dlg->addStep(s.first, s.second);
-    connect(dlg, &CommandLogDialog::completed, this, [this, after, title](bool ok){
+    connect(dlg, &CommandLogDialog::completed, this, [this, after, title, dlg](bool ok){
         if (after) after();
         // Signal completion even if the user navigated to another page/section:
         // a desktop notification plus a persistent in-app status line.
         NotificationTool::notify(
             ok ? tr("%1 — finished").arg(title) : tr("%1 — finished with errors").arg(title),
             ok ? tr("The operation completed successfully.")
-               : tr("The operation finished with errors — open the log for details."),
+               : (dlg->failureReason().isEmpty()
+                      ? tr("The operation finished with errors — open the log for details.")
+                      : dlg->failureReason()),
             ok ? NotificationTool::Urgency::Normal : NotificationTool::Urgency::Critical,
             "gt-stacer");
     });
@@ -228,7 +251,7 @@ QWidget *PackageManagerPage::buildInstalledTab()
     m_instSearch->setPlaceholderText(tr("Filter installed packages…"));
     m_instMgr = new QComboBox;
     m_instMgr->addItem(tr("All"), -1);
-    for (PkgMgr m : PackageTool::availableManagers())
+    for (PkgMgr m : PackageTool::listingManagers())   // one per package DB
         m_instMgr->addItem(PackageTool::managerName(m), int(m));
     m_instMgr->addItem(PackageTool::managerName(PkgMgr::Manual), int(PkgMgr::Manual));
     auto *reload = new QPushButton(tr("Reload"));
@@ -276,9 +299,12 @@ void PackageManagerPage::loadInstalled()
 {
     m_instStatus->setText(tr("Loading…"));
     m_instModel->setRowCount(0);
+    tabOverlay(m_instTable)->start(tr("Loading installed packages"),
+                                   tr("Reading the list from every package manager…"));
     auto *w = new QFutureWatcher<QVector<PackageInfo>>(this);
     connect(w, &QFutureWatcher<QVector<PackageInfo>>::finished, this, [this, w]{
         const auto pkgs = w->result(); w->deleteLater();
+        tabOverlay(m_instTable)->stop();
         for (const auto &p : pkgs) {
             QList<QStandardItem*> r;
             r << new QStandardItem(p.name) << new QStandardItem(p.version)
@@ -389,10 +415,13 @@ void PackageManagerPage::runSearch()
     m_srchModel->setRowCount(0);
     m_srchStatus->setText(tr("Searching…"));
     m_srchButton->setEnabled(false);
+    tabOverlay(m_srchTable)->start(tr("Searching for “%1”").arg(q),
+                                   tr("Asking %1…").arg(PackageTool::managerName(mgr)));
 
     auto *w = new QFutureWatcher<QVector<PackageInfo>>(this);
     connect(w, &QFutureWatcher<QVector<PackageInfo>>::finished, this, [this, w]{
         const auto res = w->result(); w->deleteLater();
+        tabOverlay(m_srchTable)->stop();
         for (const auto &p : res) {
             QList<QStandardItem*> r;
             r << new QStandardItem(p.name) << new QStandardItem(p.version) << new QStandardItem(p.description);
@@ -432,7 +461,173 @@ void PackageManagerPage::installSelectedSearch()
         [this]{ m_srchStatus->setText(tr("Done. Check the Installed tab.")); loadInstalled(); });
 }
 
+// ── Local packages tab ────────────────────────────────────────────────────────
+namespace {
+QString kindTr(LocalPkgKind k)
+{
+    switch (k) {
+    case LocalPkgKind::Deb:           return PackageManagerPage::tr("Debian packages (.deb)");
+    case LocalPkgKind::Rpm:           return PackageManagerPage::tr("RPM packages (.rpm)");
+    case LocalPkgKind::Pacman:        return PackageManagerPage::tr("Arch packages (.pkg.tar.zst)");
+    case LocalPkgKind::Apk:           return PackageManagerPage::tr("Alpine packages (.apk)");
+    case LocalPkgKind::Eopkg:         return PackageManagerPage::tr("Solus packages (.eopkg)");
+    case LocalPkgKind::FlatpakBundle: return PackageManagerPage::tr("Flatpak bundles (.flatpak)");
+    case LocalPkgKind::FlatpakRef:    return PackageManagerPage::tr("Flatpak references (.flatpakref)");
+    case LocalPkgKind::Snap:          return PackageManagerPage::tr("Snap packages (.snap)");
+    case LocalPkgKind::AppImage:      return PackageManagerPage::tr("AppImages");
+    default:                          return {};
+    }
+}
+} // namespace
+
+QWidget *PackageManagerPage::buildLocalTab()
+{
+    auto *tab = new QWidget;
+    auto *v = new QVBoxLayout(tab);
+
+    // What this system is and what it can take — detected, not configured.
+    QStringList kinds;
+    for (LocalPkgKind k : LocalPackageTool::supportedKinds()) kinds << kindTr(k);
+    const PkgMgr primary = PackageTool::primaryManager();
+    auto *info = new QLabel(
+        tr("Detected system: <b>%1</b> · package manager: <b>%2</b><br>"
+           "Package files this system can install: %3.")
+            .arg(LocalPackageTool::distroName().toHtmlEscaped(),
+                 primary == PkgMgr::Unknown ? tr("none detected") : PackageTool::managerName(primary),
+                 kinds.join(QStringLiteral(" · "))));
+    info->setWordWrap(true);
+    info->setObjectName("introText");
+    v->addWidget(info);
+
+    // A drop zone with a big "+" — click it, or drop a file on the zone.
+    m_lpDrop = new QFrame;
+    m_lpDrop->setObjectName("localDrop");
+    m_lpDrop->setAcceptDrops(true);
+    m_lpDrop->installEventFilter(this);
+    auto *dz = new QVBoxLayout(m_lpDrop);
+    dz->setContentsMargins(24, 32, 24, 32);
+    dz->setSpacing(12);
+    auto *add = new QPushButton(QStringLiteral("+"));
+    add->setObjectName("localAdd");
+    add->setFixedSize(72, 72);
+    add->setCursor(Qt::PointingHandCursor);
+    add->setToolTip(tr("Choose a package file to install"));
+    auto *title = new QLabel(tr("Choose a package file to install"));
+    title->setObjectName("pkgName");
+    title->setAlignment(Qt::AlignCenter);
+    auto *sub = new QLabel(tr("Click + to browse, or drop a file here. You'll see the package details and "
+                              "its dependencies before anything is installed."));
+    sub->setObjectName("introText");
+    sub->setAlignment(Qt::AlignCenter);
+    sub->setWordWrap(true);
+    dz->addStretch(1);
+    dz->addWidget(add, 0, Qt::AlignHCenter);
+    dz->addWidget(title);
+    dz->addWidget(sub);
+    dz->addStretch(1);
+    v->addWidget(m_lpDrop, 1);
+
+    m_lpStatus = new QLabel;
+    m_lpStatus->setObjectName("infoValue");
+    m_lpStatus->setWordWrap(true);
+    v->addWidget(m_lpStatus);
+
+    connect(add, &QPushButton::clicked, this, &PackageManagerPage::chooseLocalPackage);
+    return tab;
+}
+
+bool PackageManagerPage::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == m_lpDrop) {
+        if (event->type() == QEvent::DragEnter) {
+            auto *e = static_cast<QDragEnterEvent *>(event);
+            const auto urls = e->mimeData()->urls();
+            if (urls.size() == 1 && urls.first().isLocalFile()) { e->acceptProposedAction(); return true; }
+        } else if (event->type() == QEvent::Drop) {
+            auto *e = static_cast<QDropEvent *>(event);
+            const auto urls = e->mimeData()->urls();
+            if (!urls.isEmpty() && urls.first().isLocalFile()) {
+                e->acceptProposedAction();
+                const QString path = urls.first().toLocalFile();
+                QTimer::singleShot(0, this, [this, path]{ openLocalPackage(path); });
+                return true;
+            }
+        }
+    }
+    return QWidget::eventFilter(watched, event);
+}
+
+void PackageManagerPage::chooseLocalPackage()
+{
+    // Filters: everything installable here first, then one per kind, then the
+    // rest (so the user can still pick e.g. an .rpm and be told why it won't go).
+    QStringList filters, allHere;
+    for (LocalPkgKind k : LocalPackageTool::supportedKinds()) {
+        const QStringList pats = LocalPackageTool::patternsFor(k);
+        allHere += pats;
+        filters << QString("%1 (%2)").arg(kindTr(k), pats.join(' '));
+    }
+    filters.prepend(tr("Packages for this system (%1)").arg(allHere.join(' ')));
+    filters << tr("All files (*)");
+    const QString file = QFileDialog::getOpenFileName(this, tr("Choose a package file to install"),
+        QDir::homePath() + "/Downloads", filters.join(";;"));
+    if (!file.isEmpty()) openLocalPackage(file);
+}
+
+void PackageManagerPage::openLocalPackage(const QString &path)
+{
+    m_overlay->start(tr("Reading the package"),
+                     tr("%1 — checking its dependencies…").arg(QFileInfo(path).fileName()));
+    auto *w = new QFutureWatcher<LocalPackageInfo>(this);
+    connect(w, &QFutureWatcher<LocalPackageInfo>::finished, this, [this, w]{
+        const LocalPackageInfo info = w->result();
+        w->deleteLater();
+        m_overlay->stop();
+
+        LocalPackageDialog dlg(info, this);
+        if (dlg.exec() != QDialog::Accepted) {
+            m_lpStatus->setText(tr("Cancelled — nothing was installed."));
+            return;
+        }
+        const QString label = info.name + (info.version.isEmpty() ? QString() : ' ' + info.version);
+
+        if (info.kind == LocalPkgKind::AppImage) {
+            integrateAppImage(info.path, [this, label](bool ok){
+                m_lpStatus->setText(ok ? tr("%1 was integrated — see the AppImages tab and your app menu.").arg(label)
+                                       : tr("%1 could not be integrated.").arg(label));
+            });
+            return;
+        }
+
+        const QStringList optional = dlg.selectedOptional();
+        const auto argvs = LocalPackageTool::installSteps(info, optional);
+        if (argvs.isEmpty()) {
+            m_lpStatus->setText(tr("No install command is available for this package on this system."));
+            return;
+        }
+        QVector<QPair<QString, QStringList>> steps;
+        for (int i = 0; i < argvs.size(); ++i)
+            steps.append({i == 0 ? tr("Install %1").arg(label) : tr("Install the chosen optional dependencies"),
+                          argvs[i]});
+        m_lpStatus->setText(optional.isEmpty()
+            ? tr("Installing %1…").arg(label)
+            : tr("Installing %1 with %2 optional dependenc(ies)…").arg(label).arg(optional.size()));
+        runCommands(tr("Installing %1").arg(label), steps, [this, label]{
+            m_lpStatus->setText(tr("Finished: %1 — check the log for the result.").arg(label));
+            loadInstalled();
+        });
+    });
+    w->setFuture(QtConcurrent::run([path]{ return LocalPackageTool::inspect(path); }));
+}
+
 // ── Upgrades tab ──────────────────────────────────────────────────────────────
+// Every source at once ("All sources") or one; the list shows where each update
+// comes from, and per-source boxes let the user leave a whole source out before
+// anything runs. One command per source (one password per system source).
+namespace {
+constexpr int kUpName = Qt::UserRole, kUpMgr = Qt::UserRole + 1, kUpId = Qt::UserRole + 2;
+}
+
 QWidget *PackageManagerPage::buildUpgradesTab()
 {
     auto *tab = new QWidget;
@@ -440,17 +635,27 @@ QWidget *PackageManagerPage::buildUpgradesTab()
 
     auto *row = new QHBoxLayout;
     m_upMgr = new QComboBox;
+    m_upMgr->addItem(tr("All sources"), -1);
     for (PkgMgr m : installerManagerList())
         m_upMgr->addItem(PackageTool::managerName(m), int(m));
     m_upCheck = new QPushButton(tr("Check for upgrades"));
     m_upCheck->setObjectName("primaryButton");
+    m_upCheck->setToolTip(tr("Refreshes the package lists first (no password where the system allows it), "
+                             "then lists every available update and where it comes from."));
     row->addWidget(m_upMgr);
     row->addWidget(m_upCheck);
     row->addStretch();
     v->addLayout(row);
 
-    m_upModel = new QStandardItemModel(0, 2, this);
-    m_upModel->setHorizontalHeaderLabels({tr("Package"), tr("New version")});
+    // Per-source boxes: untick a source to leave it out of the upgrade.
+    m_upSources = new QWidget;
+    auto *srcLay = new QHBoxLayout(m_upSources);
+    srcLay->setContentsMargins(0, 0, 0, 0);
+    m_upSources->setVisible(false);
+    v->addWidget(m_upSources);
+
+    m_upModel = new QStandardItemModel(0, 4, this);
+    m_upModel->setHorizontalHeaderLabels({tr("Package"), tr("Installed"), tr("New version"), tr("Source")});
     m_upTable = makeTable(m_upModel, QAbstractItemView::ExtendedSelection);
     v->addWidget(m_upTable, 1);
 
@@ -458,80 +663,211 @@ QWidget *PackageManagerPage::buildUpgradesTab()
     auto *selAll = new QCheckBox(tr("Select all"));
     m_upStatus = new QLabel;
     m_upStatus->setObjectName("infoValue");
-    m_upOne = new QPushButton(tr("Upgrade selected"));
-    m_upAll = new QPushButton(tr("Upgrade all"));
+    m_upStatus->setWordWrap(true);
+    m_upAll = new QPushButton(tr("Upgrade…"));
     m_upAll->setObjectName("primaryButton");
+    m_upAll->setToolTip(tr("Upgrade the ticked updates. A summary per source is shown first."));
     m_upAll->setEnabled(false);
     arow->addWidget(selAll);
     arow->addWidget(m_upStatus, 1);
-    arow->addWidget(m_upOne);
     arow->addWidget(m_upAll);
     v->addLayout(arow);
 
-    connect(selAll, &QCheckBox::toggled, this, [this](bool on){ setAllChecked(m_upModel, on); });
-    connect(m_upCheck, &QPushButton::clicked, this, &PackageManagerPage::loadUpgrades);
-    connect(m_upOne,   &QPushButton::clicked, this, &PackageManagerPage::upgradeSelected);
-    connect(m_upAll,   &QPushButton::clicked, this, &PackageManagerPage::upgradeEverything);
-    if (m_upMgr->count() == 0) m_upCheck->setEnabled(false);
+    connect(selAll, &QCheckBox::toggled, this, [this](bool on){
+        m_upSyncing = true; setAllChecked(m_upModel, on); m_upSyncing = false;
+        syncUpgradeSourceBoxes();
+    });
+    connect(m_upModel, &QStandardItemModel::itemChanged, this, [this](QStandardItem *it){
+        if (!m_upSyncing && it && it->column() == 0) syncUpgradeSourceBoxes();
+    });
+    connect(m_upCheck, &QPushButton::clicked, this, [this]{ loadUpgrades(true); });
+    connect(m_upAll,   &QPushButton::clicked, this, &PackageManagerPage::upgradeTicked);
+    if (m_upMgr->count() == 1) m_upCheck->setEnabled(false);   // only "All sources", nothing behind it
     return tab;
 }
 
-void PackageManagerPage::loadUpgrades()
+void PackageManagerPage::loadUpgrades(bool refresh)
 {
-    if (m_upMgr->count() == 0) return;
-    const PkgMgr mgr = PkgMgr(m_upMgr->currentData().toInt());
-    m_upModel->setRowCount(0);
-    m_upStatus->setText(tr("Checking…"));
-    m_upCheck->setEnabled(false);
-    m_upAll->setEnabled(false);
+    if (m_upMgr->count() <= 1) return;
+    const int scope = m_upMgr->currentData().toInt();
+    QVector<PkgMgr> mgrs;
+    if (scope < 0) mgrs = installerManagerList();
+    else mgrs << PkgMgr(scope);
 
-    auto *w = new QFutureWatcher<QVector<PackageInfo>>(this);
-    connect(w, &QFutureWatcher<QVector<PackageInfo>>::finished, this, [this, w]{
-        const auto res = w->result(); w->deleteLater();
-        for (const auto &p : res) {
+    m_upModel->setRowCount(0);
+    m_upSources->setVisible(false);
+    m_upStatus->setText(refresh ? tr("Refreshing the package lists and checking… this can take a minute.")
+                                : tr("Checking…"));
+    m_upCheck->setEnabled(false);
+    m_upMgr->setEnabled(false);
+    m_upAll->setEnabled(false);
+    // A clear sign in the middle of the window while it searches — with the
+    // step it is on (refreshing, then each source in turn).
+    tabOverlay(m_upTable)->start(tr("Looking for updates"),
+                     refresh ? tr("Refreshing the package lists…") : tr("Checking…"));
+
+    struct Found { QVector<PackageInfo> pkgs; QStringList unsupported; };
+    auto *w = new QFutureWatcher<Found>(this);
+    connect(w, &QFutureWatcher<Found>::finished, this, [this, w]{
+        const Found f = w->result(); w->deleteLater();
+        tabOverlay(m_upTable)->stop();
+        m_upSyncing = true;
+        for (const auto &p : f.pkgs) {
             QList<QStandardItem*> r;
-            r << new QStandardItem(p.name) << new QStandardItem(p.version);
-            r[0]->setData(p.name, Qt::UserRole);
-            r[0]->setData(int(p.manager), Qt::UserRole + 1);
+            r << new QStandardItem(p.name)
+              << new QStandardItem(p.currentVersion.isEmpty() ? QStringLiteral("—") : p.currentVersion)
+              << new QStandardItem(p.version)
+              << new QStandardItem(PackageTool::managerName(p.manager));
+            r[0]->setData(p.name, kUpName);
+            r[0]->setData(int(p.manager), kUpMgr);
+            r[0]->setData(p.id.isEmpty() ? p.name : p.id, kUpId);
+            if (!p.id.isEmpty()) r[0]->setToolTip(p.id);
             m_upModel->appendRow(r);
         }
         makeCheckable(m_upModel);
-        m_upStatus->setText(res.isEmpty() ? tr("Everything is up to date.")
-                                          : tr("%1 upgrade(s) available.").arg(res.size()));
+        setAllChecked(m_upModel, true);           // everything ticked: untick what to skip
+        m_upSyncing = false;
+        rebuildUpgradeSources();
+
+        QString msg = f.pkgs.isEmpty() ? tr("Everything is up to date.")
+                                       : tr("%n update(s) available.", nullptr, int(f.pkgs.size()));
+        if (!f.unsupported.isEmpty())
+            msg += " " + tr("Updates can't be listed here for: %1 — use its own tool.").arg(f.unsupported.join(", "));
+        m_upStatus->setText(msg);
         m_upCheck->setEnabled(true);
-        m_upAll->setEnabled(!res.isEmpty());
+        m_upMgr->setEnabled(true);
+        m_upAll->setEnabled(!f.pkgs.isEmpty());
     });
-    w->setFuture(QtConcurrent::run([mgr]{ return PackageTool::upgradable(mgr); }));
+    QPointer<PackageManagerPage> self(this);
+    w->setFuture(QtConcurrent::run([mgrs, refresh, self]{
+        Found f;
+        for (int k = 0; k < mgrs.size(); ++k) {
+            const PkgMgr m = mgrs[k];
+            if (!PackageTool::canListUpgrades(m)) { f.unsupported << PackageTool::managerName(m); continue; }
+            // Tell the overlay which source is being asked (GUI thread).
+            const QString name = PackageTool::managerName(m);
+            const int n = k + 1, total = int(mgrs.size());
+            QMetaObject::invokeMethod(qApp, [self, name, n, total, refresh, m]{
+                if (!self) return;
+                QString step = (refresh && (m == PkgMgr::APT || m == PkgMgr::Pacman))
+                    ? PackageManagerPage::tr("Refreshing %1's package lists, then checking…").arg(name)
+                    : PackageManagerPage::tr("Checking %1…").arg(name);
+                if (total > 1) step += "  " + PackageManagerPage::tr("(%1 of %2)").arg(n).arg(total);
+                self->tabOverlay(self->m_upTable)->setDetail(step);
+            }, Qt::QueuedConnection);
+            f.pkgs += PackageTool::upgradable(m, refresh);
+        }
+        return f;
+    }));
 }
 
-void PackageManagerPage::upgradeSelected()
+void PackageManagerPage::rebuildUpgradeSources()
 {
-    const auto targets = collectTargets(m_upModel, m_upTable, m_upModel);
-    if (targets.isEmpty()) {
-        QMessageBox::information(this, tr("Upgrade selected"),
-            tr("Tick the packages to upgrade (or select a row) first."));
-        return;
+    auto *lay = static_cast<QHBoxLayout *>(m_upSources->layout());
+    while (QLayoutItem *it = lay->takeAt(0)) { delete it->widget(); delete it; }
+    m_upSourceBoxes.clear();
+
+    QMap<int, int> counts;   // keeps the manager order stable (enum order)
+    QVector<int> order;
+    for (int r = 0; r < m_upModel->rowCount(); ++r) {
+        const int mgr = m_upModel->item(r, 0)->data(kUpMgr).toInt();
+        if (!counts.contains(mgr)) order << mgr;
+        ++counts[mgr];
+    }
+    if (order.isEmpty()) { m_upSources->setVisible(false); return; }
+
+    lay->addWidget(new QLabel(tr("Sources:")));
+    for (int mgr : order) {
+        auto *box = new QCheckBox(QStringLiteral("%1 (%2)").arg(PackageTool::managerName(PkgMgr(mgr))).arg(counts[mgr]));
+        box->setChecked(true);
+        box->setToolTip(tr("Untick to leave every update from this source out."));
+        connect(box, &QCheckBox::clicked, this, [this, mgr](bool on){
+            m_upSyncing = true;
+            for (int r = 0; r < m_upModel->rowCount(); ++r)
+                if (m_upModel->item(r, 0)->data(kUpMgr).toInt() == mgr)
+                    m_upModel->item(r, 0)->setCheckState(on ? Qt::Checked : Qt::Unchecked);
+            m_upSyncing = false;
+            syncUpgradeSourceBoxes();
+        });
+        lay->addWidget(box);
+        m_upSourceBoxes.insert(mgr, box);
+    }
+    lay->addStretch();
+    m_upSources->setVisible(true);
+}
+
+void PackageManagerPage::syncUpgradeSourceBoxes()
+{
+    QMap<int, QPair<int, int>> ticked;   // mgr → (ticked, total)
+    for (int r = 0; r < m_upModel->rowCount(); ++r) {
+        QStandardItem *it = m_upModel->item(r, 0);
+        auto &t = ticked[it->data(kUpMgr).toInt()];
+        ++t.second;
+        if (it->checkState() == Qt::Checked) ++t.first;
+    }
+    int anyTicked = 0;
+    for (auto it = m_upSourceBoxes.cbegin(); it != m_upSourceBoxes.cend(); ++it) {
+        const auto t = ticked.value(it.key());
+        anyTicked += t.first;
+        const QSignalBlocker block(it.value());
+        it.value()->setCheckState(t.first == 0 ? Qt::Unchecked
+                                : t.first == t.second ? Qt::Checked : Qt::PartiallyChecked);
+    }
+    m_upAll->setEnabled(anyTicked > 0);
+}
+
+void PackageManagerPage::upgradeTicked()
+{
+    // Ticked updates, grouped by source, in the order the sources appear.
+    QVector<int> order;
+    QMap<int, QStringList> ids;
+    QMap<int, int> total;
+    for (int r = 0; r < m_upModel->rowCount(); ++r) {
+        QStandardItem *it = m_upModel->item(r, 0);
+        const int mgr = it->data(kUpMgr).toInt();
+        if (!total.contains(mgr)) order << mgr;
+        ++total[mgr];
+        if (it->checkState() == Qt::Checked) ids[mgr] << it->data(kUpId).toString();
     }
     QVector<QPair<QString, QStringList>> steps;
-    for (const auto &t : targets)
-        steps.append({tr("Upgrade %1").arg(t.first), PackageTool::upgradeCommand(t.first, t.second)});
-    runCommands(tr("Upgrading %1 package(s)").arg(steps.size()), steps,
-                [this]{ loadUpgrades(); });
-}
-
-void PackageManagerPage::upgradeEverything()
-{
-    if (m_upMgr->count() == 0) return;
-    const PkgMgr mgr = PkgMgr(m_upMgr->currentData().toInt());
-    if (QMessageBox::question(this, tr("Upgrade all"),
-            tr("Upgrade every package with an available update via %1?\n\n"
-               "You will be asked for your password.").arg(PackageTool::managerName(mgr)),
-            QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
+    QStringList summary, withPassword;
+    for (int mgr : order) {
+        const QStringList chosen = ids.value(mgr);
+        if (chosen.isEmpty()) continue;
+        const PkgMgr m = PkgMgr(mgr);
+        const QString name = PackageTool::managerName(m);
+        const bool everything = chosen.size() == total.value(mgr);
+        if (m == PkgMgr::Pacman && !everything) {
+            QMessageBox::warning(this, tr("Upgrade"),
+                tr("Arch Linux (pacman) doesn't support upgrading only some packages — it can leave the "
+                   "system with mismatched libraries. Tick all of its updates, or untick the whole source."));
+            return;
+        }
+        const QStringList cmd = PackageTool::upgradeBatchCommand(m, chosen, everything);
+        if (cmd.isEmpty()) {
+            QMessageBox::warning(this, tr("Upgrade"),
+                tr("The updates from %1 can't be upgraded from here — use its own tool.").arg(name));
+            return;
+        }
+        summary << (everything ? tr("• %1: all %n update(s)", nullptr, int(chosen.size())).arg(name)
+                               : tr("• %1: %2 of %3 updates").arg(name).arg(chosen.size()).arg(total.value(mgr)));
+        if (cmd.first() == "pkexec") withPassword << name;
+        steps.append({everything ? tr("Upgrade everything from %1").arg(name)
+                                 : tr("Upgrade %n package(s) from %1", nullptr, int(chosen.size())).arg(name),
+                      cmd});
+    }
+    if (steps.isEmpty()) {
+        QMessageBox::information(this, tr("Upgrade"), tr("Tick the updates to install first."));
         return;
-    runCommands(tr("Upgrading all packages"),
-                {{tr("Upgrade all packages via %1").arg(PackageTool::managerName(mgr)),
-                  PackageTool::upgradeAllCommand(mgr)}},
-                [this]{ loadUpgrades(); });
+    }
+    QString text = tr("These updates will be installed:\n\n%1").arg(summary.join('\n'));
+    if (!withPassword.isEmpty())
+        text += "\n\n" + tr("Your password will be asked once for each of: %1.").arg(withPassword.join(", "));
+    text += "\n\n" + tr("Changed configuration files you edited yourself are kept. If one source fails, the "
+                        "ones after it are not started.");
+    if (QMessageBox::question(this, tr("Upgrade"), text, QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes)
+        return;
+    runCommands(tr("Upgrading"), steps, [this]{ loadUpgrades(false); });
 }
 
 // ── Store add-ons tab ─────────────────────────────────────────────────────────
@@ -598,9 +934,12 @@ void PackageManagerPage::loadStore()
 {
     m_stStatus->setText(tr("Loading…"));
     m_stModel->setRowCount(0);
+    tabOverlay(m_stTable)->start(tr("Loading store add-ons"),
+                                 tr("Looking for installed themes, icons and widgets…"));
     auto *w = new QFutureWatcher<QVector<StoreAddon>>(this);
     connect(w, &QFutureWatcher<QVector<StoreAddon>>::finished, this, [this, w]{
         const auto items = w->result(); w->deleteLater();
+        tabOverlay(m_stTable)->stop();
         for (const auto &a : items) {
             QList<QStandardItem*> r;
             r << new QStandardItem(a.name) << new QStandardItem(trCategory(a.category))
@@ -740,9 +1079,12 @@ void PackageManagerPage::loadAppImages()
     if (!m_aiStatus) return;
     m_aiStatus->setText(tr("Loading…"));
     m_aiModel->setRowCount(0);
+    tabOverlay(m_aiTable)->start(tr("Loading AppImages"),
+                                 tr("Looking for integrated AppImages…"));
     auto *w = new QFutureWatcher<QVector<AppImageEntry>>(this);
     connect(w, &QFutureWatcher<QVector<AppImageEntry>>::finished, this, [this, w]{
         const auto items = w->result(); w->deleteLater();
+        tabOverlay(m_aiTable)->stop();
         for (const auto &e : items) {
             QList<QStandardItem*> r;
             r << new QStandardItem(e.name)
@@ -752,12 +1094,21 @@ void PackageManagerPage::loadAppImages()
             r[0]->setData(e.appImagePath, Qt::UserRole);
             r[0]->setData(e.desktopPath,  Qt::UserRole + 1);
             r[0]->setData(e.iconPath,     Qt::UserRole + 2);
+            // Show the app's own icon (an extracted file, or an icon-theme name).
+            const QIcon icon = e.iconPath.startsWith('/') ? QIcon(e.iconPath)
+                                                          : QIcon::fromTheme(e.iconPath);
+            if (!icon.isNull()) r[0]->setIcon(icon);
+            r[0]->setToolTip(e.comment.isEmpty() ? e.appImagePath
+                                                 : e.comment + "\n" + e.appImagePath);
             m_aiModel->appendRow(r);
         }
         makeCheckable(m_aiModel);
         m_aiStatus->setText(tr("%1 AppImage(s).").arg(items.size()));
     });
-    w->setFuture(QtConcurrent::run([]{ return AppImageTool::installed(); }));
+    // Localized names ("Name[ar]=…") follow the UI language.
+    const QString locale = SettingManager::instance()->effectiveLanguage() == "ar"
+                         ? QStringLiteral("ar_MA") : QLocale().name();
+    w->setFuture(QtConcurrent::run([locale]{ return AppImageTool::installed(locale); }));
 }
 
 void PackageManagerPage::addAppImage()
@@ -765,11 +1116,27 @@ void PackageManagerPage::addAppImage()
     const QString file = QFileDialog::getOpenFileName(this, tr("Choose an AppImage to integrate"),
         QDir::homePath(), tr("AppImages (*.AppImage *.appimage);;All files (*)"));
     if (file.isEmpty()) return;
+    integrateAppImage(file, nullptr);
+}
+
+void PackageManagerPage::integrateAppImage(const QString &file, const std::function<void(bool)> &done)
+{
+    // Shared by the AppImages tab and the Local packages tab. The result is
+    // reported for real — 26.11 announced success even when integration failed.
+    auto ok  = std::make_shared<bool>(false);
+    auto err = std::make_shared<QString>();
     runOff(tr("Integrating %1…").arg(QFileInfo(file).fileName()),
-        [file]{ AppImageTool::integrate(file); },
-        [this]{
-            m_aiStatus->setText(tr("Integrated — it should now appear in your app menu."));
+        [file, ok, err]{ *ok = AppImageTool::integrate(file, err.get()); },
+        [this, ok, err, file, done]{
+            if (*ok) {
+                m_aiStatus->setText(tr("Integrated — it should now appear in your app menu."));
+            } else {
+                m_aiStatus->setText(tr("Integration failed."));
+                QMessageBox::warning(this, tr("AppImage"),
+                    tr("Could not integrate %1:\n\n%2").arg(QFileInfo(file).fileName(), *err));
+            }
             loadAppImages();
+            if (done) done(*ok);
         });
 }
 

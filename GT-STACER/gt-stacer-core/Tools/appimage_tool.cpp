@@ -1,6 +1,11 @@
 #include "appimage_tool.h"
 #include "../Utils/command_util.h"
+#include "../Utils/desktop_entry.h"
+#include <QCryptographicHash>
+#include <QHash>
+#include <QSaveFile>
 #include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 #include <QSettings>
@@ -49,20 +54,6 @@ bool moveOnIntegration()
     if (g == "true")  return true;
     if (g == "false") return false;
     return false;      // no GearLever → clone, keeping the original
-}
-
-// The Exec target of a launcher, minus field codes / quotes / interpreter prefix.
-QString execTarget(const QString &exec)
-{
-    for (QString t : exec.trimmed().split(' ', Qt::SkipEmptyParts)) {
-        if (t.startsWith('"') || t.startsWith('\'')) t = t.mid(1);
-        if (t.endsWith('"')   || t.endsWith('\''))   t.chop(1);
-        if (t.isEmpty() || t.startsWith('%')) continue;
-        if (t.contains('=') && !t.startsWith('/')) continue;
-        if (t == "env" || t == "sh" || t == "bash" || t == "/usr/bin/env") continue;
-        return t;
-    }
-    return {};
 }
 
 // Byte offset of the squashfs filesystem inside a type-2 AppImage. A type-2
@@ -132,170 +123,376 @@ bool AppImageTool::gearLeverInstalled()
     return out.contains("it.mijorus.gearlever");
 }
 
-QVector<AppImageEntry> AppImageTool::installed()
+
+// ─────────────────────────────────────────────────────────────────────────────
+namespace {
+
+// Follow a symlink chain INSIDE an extraction root. AppImages ship their root
+// .desktop/.DirIcon as symlinks (often absolute, e.g. "/usr/share/…"), which must
+// be re-rooted under `root` — never followed onto the host filesystem.
+QString resolveInside(const QString &root, const QString &path)
+{
+    const QString r = QDir::cleanPath(root);
+    QString cur = QDir::cleanPath(path);
+    for (int hop = 0; hop < 16; ++hop) {
+        if (!cur.startsWith(r + '/')) return {};
+        const QFileInfo fi(cur);
+        if (!fi.isSymLink()) return fi.isFile() ? cur : QString();
+        const QString raw = fi.readSymLink();
+        if (raw.isEmpty()) return {};
+        cur = QDir::cleanPath(QDir::isAbsolutePath(raw) ? r + raw : fi.absolutePath() + '/' + raw);
+    }
+    return {};
+}
+
+// The embedded desktop entry: the root-level *.desktop the AppImage spec
+// requires (usually a symlink), else the first one in usr/share/applications.
+// Returns the resolved file; `id` receives the desktop-file id (basename).
+QString findEmbeddedDesktop(const QString &ex, QString *id)
+{
+    for (const QString &dir : {ex, ex + "/usr/share/applications"}) {
+        const auto list = QDir(dir).entryInfoList({"*.desktop"}, QDir::Files | QDir::System);
+        for (const QFileInfo &fi : list) {
+            const QString real = resolveInside(ex, fi.absoluteFilePath());
+            if (real.isEmpty()) continue;
+            if (id) { *id = fi.fileName(); id->chop(8); }   // strip ".desktop"
+            return real;
+        }
+    }
+    return {};
+}
+
+// Desktop-file-id safe form of a string ([A-Za-z0-9._-]).
+QString sanitizeId(QString s)
+{
+    s.replace(QRegularExpression("[^A-Za-z0-9._-]+"), "_");
+    while (s.startsWith('.') || s.startsWith('-') || s.startsWith('_')) s.remove(0, 1);
+    return s.left(96);
+}
+
+// The file name minus its .AppImage extension, version and arch:
+// "photocraft-0.19.0-linux-x86_64.AppImage" → "photocraft".
+QString stemFromFileName(const QString &fileName)
+{
+    QString b = fileName;
+    b.remove(QRegularExpression("\\.appimage$", QRegularExpression::CaseInsensitiveOption));
+    const QRegularExpression cut("[-_ ](v?\\d|x86_64|amd64|aarch64|arm64|i[3-6]86|armhf|linux)",
+                                 QRegularExpression::CaseInsensitiveOption);
+    const auto m = cut.match(b);
+    if (m.hasMatch() && m.capturedStart() > 0) b = b.left(m.capturedStart());
+    return b;
+}
+
+// The AppImage an existing launcher points at (TryExec, else the Exec program).
+QString launcherTarget(const DesktopEntry &de)
+{
+    const QString tryExec = de.value("TryExec");
+    if (tryExec.endsWith(".appimage", Qt::CaseInsensitive)) return tryExec;
+    const QStringList argv = DesktopEntry::splitExec(de.value("Exec"));
+    const int pi = DesktopEntry::programIndex(argv);
+    if (pi >= 0 && argv[pi].endsWith(".appimage", Qt::CaseInsensitive)) return argv[pi];
+    return {};
+}
+
+// Rewrite an Exec line so its program is `appImage`, keeping any env prefix and
+// every argument / field code after the program (%U, %F, --flags …).
+QString rewriteExec(const QString &exec, const QString &appImage)
+{
+    QStringList argv = DesktopEntry::splitExec(exec);
+    const int pi = DesktopEntry::programIndex(argv);
+    if (pi < 0) argv = {appImage};
+    else        argv[pi] = appImage;
+    QStringList q;
+    for (const QString &a : argv) q << DesktopEntry::quoteExecArg(a);
+    return q.join(' ');
+}
+
+// Pick the best icon in the extraction for `iconRef` (an icon name or path).
+QString findIcon(const QString &ex, const QString &iconRef)
+{
+    // "Icon=" is normally a theme name ("krita"), sometimes a path or "name.png".
+    QString name = iconRef.contains('/') ? QFileInfo(iconRef).fileName() : iconRef;
+    name.remove(QRegularExpression("\\.(png|svg|xpm|jpg)$", QRegularExpression::CaseInsensitiveOption));
+    // 1. Scalable SVG from the hicolor theme.
+    if (!name.isEmpty()) {
+        const QString svg = resolveInside(ex, ex + "/usr/share/icons/hicolor/scalable/apps/" + name + ".svg");
+        if (!svg.isEmpty()) return svg;
+    }
+    // 2. The AppImage's declared icon.
+    const QString dirIcon = resolveInside(ex, ex + "/.DirIcon");
+    if (!dirIcon.isEmpty()) return dirIcon;
+    // 3. The largest hicolor PNG of that name (folders are named NxN).
+    QString best; int bestSize = 0;
+    if (!name.isEmpty()) {
+        QDirIterator it(ex + "/usr/share/icons", {name + ".png"}, QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            const QString f = it.next();
+            const auto m = QRegularExpression("/(\\d+)x\\d+/").match(f);
+            const int sz = m.hasMatch() ? m.captured(1).toInt() : 1;
+            if (sz > bestSize && !resolveInside(ex, f).isEmpty()) { bestSize = sz; best = resolveInside(ex, f); }
+        }
+        if (!best.isEmpty()) return best;
+        // 4. Root-level or pixmaps file of that name.
+        for (const QString &c : {ex + '/' + name + ".png", ex + '/' + name + ".svg",
+                                 ex + "/usr/share/pixmaps/" + name + ".png",
+                                 ex + "/usr/share/pixmaps/" + name + ".svg"}) {
+            const QString r = resolveInside(ex, c);
+            if (!r.isEmpty()) return r;
+        }
+    }
+    // 5. Anything image-like at the root.
+    qint64 bigger = 0;
+    for (const QFileInfo &fi : QDir(ex).entryInfoList({"*.png", "*.svg"}, QDir::Files)) {
+        const QString r = resolveInside(ex, fi.absoluteFilePath());
+        if (!r.isEmpty() && QFileInfo(r).size() > bigger) { bigger = QFileInfo(r).size(); best = r; }
+    }
+    return best;
+}
+
+// Image extension from content (a .DirIcon has none).
+QString imageExtension(const QString &file)
+{
+    QFile probe(file);
+    if (probe.open(QIODevice::ReadOnly)) {
+        const QByteArray head = probe.read(256);
+        if (head.startsWith(QByteArray("\x89PNG", 4))) return "png";
+        if (head.startsWith(QByteArray("\xff\xd8", 2))) return "jpg";
+        if (head.contains("<svg") || head.startsWith("<?xml")) return "svg";
+    }
+    const QString s = QFileInfo(file).suffix().toLower();
+    return (s == "svg" || s == "jpg" || s == "jpeg" || s == "xpm") ? s : QStringLiteral("png");
+}
+
+// Extract the metadata files of an AppImage into `ex` without running it.
+bool extractMetadata(const QString &appImage, const QString &ex, bool withIcons)
+{
+    const qint64 offset = squashfsOffset(appImage);
+    if (offset < 0) return false;
+    QStringList patterns = {"*.desktop", "usr/share/applications/*"};
+    if (withIcons) patterns += {".DirIcon", "*.png", "*.svg",
+                                "usr/share/icons/hicolor/*", "usr/share/pixmaps/*"};
+    safeExtract(appImage, offset, ex, patterns);
+    return QDir(ex).exists();
+}
+
+} // namespace
+
+QString AppImageTool::versionFromFileName(const QString &fileName)
+{
+    static const QRegularExpression rx(
+        "(?:^|[-_ ])v?(\\d+(?:\\.\\d+)+(?:[-+~]?(?:alpha|beta|rc|pre)[.-]?\\d*)?)",
+        QRegularExpression::CaseInsensitiveOption);
+    const auto m = rx.match(fileName);
+    return m.hasMatch() ? m.captured(1) : QString();
+}
+
+QVector<AppImageEntry> AppImageTool::installed(const QString &locale)
 {
     QVector<AppImageEntry> out;
     const QString folder = QDir::cleanPath(managedFolder());
     QDir apps(appsDir());
     if (!apps.exists()) return out;
 
+    QHash<QString, int> byTarget;   // canonical AppImage path → index in out
     for (const QFileInfo &fi : apps.entryInfoList({"*.desktop"}, QDir::Files)) {
-        QSettings d(fi.absoluteFilePath(), QSettings::IniFormat);
-        d.beginGroup("Desktop Entry");
-        const QString exec = d.value("Exec").toString();
-        const QString tryExec = d.value("TryExec").toString();
-        QString target = tryExec.isEmpty() ? execTarget(exec) : tryExec;
-        // Only launchers that point at an actual .AppImage file.
-        if (!target.endsWith(".appimage", Qt::CaseInsensitive)) { d.endGroup(); continue; }
-        if (!QFileInfo::exists(target))                          { d.endGroup(); continue; }
+        const DesktopEntry de = DesktopEntry::read(fi.absoluteFilePath());
+        if (!de.isValid()) continue;
+        const QString target = launcherTarget(de);
+        if (target.isEmpty()) continue;
+        const QFileInfo ti(target);
+        if (!ti.isFile()) continue;                    // stale launcher (file gone)
 
         AppImageEntry e;
-        e.name         = d.value("Name").toString();
-        e.version      = d.value("X-AppImage-Version").toString();
+        e.name         = de.localized("Name", locale);
+        e.version      = de.value("X-AppImage-Version");
+        if (e.version.isEmpty()) e.version = versionFromFileName(ti.fileName());
+        e.comment      = de.localized("Comment", locale);
+        if (e.comment.isEmpty()) e.comment = de.localized("GenericName", locale);
         e.appImagePath = target;
         e.desktopPath  = fi.absoluteFilePath();
-        e.iconPath     = d.value("Icon").toString();
-        e.sizeBytes    = QFileInfo(target).size();
+        e.iconPath     = de.value("Icon");
+        e.sizeBytes    = ti.size();
         e.byGearLever  = QDir::cleanPath(target).startsWith(folder + '/');
-        d.endGroup();
-        if (e.name.isEmpty()) e.name = QFileInfo(target).completeBaseName();
+        if (e.name.isEmpty()) e.name = stemFromFileName(ti.fileName());
+
+        // Several launchers can point at one AppImage (GearLever + the app's own
+        // AppRun, or a leftover) — list the file once, preferring our launcher.
+        const QString key = ti.canonicalFilePath();
+        if (byTarget.contains(key)) {
+            if (de.value("X-GT-STACER-Integrated") == "true") out[byTarget[key]] = e;
+            continue;
+        }
+        byTarget.insert(key, out.size());
         out << e;
     }
     return out;
 }
 
-bool AppImageTool::integrate(const QString &appImagePath)
+AppImageInfo AppImageTool::inspect(const QString &appImagePath)
 {
+    AppImageInfo info;
     const QFileInfo src(appImagePath);
-    if (!src.exists() || !src.isFile()) return false;
+    if (!src.isFile()) { info.error = "File not found."; return info; }
+    if (squashfsOffset(appImagePath) < 0) { info.error = "Not a type-2 AppImage (no ELF runtime)."; return info; }
+    if (!CommandUtil::commandExists("unsquashfs")) {
+        info.error = "unsquashfs (squashfs-tools) is required to read AppImages.";
+        return info;
+    }
+    QTemporaryDir tmp;
+    if (!tmp.isValid()) { info.error = "Could not create a temporary folder."; return info; }
+    const QString ex = tmp.path() + "/x";
+    extractMetadata(appImagePath, ex, false);
+    const QString desktop = findEmbeddedDesktop(ex, &info.desktopId);
+    const DesktopEntry de = DesktopEntry::read(desktop);
+    info.valid      = true;
+    info.name       = de.value("Name");
+    info.comment    = de.value("Comment");
+    if (info.comment.isEmpty()) info.comment = de.value("GenericName");
+    info.categories = de.value("Categories");
+    info.version    = de.value("X-AppImage-Version");
+    if (info.version.isEmpty()) info.version = versionFromFileName(src.fileName());
+    if (info.name.isEmpty()) info.name = stemFromFileName(src.fileName());
+    return info;
+}
 
-    const qint64 offset = squashfsOffset(appImagePath);
-    if (offset < 0) return false;   // not a type-2 AppImage we can read safely
+bool AppImageTool::integrate(const QString &appImagePath, QString *error, QString *launcherOut)
+{
+    auto fail = [error](const QString &why) { if (error) *error = why; return false; };
+
+    const QFileInfo src(appImagePath);
+    if (!src.exists() || !src.isFile()) return fail("File not found.");
+    if (squashfsOffset(appImagePath) < 0)
+        return fail("Not a type-2 AppImage — it can't be read safely without running it.");
+    if (!CommandUtil::commandExists("unsquashfs"))
+        return fail("unsquashfs (package squashfs-tools) is required to integrate AppImages.");
 
     QTemporaryDir tmp;
-    if (!tmp.isValid()) return false;
+    if (!tmp.isValid()) return fail("Could not create a temporary folder.");
     const QString ex = tmp.path() + "/x";
-    // Extract just the metadata files — the root desktop/icon (often symlinks),
-    // their real targets under usr/share, and any pixmaps. No AppImage code runs.
-    safeExtract(appImagePath, offset, ex, {
-        "*.desktop", ".DirIcon", "*.png", "*.svg",
-        "usr/share/applications/*", "usr/share/icons/*", "usr/share/pixmaps/*"});
+    extractMetadata(appImagePath, ex, true);       // no AppImage code runs
 
-    QDir exd(ex);
-    // Find the real .desktop: prefer usr/share/applications, else any *.desktop
-    // that is a regular file with a [Desktop Entry]. (Root entries are symlinks.)
-    QString desktopFile;
-    for (const QString &cand : QStringList{ex + "/usr/share/applications", ex}) {
-        for (const QFileInfo &fi : QDir(cand).entryInfoList({"*.desktop"}, QDir::Files)) {
-            const QString real = fi.isSymLink() ? fi.symLinkTarget() : fi.absoluteFilePath();
-            if (QFileInfo(real).isFile()) { desktopFile = real; break; }
-        }
-        if (!desktopFile.isEmpty()) break;
-    }
+    QString embeddedId;
+    const QString embeddedDesktop = findEmbeddedDesktop(ex, &embeddedId);
+    DesktopEntry de = DesktopEntry::read(embeddedDesktop);
+    if (!de.isValid()) de.set("Type", "Application");
 
-    QString desktopName, iconRef, categories, execArgs;
-    bool terminal = false;
-    if (!desktopFile.isEmpty()) {
-        QSettings d(desktopFile, QSettings::IniFormat);
-        d.beginGroup("Desktop Entry");
-        desktopName = d.value("Name").toString();
-        iconRef     = d.value("Icon").toString();
-        categories  = d.value("Categories").toString();
-        terminal    = d.value("Terminal").toString().compare("true", Qt::CaseInsensitive) == 0;
-        d.endGroup();
-    }
-    if (desktopName.isEmpty()) desktopName = src.completeBaseName();
+    // ── Identity ── the embedded desktop id is the app's real identity (and on
+    // Wayland usually its app_id). Fall back to the file name without version.
+    QString id = sanitizeId(embeddedId);
+    if (id.isEmpty()) id = sanitizeId(stemFromFileName(src.fileName()));
+    if (id.isEmpty())
+        id = "app-" + QString::fromLatin1(QCryptographicHash::hash(
+                 src.fileName().toUtf8(), QCryptographicHash::Sha1).toHex().left(10));
 
-    // GearLever-compatible filenames: lowercased, spaces→underscores.
-    QString base = desktopName.toLower();
-    base.replace(QRegularExpression("[^a-z0-9._+-]+"), "_");
-    if (base.isEmpty()) base = "appimage";
+    QString name = de.value("Name");
+    if (name.isEmpty()) { name = stemFromFileName(src.fileName()); de.set("Name", name); }
+    QString version = de.value("X-AppImage-Version");
+    if (version.isEmpty()) version = versionFromFileName(src.fileName());
 
     const QString folder = managedFolder();
     QDir().mkpath(folder);
     QDir().mkpath(folder + "/.icons");
     QDir().mkpath(appsDir());
 
-    // Move or clone into the folder, honouring GearLever's configured preference.
-    const QString destAppImage = folder + '/' + base + ".AppImage";
-    QFile::remove(destAppImage);
-    bool placed;
-    if (moveOnIntegration()) {
-        placed = QFile::rename(appImagePath, destAppImage);   // move (rename)
-        if (!placed && QFile::copy(appImagePath, destAppImage)) {   // cross-device: copy+delete
-            QFile::remove(appImagePath);
-            placed = true;
-        }
-    } else {
-        placed = QFile::copy(appImagePath, destAppImage);     // clone (keep original)
+    // Launcher name: "appimage-<id>.desktop". The "appimage-" prefix matters: a
+    // user launcher named exactly like a system one (e.g. gt-stacer.desktop)
+    // would SHADOW the distro-installed app in the menu.
+    const QString launcher = appsDir() + "/appimage-" + id + ".desktop";
+
+    // What did a previous integration of this app leave? (update = replace)
+    QStringList oldTargets, oldLaunchers;
+    auto noteOld = [&](const QString &desktopPath) {
+        const DesktopEntry old = DesktopEntry::read(desktopPath);
+        if (!old.isValid() || old.value("X-GT-STACER-Integrated") != "true") return;
+        oldLaunchers << desktopPath;
+        const QString t = launcherTarget(old);
+        if (!t.isEmpty()) oldTargets << QDir::cleanPath(t);
+    };
+    if (QFileInfo::exists(launcher)) noteOld(launcher);
+    {   // 26.11 launchers were named after the lowercased display name.
+        QString legacy = name.toLower();
+        legacy.replace(QRegularExpression("[^a-z0-9._+-]+"), "_");
+        if (!legacy.isEmpty() && QFileInfo::exists(appsDir() + '/' + legacy + ".desktop"))
+            noteOld(appsDir() + '/' + legacy + ".desktop");
     }
-    if (!placed) return false;
+
+    // ── Place the file ── keep its own name; only add the extension if missing.
+    QString fileName = src.fileName();
+    if (!fileName.endsWith(".appimage", Qt::CaseInsensitive)) fileName += ".AppImage";
+    const QString destAppImage = QDir::cleanPath(folder + '/' + fileName);
+    const bool alreadyThere = QFileInfo(destAppImage).exists()
+        && QFileInfo(destAppImage).canonicalFilePath() == src.canonicalFilePath();
+    if (!alreadyThere) {
+        // Write to a temp name first so a failed copy never destroys the old file.
+        const QString part = destAppImage + ".part";
+        QFile::remove(part);
+        bool placed = false;
+        if (moveOnIntegration()) {
+            placed = QFile::rename(appImagePath, part);
+            if (!placed && QFile::copy(appImagePath, part)) placed = true;  // cross-device
+        } else {
+            placed = QFile::copy(appImagePath, part);       // clone (keep original)
+        }
+        if (!placed) { QFile::remove(part); return fail("Could not copy the AppImage into " + folder + "."); }
+        QFile::remove(destAppImage);
+        if (!QFile::rename(part, destAppImage)) return fail("Could not place the AppImage in " + folder + ".");
+        if (moveOnIntegration() && QFileInfo::exists(appImagePath)
+            && QFileInfo(appImagePath).canonicalFilePath() != QFileInfo(destAppImage).canonicalFilePath())
+            QFile::remove(appImagePath);                    // finish a cross-device move
+    }
     QFile::setPermissions(destAppImage, QFileInfo(destAppImage).permissions()
                           | QFileDevice::ExeOwner | QFileDevice::ExeGroup | QFileDevice::ExeOther);
 
-    // Icon: prefer the embedded .DirIcon, else the icon the .desktop names, else
-    // the largest extracted image. Best-effort — a missing icon is not fatal.
-    // The image type is detected from content (the .DirIcon has no extension).
+    // ── Icon ──
     QString destIcon;
-    auto pickIcon = [&](const QString &candidate) -> QString {
-        if (candidate.isEmpty() || !QFileInfo::exists(candidate)) return {};
-        QString extn = "png";
-        QFile probe(candidate);
-        if (probe.open(QIODevice::ReadOnly)) {
-            const QByteArray head = probe.read(64);
-            if      (head.startsWith(QByteArray("\x89PNG", 4))) extn = "png";
-            else if (head.contains("<svg") || head.startsWith("<?xml")) extn = "svg";
-            else if (head.startsWith(QByteArray("\xff\xd8", 2))) extn = "jpg";
-            else {
-                const QString s = QFileInfo(candidate).suffix().toLower();
-                if (s == "png" || s == "svg" || s == "jpg" || s == "jpeg" || s == "xpm") extn = s;
-            }
-        }
-        const QString dst = folder + "/.icons/" + base + '.' + extn;
-        QFile::remove(dst);
-        return QFile::copy(candidate, dst) ? dst : QString();
-    };
-    destIcon = pickIcon(ex + "/.DirIcon");
-    if (destIcon.isEmpty() && !iconRef.isEmpty()) {
-        for (const QString &e : {ex + "/" + iconRef + ".png", ex + "/" + iconRef + ".svg", ex + "/" + iconRef}) {
-            destIcon = pickIcon(e); if (!destIcon.isEmpty()) break;
-        }
-    }
-    if (destIcon.isEmpty()) {  // largest png/svg anywhere in the extraction
-        qint64 best = 0;
-        for (const QFileInfo &fi : exd.entryInfoList({"*.png","*.svg"}, QDir::Files))
-            if (fi.size() > best) { best = fi.size(); destIcon = pickIcon(fi.absoluteFilePath()); }
+    const QString iconSrc = findIcon(ex, de.value("Icon"));
+    if (!iconSrc.isEmpty()) {
+        const QString dst = folder + "/.icons/" + id + '.' + imageExtension(iconSrc);
+        for (const char *ext : {"png", "svg", "jpg", "jpeg", "xpm"})
+            QFile::remove(folder + "/.icons/" + id + '.' + ext);
+        if (QFile::copy(iconSrc, dst)) destIcon = dst;
     }
 
-    // Write the launcher as a proper freedesktop .desktop file. (QSettings is NOT
-    // used here — its IniFormat percent-encodes the "[Desktop Entry]" group name
-    // and quotes values, producing an invalid launcher.) Same fields GearLever
-    // writes, so GearLever recognises the app too.
-    const QString exec = categories.isEmpty()
-        ? QString("\"%1\"").arg(destAppImage)
-        : QString("\"%1\"").arg(destAppImage);
-    QString cats = categories;
-    if (!cats.isEmpty() && !cats.endsWith(';')) cats += ';';
+    // ── Launcher ── the embedded entry carried over, with only the keys that
+    // must point at the installed copy rewritten.
+    de.set("Type", de.value("Type").isEmpty() ? QStringLiteral("Application") : de.value("Type"));
+    de.set("Exec", rewriteExec(de.value("Exec"), destAppImage));
+    de.set("TryExec", destAppImage);
+    de.removeKey("Icon");
+    de.set("Icon", destIcon.isEmpty() ? QStringLiteral("application-x-executable") : destIcon);
+    // DBusActivatable would launch through a D-Bus service that isn't installed;
+    // Hidden means "deleted"; X-AppImage-Integrate=false is advice to *automatic*
+    // integrators — the user asked for this one explicitly.
+    de.removeKey("DBusActivatable");
+    de.removeKey("Hidden");
+    de.removeKey("X-AppImage-Integrate");
+    // Lets the taskbar/dock match the running window to this launcher (its icon
+    // and pinning). Most apps report their desktop id as WM_CLASS / app_id.
+    if (de.value("StartupWMClass").isEmpty() && !embeddedId.isEmpty())
+        de.set("StartupWMClass", embeddedId);
+    de.set("X-AppImage-Version", version);             // GearLever marker key
+    de.set("X-GT-STACER-Integrated", "true");
+    de.set("X-GT-STACER-Id", id);
+    for (auto &g : de.groups())                         // [Desktop Action …] entries
+        if (g.name.startsWith("Desktop Action ") && de.contains("Exec", g.name))
+            de.set("Exec", rewriteExec(de.value("Exec", g.name), destAppImage), g.name);
 
-    QString content = "[Desktop Entry]\n";
-    content += "Type=Application\n";
-    content += "Name=" + desktopName + "\n";
-    content += "Exec=" + exec + "\n";
-    content += "TryExec=" + destAppImage + "\n";
-    content += "Icon=" + (destIcon.isEmpty() ? QStringLiteral("application-x-executable") : destIcon) + "\n";
-    content += QString("Terminal=") + (terminal ? "true" : "false") + "\n";
-    if (!cats.isEmpty()) content += "Categories=" + cats + "\n";
-    content += "X-AppImage-Version=" + QString() + "\n";   // GearLever marker key
-    content += "X-GT-STACER-Integrated=true\n";
+    QSaveFile df(launcher);
+    if (!df.open(QIODevice::WriteOnly)) return fail("Could not write the launcher " + launcher + ".");
+    df.write(de.serialize());
+    if (!df.commit()) return fail("Could not write the launcher " + launcher + ".");
+    QFile::setPermissions(launcher, QFileInfo(launcher).permissions() | QFileDevice::ExeOwner);
 
-    const QString desktopPath = appsDir() + '/' + base + ".desktop";
-    QFile df(desktopPath);
-    if (!df.open(QIODevice::WriteOnly | QIODevice::Truncate)) return false;
-    df.write(content.toUtf8());
-    df.close();
-    QFile::setPermissions(desktopPath, QFileInfo(desktopPath).permissions() | QFileDevice::ExeOwner);
+    // ── Replace the previous version ── only files we integrated, in our folder.
+    const QString cleanFolder = QDir::cleanPath(folder);
+    for (const QString &t : oldTargets)
+        if (t != destAppImage && t.startsWith(cleanFolder + '/') && QFileInfo(t).isFile())
+            QFile::remove(t);
+    for (const QString &l : oldLaunchers)
+        if (QDir::cleanPath(l) != QDir::cleanPath(launcher)) QFile::remove(l);
 
     CommandUtil::execProgram("update-desktop-database", {appsDir()}, 15000);
+    if (launcherOut) *launcherOut = launcher;
     return true;
 }
 
@@ -304,19 +501,31 @@ bool AppImageTool::remove(const AppImageEntry &entry)
     const QString h = QDir::cleanPath(home());
     bool any = false;
 
-    // AppImage file — must be a .AppImage under the user's home.
     const QString ai = QDir::cleanPath(entry.appImagePath);
+    const QString canonical = QFileInfo(ai).canonicalFilePath();
+
+    // Every launcher pointing at this AppImage (ours, GearLever's, the app's own).
+    QStringList launchers;
+    const QString apps = QDir::cleanPath(appsDir());
+    const QString dt = QDir::cleanPath(entry.desktopPath);
+    if (dt.startsWith(apps + '/') && dt.endsWith(".desktop") && QFileInfo(dt).isFile())
+        launchers << dt;
+    if (!canonical.isEmpty())
+        for (const QFileInfo &fi : QDir(apps).entryInfoList({"*.desktop"}, QDir::Files)) {
+            const QString t = launcherTarget(DesktopEntry::read(fi.absoluteFilePath()));
+            if (!t.isEmpty() && QFileInfo(t).canonicalFilePath() == canonical
+                && !launchers.contains(fi.absoluteFilePath()))
+                launchers << fi.absoluteFilePath();
+        }
+
+    // AppImage file — must be a .AppImage under the user's home.
     if (ai.endsWith(".appimage", Qt::CaseInsensitive) && ai.startsWith(h + '/')
         && QFileInfo(ai).isFile())
         any |= QFile::remove(ai);
 
-    // Launcher — must live in the applications dir.
-    const QString dt = QDir::cleanPath(entry.desktopPath);
-    if (dt.startsWith(QDir::cleanPath(appsDir()) + '/') && dt.endsWith(".desktop")
-        && QFileInfo(dt).isFile())
-        QFile::remove(dt);
+    for (const QString &l : launchers) QFile::remove(l);
 
-    // Icon — must be under the managed folder's .icons (or home) and a real file.
+    // Icon — only an extracted one under the user's home (".icons" folder).
     const QString ic = QDir::cleanPath(entry.iconPath);
     if (ic.startsWith(h + '/') && ic.contains("/.icons/") && QFileInfo(ic).isFile())
         QFile::remove(ic);

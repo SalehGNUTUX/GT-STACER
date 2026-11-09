@@ -64,6 +64,9 @@ struct PackageInfo {
     QString size;
     QString arch;
     PkgMgr  manager = PkgMgr::Unknown;
+    QString currentVersion;   // upgradable(): the installed version ("" = unknown)
+    QString id;               // upgradable(): what to pass to the upgrade command
+                              // when it isn't `name` (a Flatpak ref) — "" = name
 
     QString managerName() const;
     QString managerLabel() const;  // Arabic label
@@ -74,6 +77,10 @@ class PackageTool {
 public:
     // ── الكشف ──
     static QVector<PkgMgr> availableManagers();
+    // One entry per package DATABASE (rpm family / pacman family collapsed),
+    // matching the `manager` tag on allPackages() rows — use this to list or
+    // filter installed packages so nothing is shown twice.
+    static QVector<PkgMgr> listingManagers();
     static bool             has(PkgMgr mgr);
     static PkgMgr           primaryManager();        // المدير الرئيسي للتوزيعة
     static QString          managerName(PkgMgr mgr);
@@ -108,7 +115,19 @@ public:
     // Upgrade everything the manager has updates for.
     static bool upgradeAll(PkgMgr mgr);
     // Packages that have a newer version available (name/version = the NEW one).
-    static QVector<PackageInfo> upgradable(PkgMgr mgr);
+    // refresh = bring the package lists up to date first where that needs no
+    // password (APT via PackageKit `pkcon refresh`; Pacman via `checkupdates`,
+    // which syncs into a temporary database) — otherwise the lists on disk
+    // may be days old and "up to date" would be a lie.
+    static QVector<PackageInfo> upgradable(PkgMgr mgr, bool refresh = false);
+    // Can upgradable() list this manager's updates? (Otherwise say so — never
+    // report "up to date" for a manager it can't ask.)
+    static bool canListUpgrades(PkgMgr mgr);
+    // ONE command that upgrades `ids` (everything = the manager's full upgrade,
+    // ids ignored) — one password per source instead of one per package. Empty
+    // = not possible: invalid id, unsupported manager, or a PARTIAL Pacman
+    // upgrade (unsupported on Arch: it can break the system).
+    static QStringList upgradeBatchCommand(PkgMgr mgr, const QStringList &ids, bool everything);
 
     // ── Command builders ──
     // Return the exact argv ({program, arg…}, pkexec-prepended when root is

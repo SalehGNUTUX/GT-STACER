@@ -1,4 +1,5 @@
 #include "per_core_bars.h"
+#include "bidi_text.h"
 #include <QPainter>
 
 PerCoreBars::PerCoreBars(QWidget *parent) : QWidget(parent)
@@ -27,7 +28,7 @@ void PerCoreBars::paintEvent(QPaintEvent *)
 
     if (m_values.isEmpty()) {
         p.setPen(QColor(0x6c, 0x70, 0x86));
-        p.drawText(rect(), Qt::AlignCenter, tr("No per-core data"));
+        p.drawText(rect(), Qt::AlignCenter, Bidi::isolate(tr("No per-core data")));
         return;
     }
 
@@ -55,6 +56,6 @@ void PerCoreBars::paintEvent(QPaintEvent *)
         QString label = QString::number(i);
         p.setPen(QColor(0xa6, 0xad, 0xc8));
         p.drawText(QRectF(cx - slot/2.0, height() - labelH, slot, labelH),
-                   Qt::AlignCenter, label);
+                   Qt::AlignCenter, Bidi::isolate(label));
     }
 }

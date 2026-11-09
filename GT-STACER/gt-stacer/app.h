@@ -25,7 +25,7 @@ public:
     // Dev/website tool: navigate every page and save it as <dir>/<index>.png at
     // the website mockup size. Quits the app when done. Invoked via --capture.
     // onlyPage >= 0 captures just that one page index (e.g. to redo a slow one).
-    void captureAllPages(const QString &dir, int onlyPage = -1);
+    void captureAllPages(const QString &dir, int onlyPage = -1, int onlyTab = -1);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

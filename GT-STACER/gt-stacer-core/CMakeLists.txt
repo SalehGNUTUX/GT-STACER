@@ -24,7 +24,13 @@ add_library(gt-stacer-core STATIC
     Tools/relief_tool.cpp
     Tools/store_addon_tool.cpp
     Tools/appimage_tool.cpp
+    Tools/local_package_tool.cpp
+    Tools/disk_image_tool.cpp
+    Tools/removable_tool.cpp
+    Tools/grub_tool.cpp
     Utils/command_util.cpp
+    Utils/desktop_entry.cpp
+    Utils/command_failure.cpp
     Utils/file_util.cpp
     Utils/format_util.cpp
 )
@@ -35,7 +41,7 @@ target_include_directories(gt-stacer-core
 )
 
 target_link_libraries(gt-stacer-core
-    PUBLIC Qt6::Core Qt6::Network Qt6::Concurrent
+    PUBLIC Qt6::Core Qt6::Network Qt6::Concurrent Qt6::DBus
 )
 
 target_compile_features(gt-stacer-core PUBLIC cxx_std_17)

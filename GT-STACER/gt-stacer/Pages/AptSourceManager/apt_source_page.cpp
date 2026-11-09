@@ -1,4 +1,6 @@
 #include "apt_source_page.h"
+#include "../../Widgets/failure_text.h"
+#include "../../../gt-stacer-core/Utils/command_util.h"
 #include "../../Widgets/table_util.h"
 #include "ui_apt_source_page.h"
 #include "../../Managers/tool_manager.h"
@@ -125,8 +127,10 @@ void AptSourcePage::addSource()
         QMessageBox::warning(this, tr("Invalid"), tr("URI and Suite are required."));
         return;
     }
+    CommandUtil::clearLastResult();
     if (AptSourceTool::add(s)) refresh();
-    else QMessageBox::warning(this, tr("Error"), tr("Could not add source."));
+    else FailureText::show(this, tr("Error"), tr("The source was not added."),
+                           CommandUtil::lastResult());
 }
 
 void AptSourcePage::removeSource()

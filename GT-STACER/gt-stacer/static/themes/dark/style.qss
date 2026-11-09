@@ -394,3 +394,28 @@ QFrame#startupRow:hover  { background: #1f2238; border-color: #45475a; }
 
 /* ── Table row selection (hover already defined above) ── */
 QTableView::item:selected { background: #45475a; color: #cdd6f4; }
+
+/* ── Local package install dialog (26.12) ── */
+#pkgName     { color: #cdd6f4; font-size: 18px; font-weight: bold; }
+#pkgProblem  { color: #f38ba8; background: #311b22; border: 1px solid #f38ba8; border-radius: 6px; padding: 8px; }
+#pkgWarning  { color: #f9e2af; background: #2e2a1f; border: 1px solid #45475a; border-radius: 6px; padding: 8px; }
+#localDrop   { background: #181825; border: 2px dashed #45475a; border-radius: 12px; }
+#localAdd    { background: #89b4fa; color: #11111b; border: none; border-radius: 36px; font-size: 40px; font-weight: bold; }
+#localAdd:hover { background: #b4befe; }
+
+/* Small round "i" (more information) button — 26.12 */
+#infoButton {
+    background-color: transparent;
+    border: 1px solid #89b4fa;
+    border-radius: 11px;
+    color: #89b4fa;
+    font-weight: bold;
+    font-style: italic;
+    min-width: 22px; max-width: 22px;
+    min-height: 22px; max-height: 22px;
+    padding: 0;
+}
+#infoButton:hover {
+    background-color: #89b4fa;
+    color: #1e1e2e;
+}

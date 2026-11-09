@@ -34,12 +34,14 @@ finish-args:
   - --system-talk-name=org.freedesktop.PolicyKit1
   - --system-talk-name=org.freedesktop.systemd1
   - --system-talk-name=org.freedesktop.UPower
+  - --system-talk-name=org.freedesktop.UDisks2          # Helpers: USB & memory cards (26.12)
 
   # Session bus — desktop integration.
   - --talk-name=org.freedesktop.Flatpak               # for flatpak-spawn --host
   - --talk-name=org.freedesktop.Notifications         # desktop alerts
   - --talk-name=org.freedesktop.secrets               # (future, no-op today)
   - --talk-name=org.kde.StatusNotifierWatcher         # tray icon on KDE
+  - --talk-name=org.kde.KWin                          # System Relief: which window is active (26.12)
   # Tray-item names like `org.kde.StatusNotifierItem-PID-SLOT` get registered
   # by the watcher on demand; we don't need to own them explicitly. Older
   # versions of this manifest used `--own-name=org.kde.StatusNotifierItem-*`
