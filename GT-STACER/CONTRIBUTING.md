@@ -276,6 +276,9 @@ with real translations**, not to fix `unfinished` flags.
 > Firewall pages in 26.08), all native in Arabic and English only. Every other
 > language's native share is therefore now lower against the 578-string total
 > until contributors translate the new entries — a great place to start.
+>
+> **v26.12 note.** The UI now has **1566** strings (Helpers tools, upgrades,
+> failure explanations), all native in Arabic and English.
 
 ### Translation conventions
 

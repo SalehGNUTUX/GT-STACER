@@ -6,6 +6,318 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
+## [26.12-stable] — 2026-11-09
+
+A large release: the Helpers page gains native Disk images (ISO mount, CD/DVD
+copy and burn), USB drives and Boot (GRUB) tabs that replace three separate
+tools; System Relief keeps the heaviest app running; Packages gets a reworked
+Upgrades tab across every source; one animated waiting card everywhere; and
+plain-language explanations for every failed command.
+
+### Added
+- **Local packages tab** in the Package & Software Manager: a "+" button (or
+  drag & drop) to install a package FILE. It detects the distribution and its
+  package manager and which file types this system can install (.deb, .rpm,
+  Arch .pkg.tar.*, Alpine .apk, Solus .eopkg, Flatpak bundle/ref, Snap,
+  AppImage), shows the package details, and for .deb / .rpm / pacman packages
+  checks every dependency: already installed, installable from the
+  repositories (version constraint checked against the repo candidate too), or
+  not available. Required dependencies are installed automatically; optional
+  ones (Recommends / Suggests / optdepends) can be ticked — all, some or none.
+- **Plain-language failure explanations everywhere.** A failed command is now
+  classified (password prompt cancelled, not authorized, no polkit agent,
+  program missing, package manager busy, dpkg interrupted, no network, disk
+  full, read-only disk, package not found, broken dependencies, permission
+  denied, timeout) and explained with a suggested fix — in the package log
+  window, notifications, snapshots, home backup, recovery, System Cleaner,
+  Uninstaller, Helpers, Power and APT sources. Replaces guesses such as
+  "authorization declined?".
+- **Backup & Snapshots shows where Timeshift stores restore points** and
+  explains Timeshift settings that can't work (BTRFS mode on a system without
+  the "@" subvolume layout, BTRFS mode pointed at a non-BTRFS disk, snapshot
+  disk not connected), with the fix (Snapper, or RSYNC mode on the system
+  partition).
+- **Helpers is organized into short, clear tabs — System · Disk images ·
+  USB drives · Boot** — the native, safe replacements for the author's
+  separate tools gt-imt, gt-usdr and GT-GMT (reviews of all three in
+  `TOOLS-REVIEW/`). Each tab's details are in its tooltip.
+- **"Disk images" tab** — the
+  native replacement for the GT-IMT tool (see `TOOLS-REVIEW/gt-imt.md`).
+  Mount ISO / UDF / IMG images **without a password** through udisks (like a
+  file manager mounting a USB stick), browse them, and unmount them; a
+  partitioned image (e.g. a Raspberry Pi .img) gets every partition mounted.
+  Drag & drop an image onto the list to mount it. The image type is read from
+  the file's content, so a compressed image (.img.xz …), a VM disk (qcow2,
+  VMDK, VDI, VHD) or an empty/unknown file gets an explanation and the command
+  to convert it, instead of a failed mount. "Busy" on unmount names the
+  programs still using the image. Extract an image into a new folder named
+  after it — ISO with 7z/bsdtar/xorriso, disk images by mounting read-only and
+  copying with rsync — with a progress bar and a Stop button (the copy never
+  outlives GT-STACER), then the image is unmounted again if GT-STACER mounted
+  it. "Replace" overwrites same-name files only, "keep" really skips them; no
+  file in the destination is ever deleted. File names are passed as
+  arguments, never through a shell.
+- **CD / DVD / Blu-ray discs** in the "Disk images" tab: the disc in the drive
+  is recognised (type, label, size — through udisks, since an empty drive
+  reports a fake 1 GB to the kernel) and re-checked every few seconds while
+  the tab is shown. **Save as ISO** copies it into a local `.iso` without a
+  password: exactly the ISO 9660 volume size (no unreadable run-out blocks),
+  progress bar, Stop, written to `.part` and renamed only when complete — a
+  stopped or failed copy never leaves a half image. Free space and FAT32's
+  4 GB limit are checked first. Audio CDs, blank discs, missing read
+  permission (cdrom group), a scratched disc / copy-protected video DVD, and a
+  disc removed mid-copy each get their own explanation. **Open** mounts and
+  opens the disc; **Eject** unmounts it first and names the programs still
+  using it.
+- **Burn ISO** onto a CD / DVD / Blu-ray (xorriso, no password): only on a
+  drive that can write (a read-only DVD-ROM explains itself), only ISO/UDF
+  images (a USB .img is pointed to the USB tab). The disc is checked first —
+  closed or already-written discs are refused with the reason, a written
+  rewritable disc is erased only after an explicit "Erase and burn", and an
+  image larger than the disc is refused before anything is written. Progress
+  bar; Stop asks first (a stopped write-once disc is lost). Afterwards the disc
+  is compared byte-for-byte with the image (on by default); a mismatch, a
+  removed disc, a busy drive, missing permission and write errors each get
+  their own explanation.
+- **"USB drives" tab** (replaces gt-usdr, whose GUI listed every disk except
+  "sda" as external — an NVMe system disk or zram could be formatted). Lists
+  only removable disks (USB, card readers — partitions found from PKNAME, since
+  lsblk prints a flat list for some column sets); a removable disk that holds the
+  system or active swap is shown locked. Through UDisks2 — no password for
+  removable media in a normal session: mount/unmount, **check** (read-only),
+  **repair** (unmounts first, remounts after; names the programs keeping it
+  busy), **format a partition** or **the whole device** (new MBR table + one
+  partition of the right type) with **every filesystem the system can create**
+  (asked from UDisks2: FAT32, exFAT, NTFS, ext4, F2FS, Btrfs, XFS, ext3, ext2,
+  UDF, NILFS2 — missing ones shown with the package to install). A
+  **recommendation for the device** (SD ≤ 32 GB → FAT32/SDHC, SD > 32 GB →
+  exFAT/SDXC, small stick → FAT32, large → exFAT) comes first, and a
+  compatibility card (Windows / macOS / Linux / TVs-cars-cameras / largest
+  file) with warnings for poor choices updates as you pick; filesystems too
+  small for the device are refused, labels are checked per filesystem, and
+  Linux filesystems are created owned by the user (UDisks2 take-ownership). **Health** reads
+  S.M.A.R.T. (with the USB-bridge fallback) and explains plainly that most
+  sticks and cards don't have it. **Surface scan** (read-only badblocks) and
+  **Back up to image** (an image file owned by the user, free-space check,
+  partial image deleted on Stop/failure) run with progress and Stop. Every
+  destructive action re-checks right before it runs that the SAME device
+  (serial + size) is still connected. Plugging/unplugging updates the list.
+- **"Boot" tab** (replaces GT-GMT, whose review found root command injection
+  through settings values, grub-install aimed at the wrong disk, and backups
+  that failed silently). Shows the firmware (BIOS/UEFI, Secure Boot), the boot
+  loader, the boot disk (resolved through partitions/LVM/LUKS) or ESP. Edits
+  the GRUB menu: waiting time, menu display, default entry (by name, read from
+  the real menu, or "remember the last choice"), other operating systems,
+  recovery entries, resolution, kernel parameters, theme (install from a
+  folder or archive). Only the edited keys of /etc/default/grub change — it is
+  a shell script, so every other line stays byte-for-byte and new values are
+  validated and single-quoted. **Every change is one transaction** under one
+  password prompt: restore point → new file → `sh -n` → menu generated into a
+  temporary file → grub-script-check → replace; any failure puts the previous
+  settings back automatically. Restore points can be viewed and restored.
+  "Reinstall GRUB" shows the exact commands first and refuses when the target
+  is ambiguous (several disks) or unsupported (Fedora + UEFI). systemd-boot
+  and rEFInd are shown, not edited.
+- **System Relief is smart about what it freezes.** Automatic relief used to
+  freeze EVERY candidate, including the job doing the work. It now judges
+  activity per app (the whole process tree) and never freezes an app that owns
+  the active window (KWin on KDE — Wayland and X11 — or xprop on X11), is
+  playing sound, holds a sleep inhibitor, is using the CPU or disk, or was
+  active in the last 20 seconds. A frozen app is thawed the moment you switch
+  to it. A new "State" column says why each process is (or isn't) in use.
+- **Smart auto relief: the heaviest app gets the machine.** Sparing every busy
+  app meant that with several busy apps nothing was frozen and the load stayed.
+  Auto relief now picks the **main workload** — the app using the most CPU +
+  disk, with everything it runs in the background (sticky: a challenger must
+  load twice as much to take over, and a short pause doesn't demote it) — and
+  escalates in stages: idle apps first; if the load is still high after another
+  hold period, the busy background apps too. The active window, apps playing
+  sound and apps keeping the system awake are never frozen, and switching to a
+  frozen app thaws it at once. Thawing goes back down step by step, and only
+  once the load is clearly (10 points) below the threshold, so it doesn't
+  oscillate. "Prioritise the heaviest app" (on by default) turns stage 2 off.
+  The State column marks the main workload and explains, per app, what auto
+  relief would do.
+- **Automatic relief is on by default.** With the smarter model above (only
+  idle apps first, the main workload, focused, audio-playing and
+  sleep-inhibiting apps never paused, thresholds at 90 %), it is safe to run
+  for everyone. A choice the user already saved is kept.
+- **"i" next to the BFQ disk-scheduler option** explains what BFQ (Budget Fair
+  Queueing) is, when it helps (HDD, SD, USB, slow SSD) and when it doesn't.
+
+### Fixed
+- **Packages → Upgrades, reworked: every source at once, and a choice of
+  sources before anything runs.** "All sources" (or one: APT, Flatpak, Snap …)
+  first refreshes the package lists — without a password through PackageKit
+  (`pkcon refresh`) or `checkupdates` on Arch — then lists each update with its
+  installed and new version and its source. A box per source ("APT (79)",
+  "Flatpak (1)") leaves a whole source out; single updates can be unticked too.
+  "Upgrade…" shows a summary per source and runs ONE command per source (one
+  password per system source, not one per package); a fully ticked source gets
+  its proper full upgrade. Fixed on the way:
+  - APT ran without a terminal: a "keep your config file?" question could fail
+    or hang the upgrade — now non-interactive, keeping the user's files.
+  - APT "upgrade all" held back updates that need a new dependency (2 of 79
+    here) — now `upgrade --with-new-pkgs` (nothing is removed).
+  - Pacman's "upgrade selected" was a partial upgrade, which can break Arch —
+    refused with an explanation; only the full -Syu.
+  - The lists were not refreshed, so "Everything is up to date" could be days
+    old; and managers it can't ask (XBPS, APK) were reported up to date — now
+    named as such. Zypper updates are listed.
+  - While it searches, a clear animated card sits in the middle of the window
+    (pulse rings, a rotating gradient arc, the current step: "Refreshing
+    APT's package lists, then checking… (1 of 2)").
+- **The loading overlay was redrawn** (every page that uses it: Packages,
+  System Cleaner, Backup, Uninstaller): a centred card with pulse rings, a
+  rotating gradient arc, a breathing core and bouncing dots, fading in; its
+  colours were hard-coded for the dark theme and now follow the theme.
+- **One waiting sign everywhere**: the same card, with a title naming the
+  service and a line for the step, now covers every wait that has no Stop
+  button — Packages (each tab on its own: Installed, Search, Upgrades, Store
+  add-ons, AppImages, reading a local package), Uninstaller, System Cleaner
+  (scan, clean), Backup (list, create, delete, restore), Boot (read the menu,
+  apply, restore, reinstall), Disk images (mount, unmount, open, read / open /
+  eject / check a disc), USB drives (mount, check, repair, health, format),
+  Firewall, and the App cache / Package cache / Flatpak-Snap dialogs. Jobs
+  with progress and Stop (disc copy, burn, extraction, surface scan, PhotoRec,
+  the command log) keep their bar. A wait shorter than 0.15 s shows nothing
+  (no flash); the card follows its tab or dialog's size by itself.
+- *USB "Health" asked for the password twice* on drives behind a USB bridge
+  (smartctl first without, then with `-d sat` — two pkexec calls). Both
+  attempts now run in ONE pkexec, the disk passed as a positional argument.
+- *Firewall froze the whole window* while polkit asked for the password (the
+  ufw / firewall-cmd calls ran on the UI thread) — they now run in the
+  background behind the card.
+- **Boot tab (GRUB): full technical review before first release** (two
+  independent passes, every finding checked against GRUB's own scripts and
+  GT-GMT; transaction and restore scripts tested on copies in 20+ scenarios).
+  Fixed:
+  - *Flatpak would have overwritten /etc/default/grub with a near-empty file*:
+    the sandbox has its own /etc, so the file read as empty. System files are
+    now read through the host, and every write is refused unless the file on
+    disk is byte-for-byte what was read (also catches edits made elsewhere).
+  - The new settings file is copied by root before it is checked and
+    installed (a file in the user's folder could have been swapped in between).
+  - Restore points are put back by root, byte-exact, by their stamp — and now
+    also work when /etc/default/grub is missing or broken; a failure puts the
+    previous file back (or says exactly what happened).
+  - Reinstall on UEFI: only when the firmware confirms GRUB started the
+    computer; refused with Secure Boot on outside Debian/Ubuntu (an unsigned
+    GRUB would not start) and on openSUSE (its own shim tool); Debian/Ubuntu
+    get grub-install's own --bootloader-id (as the packages use), never the
+    fallback "BOOT" or "Microsoft" entry; the dialog shows which loader starts
+    the computer now. A failed grub-install says GRUB may be partly installed.
+  - "Remember the last choice" is disabled where GRUB can't write at boot
+    (btrfs, zfs, LVM, RAID, LUKS — it failed at every boot); on UEFI there the
+    waiting time is also written to GRUB_RECORDFAIL_TIMEOUT, which GRUB uses
+    instead; "wait forever" + hidden menu (a black screen) is refused.
+  - The default entry is stored by its menu id, so it survives kernel
+    updates; titles with apostrophes, line continuations, grub.d files that
+    extend a value, and Fedora BLS entries / kernel parameters
+    (--update-bls-cmdline) are handled. GRUB_SAVEDEFAULT is no longer added on
+    every Apply on Fedora. The GRUB folder follows the tools (grub2-* ↔
+    /boot/grub2). Themes: a same-name theme is restored if Apply fails and
+    replaced only after asking, /usr/share themes are copied where GRUB can
+    read them at boot, "no theme" disables every GRUB_THEME line.
+- **USB tab: "Surface scan" crashed the app with no message** (caught with
+  gdb: `RemovableTab::surfaceScan` → `Disk::title()` → `std::bad_alloc`). It
+  held a reference into the device list, then unmounted and refreshed the list,
+  so the reference pointed at freed memory. "Back up to image" had the same
+  bug (the list can refresh while its save dialog is open). Both now take a
+  copy.
+- **USB tab: after "Surface scan" or "Back up to image" the device stayed
+  unmounted** (unlike Check / Repair). Whatever the job unmounted is mounted
+  again when it ends — finished, failed or stopped; if that fails, the status
+  line says so and how to mount it.
+- **A crash no longer goes unexplained**: the reason (signal or uncaught
+  exception, with its message) and the call stack are written to
+  `~/.config/GNUTUX/gt-stacer/crash.log`, and the next start shows a
+  notification with the file's path. The app's own functions are named in it
+  (linked with `-rdynamic`).
+- **Apps frozen by System Relief stayed frozen after GT-STACER was closed
+  abruptly** (found in testing: 8 apps, spectacle and KDE Connect among them,
+  still stopped hours later). SIGTERM / SIGINT / SIGHUP ended the app without
+  any clean-up, and in Qt 6 `quit()` is cancelled by a window that refuses to
+  close (minimize-to-tray) — so they now end the event loop with `exit()` and
+  every destructor runs (Relief thaws what it froze). For SIGKILL or a crash,
+  the frozen apps are kept in a journal (`~/.cache/gt-stacer/`, PID + process
+  start time, per instance); the next start thaws what a dead instance left
+  frozen — never a recycled PID, never another running instance's — and says
+  so in a notification.
+- **USB stick health showed "the operation failed"** (e.g. Kingston
+  DataTraveler 2.0): smartctl answers a stick without S.M.A.R.T. with exit
+  status 2 ("no IDENTIFY DEVICE structure") — a report, not a failure. It now
+  says plainly that the device doesn't report its health (normal for USB
+  sticks and memory cards) and suggests the surface scan; smartctl's answer is
+  in the details.
+- **Hybrid ISO images didn't mount** ("is not a mountable filesystem" — most
+  Linux installers, e.g. CachyOS): UDisks2 exposes their ISO 9660 filesystem
+  only on the ISO partition, not on the whole device. The ISO/UDF partition is
+  mounted now (then every partition, for images without one); extraction tells
+  7z the image type so a hybrid's partition table is never extracted instead.
+- **Backup & Snapshots didn't notice changes made in Timeshift (or Snapper)**
+  while GT-STACER was open — the engine, location and warnings stayed stale
+  until a restart. The page now watches /etc/timeshift and /etc/snapper
+  (surviving Timeshift's save-by-replace), refreshes the status within a
+  second, clears a snapshot list that belonged to the old location, and also
+  refreshes whenever the page is shown. No password needed.
+- **Arabic text mixed with commands, paths or English names was scrambled**
+  (parentheses and slashes on the wrong side, words out of order, a paragraph
+  starting with an English word laid out left-to-right). Fixed once for the
+  whole app: every label, button, group title, message box and tooltip is
+  bidi-isolated automatically before it is painted, and the custom-painted
+  gauges/charts/cards do the same ("2.79 GB / 7.65 GB", "61.0 °C" on the
+  Dashboard were reversed in Arabic).
+- **ZFS restore said "restores need a reboot" but rolled back immediately**,
+  live. The status now says restores apply immediately, the dialog explains it
+  and lists the newer restore points `zfs rollback -r` deletes, requires an
+  explicit tick, and offers a restart afterwards.
+- **Startup Apps read .desktop files with QSettings**: an Exec with quotes or
+  spaces, a Name with a comma or Categories with ";" were mangled, and every
+  enable/disable rewrote the file keeping only [Desktop Entry] (deleting
+  [Desktop Action …] groups). Now read and written with a real desktop-entry
+  parser, atomically; new entries get a safe file name and never overwrite
+  another entry with the same name.
+- **Pacman packages listed three times** when yay/paru are installed (#1);
+  the installed-package filters now list one entry per package database.
+- **Recovery: Stop did nothing, and PhotoRec kept running after GT-STACER was
+  closed or killed.** PhotoRec runs as root, so our signal was refused. It now
+  runs under a root guard tied to a pipe: Stop (no second password) or
+  GT-STACER exiting in any way — even SIGKILL — stops it.
+- **Home backup kept running after a force-close**, and Stop froze the window.
+  Same guard (rsync), instant stop.
+- **Home backup into a folder inside home copied the backup into itself** on
+  every run (Backups/Backups/…); the destination is now excluded. Choosing home
+  itself or a parent of it (e.g. /home) is refused — in mirror mode it would
+  have deleted the home folder.
+- **Home backup on FAT32 / exFAT / NTFS / SMB** ended in errors and, on FAT,
+  re-copied everything each run. rsync options now follow the destination
+  filesystem (detected, including ntfs-3g behind "fuseblk"); FAT32 skips files
+  ≥ 4 GB. Mirror mode warns clearly before deleting files it didn't create
+  (a marker file identifies GT-STACER backups). rsync exit 24 ("files vanished")
+  is success; exit 23 lists the files that couldn't be copied and why.
+- **Timeshift mode shown wrongly**: GT-STACER read Timeshift's template
+  (default.json) instead of its real settings (timeshift.json), so BTRFS-mode
+  systems showed "rsync" and an unconfigured Timeshift looked configured.
+- **Snapshots reported failure after 5 minutes** while Timeshift carried on;
+  snapshot/restore operations are no longer timed out.
+- **AppImages**: most apps integrated by other tools were missing from the
+  list (a quoted Exec was misread); launchers lost categories, translated
+  names, MIME types, StartupWMClass and actions (so wrong menu section, no
+  "Open with", generic taskbar icon); the file was renamed (non-Latin names all
+  became "_" and overwrote each other); re-integrating a file already in the
+  folder DELETED it; a launcher named like a system app hid the system one;
+  failures were reported as success. The embedded desktop entry is now carried
+  over faithfully and the file keeps its name.
+- GT-STACER's own launcher listed two main categories (could appear twice in
+  menus).
+
+### Security
+- `isSafeIdentifier()` accepted names starting with "-", letting package
+  metadata inject options into root package-manager commands. Rejected now.
+- Desktop entries are parsed with a real freedesktop parser
+  (`Utils/desktop_entry`) instead of QSettings.
+
 ## [26.11.3-stable] — 2026-09-17
 
 A UX-focused point release, from a testing pass on the Package Manager and

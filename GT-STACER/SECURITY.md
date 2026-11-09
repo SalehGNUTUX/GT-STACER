@@ -14,11 +14,12 @@ report it before disclosing.
 
 | Version       | Supported                |
 |---------------|--------------------------|
-| 26.11.3 stable | ✅ current (recommended) |
-| 26.11.2 stable | ⚠️ superseded by 26.11.3  |
-| 26.11.1 stable | ⚠️ superseded              |
-| 26.11 stable  | ⚠️ superseded              |
-| 26.10 stable  | ⚠️ security fixes only    |
+| 26.12 stable  | ✅ current (recommended) |
+| 26.11.3 stable | ⚠️ security fixes only    |
+| 26.11.2 stable | ❌ superseded by 26.11.3  |
+| 26.11.1 stable | ❌ superseded              |
+| 26.11 stable  | ❌ superseded              |
+| 26.10 stable  | ❌ unsupported            |
 | 26.09 stable  | ❌ unsupported            |
 | 26.08 stable  | ❌ unsupported            |
 | 26.07 stable  | ❌ unsupported            |
@@ -26,6 +27,13 @@ report it before disclosing.
 
 We do **not** publish patches for unsupported versions. The fix lands in the
 current branch and the next release.
+
+> **Fixed in 26.12:** `isSafeIdentifier()` accepted names starting with "-",
+> so package metadata could inject options into root package-manager commands
+> — rejected now. The Boot (GRUB) tab replaces the separate GT-GMT tool, whose
+> review found root command injection through settings values: values are
+> validated per key and single-quoted, and every change runs as one checked
+> transaction. Users on 26.11.x should upgrade.
 
 > **Fixed in 26.11:** a command-injection vulnerability in package search — the
 > query was passed to a shell (`sh -c`), so a crafted term could run arbitrary

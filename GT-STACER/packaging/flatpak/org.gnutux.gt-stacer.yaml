@@ -3,6 +3,11 @@ runtime: org.kde.Platform
 runtime-version: '6.9'
 sdk: org.kde.Sdk
 command: gt-stacer
+# No separate debug-info extension is published; without this,
+# flatpak-builder needs eu-strip (elfutils) on the build host.
+build-options:
+  no-debuginfo: true
+  strip: true            # plain binutils strip (no eu-strip needed)
 
 # Privileges. GT-STACER is a system optimiser/monitor that needs broad read
 # access to inspect /proc, /sys, log files, package caches, and so on. The

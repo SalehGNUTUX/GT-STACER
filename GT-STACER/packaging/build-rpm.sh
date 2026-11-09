@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$ROOT_DIR/build-rpm"
 APP_NAME="gt-stacer"
-VERSION="26.11.3"
+VERSION="26.12"
 RELEASE="1"
 ARCH="$(uname -m)"
 
@@ -115,7 +115,7 @@ gtk-update-icon-cache -f %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/icons/hicolor/*/apps/gt-stacer.png
 
 %changelog
-* $(date "+%a %b %d %Y") GNUTUX <gnutux.arabic@gmail.com> - ${VERSION}-${RELEASE}
+* $(LC_ALL=C date "+%a %b %d %Y") GNUTUX <gnutux.arabic@gmail.com> - ${VERSION}-${RELEASE}
 - Initial GT-STACER release based on modernized Stacer fork
 - Qt6, C++17, GPU monitoring, Flatpak support, Temperature sensors
 - Wayland compatible, modern dark/light themes

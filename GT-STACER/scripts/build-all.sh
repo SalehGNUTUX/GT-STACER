@@ -17,7 +17,7 @@ BUILD_DIR="$ROOT_DIR/build"
 RELEASE_DIR="$ROOT_DIR/release"
 APP_NAME="gt-stacer"
 APP_DISPLAY="GT-STACER"
-VERSION="26.11.3"
+VERSION="26.12"
 CHANNEL="stable"
 ARCH="$(uname -m)"
 BUILD_TOOL="Unix Makefiles"
@@ -94,7 +94,6 @@ install_deps() {
         # حزم اختيارية (تجاهل الفشل)
         local QT6_OPT=(
             qt6-l10n-tools
-            libqt6charts6-dev
             libqt6svg6-dev
             libqt6network6-dev
             libqt6concurrent6t64
@@ -163,7 +162,7 @@ install_deps() {
         echo "   - cmake >= 3.24"
         echo "   - g++ أو clang++ (C++17)"
         echo "   - make أو ninja"
-        echo "   - Qt6: base-dev, charts-dev, svg-dev, network"
+        echo "   - Qt6: base-dev, svg-dev, network, dbus"
         echo "   - dpkg-dev أو rpm-build لحزم DEB/RPM"
         ;;
     esac
@@ -271,7 +270,8 @@ check_requirements() {
         local qt_prefix
         qt_prefix="$("$QT6_QMAKE" -query QT_INSTALL_LIBS 2>/dev/null || echo "/usr/lib")"
         local missing_mods=()
-        for mod in Qt6Charts Qt6Svg Qt6Network; do
+        # Qt6Charts is not used since 26.05 (LineChart is hand-painted).
+        for mod in Qt6Svg Qt6Network Qt6DBus Qt6Concurrent; do
             if ! (find "$qt_prefix" /usr/lib -name "${mod}Config.cmake" 2>/dev/null | grep -q .); then
                 if ! pkg-config --exists "$mod" 2>/dev/null; then
                     missing_mods+=("$mod")
@@ -556,7 +556,10 @@ build_rpm() {
 }
 
 _build_rpm_native() {
-    local rpmbase="$BUILD_DIR/rpmbuild"
+    # rpmbuild's own helpers (find-debuginfo, debugedit) break on a path with
+    # spaces — build in a space-free temporary tree.
+    local rpmbase
+    rpmbase="$(mktemp -d "${TMPDIR:-/tmp}/gt-stacer-rpm.XXXXXX")"
     mkdir -p "$rpmbase"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 
     # إنشاء tarball للمصادر
@@ -605,7 +608,7 @@ cmake -B _build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build _build --parallel \$(nproc)
 
 %install
-DESTDIR=%{buildroot} cmake --install _build
+DESTDIR="%{buildroot}" cmake --install _build
 
 %post
 update-desktop-database %{_datadir}/applications &>/dev/null || :
@@ -620,14 +623,16 @@ gtk-update-icon-cache -f %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/gt-stacer
 %{_datadir}/applications/gt-stacer.desktop
 %{_datadir}/icons/hicolor/*/apps/gt-stacer.png
+%{_datadir}/gt-stacer/
 
 %changelog
-* $(date "+%a %b %d %Y") GNUTUX <gnutux.arabic@gmail.com> - ${VERSION}-1
+* $(LC_ALL=C date "+%a %b %d %Y") GNUTUX <gnutux.arabic@gmail.com> - ${VERSION}-1
 - إصدار GT-STACER الأول — Qt6, C++17, GPU, Flatpak, Wayland
 SPEC
 
     if rpmbuild \
         --define "_topdir $rpmbase" \
+        --define "debug_package %{nil}" \
         -bb "$rpmbase/SPECS/${APP_NAME}.spec" 2>&1; then
         local rpm_file
         rpm_file="$(find "$rpmbase/RPMS" -name "*.rpm" | head -1)"

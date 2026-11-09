@@ -90,7 +90,7 @@ int  SettingManager::batteryThresholdPercent() const { return cfg().value("alert
 void SettingManager::setBatteryThresholdPercent(int v){ cfg().setValue("alerts/batteryPercent", v); }
 
 // ── System Relief ───────────────────────────────────────────────────────
-bool SettingManager::reliefAutoMode()        const { return cfg().value("relief/auto", false).toBool(); }
+bool SettingManager::reliefAutoMode()        const { return cfg().value("relief/auto", true).toBool(); }
 void SettingManager::setReliefAutoMode(bool v)     { cfg().setValue("relief/auto", v); }
 
 int  SettingManager::reliefCpuThreshold()    const { return cfg().value("relief/cpuThresh", 90).toInt(); }

@@ -6,11 +6,13 @@ the `YY.MM` rolling-release scheme (matching the website roadmap).
 
 ---
 
-## [26.12] — unreleased (in development)
+## [26.12-stable] — 2026-11-09
 
-Work in progress — not yet packaged or published. Core parts tested against
-real files, processes and loop-device disk images; the GUI builds and renders
-(checked in Arabic/English, dark/light) and needs local testing on real hardware.
+A large release: the Helpers page gains native Disk images (ISO mount, CD/DVD
+copy and burn), USB drives and Boot (GRUB) tabs that replace three separate
+tools; System Relief keeps the heaviest app running; Packages gets a reworked
+Upgrades tab across every source; one animated waiting card everywhere; and
+plain-language explanations for every failed command.
 
 ### Added
 - **Local packages tab** in the Package & Software Manager: a "+" button (or
@@ -136,6 +138,10 @@ real files, processes and loop-device disk images; the GUI builds and renders
   oscillate. "Prioritise the heaviest app" (on by default) turns stage 2 off.
   The State column marks the main workload and explains, per app, what auto
   relief would do.
+- **Automatic relief is on by default.** With the smarter model above (only
+  idle apps first, the main workload, focused, audio-playing and
+  sleep-inhibiting apps never paused, thresholds at 90 %), it is safe to run
+  for everyone. A choice the user already saved is kept.
 - **"i" next to the BFQ disk-scheduler option** explains what BFQ (Budget Fair
   Queueing) is, when it helps (HDD, SD, USB, slow SSD) and when it doesn't.
 

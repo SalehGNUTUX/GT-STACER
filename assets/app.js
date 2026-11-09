@@ -26,9 +26,9 @@
                     comparison_title: 'GT-STACER vs Original Stacer',
                     comparison_subtitle: 'See how far we\'ve come since the original Stacer 1.1.0 (2019).',
                     download_tag: 'Download',
-                    download_title: 'Get GT-STACER 26.11.3 STABLE',
+                    download_title: 'Get GT-STACER 26.12 STABLE',
                     download_subtitle: 'Choose your package format. SHA256 checksums included for verification.',
-                    download_note: 'All downloads are from the 26.11.3 STABLE GitHub release. Verify the SHA256 sums against the page on',
+                    download_note: 'All downloads are from the 26.12 STABLE GitHub release. Verify the SHA256 sums against the page on',
                     footer_made: 'Made with',
                     footer_by: 'by',
                     footer_inspired: 'Inspired by',
@@ -56,7 +56,7 @@
                     pkg_flatpak_desc: 'Sandboxed — runs on any distro with Flatpak',
                     table_header_aspect: 'Aspect',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.11 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.12 (2026)',
                 },
                 ar: {
                     nav_features: 'المزايا',
@@ -78,9 +78,9 @@
                     comparison_title: 'GT-STACER مقارنةً بـ Stacer الأصلي',
                     comparison_subtitle: 'شاهد كم تطوّرنا منذ الإصدار الأصلي Stacer 1.1.0 (2019).',
                     download_tag: 'التنزيل',
-                    download_title: 'حمّل GT-STACER 26.11.3 STABLE',
+                    download_title: 'حمّل GT-STACER 26.12 STABLE',
                     download_subtitle: 'اختر صيغة الحزمة المناسبة. مرفق تجزئة SHA256 للتحقق.',
-                    download_note: 'جميع التنزيلات من إصدار 26.11.3 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
+                    download_note: 'جميع التنزيلات من إصدار 26.12 STABLE على GitHub. للتحقق من سلامة الملفات، طابق تجزئة SHA256 مع',
                     footer_made: 'صُنع بـ',
                     footer_by: 'بواسطة',
                     footer_inspired: 'مستوحى من',
@@ -108,7 +108,7 @@
                     pkg_flatpak_desc: 'معزولة في sandbox — تعمل في أي توزيعة فيها Flatpak',
                     table_header_aspect: 'الجانب',
                     table_header_stacer: 'Stacer 1.1.0 (2019)',
-                    table_header_gtstacer: 'GT-STACER 26.11 (2026)',
+                    table_header_gtstacer: 'GT-STACER 26.12 (2026)',
                 }
             };
 
@@ -184,19 +184,27 @@
                         'In-app self-update — check, download, SHA-256 verify & install',
                         'Security: fixed a command-injection hole in package search',
                       ] },
-                    { ver: 'v26.12', status: 'planned',
-                      title: 'Plugin system',
+                    { ver: 'v26.12 stable', status: 'shipped',
+                      title: 'Disk, USB & boot tools',
                       bullets: [
-                        'Lua/Python plugin API',
-                        'Community plugin registry',
-                        'Sandboxed execution',
+                        'Disk images — mount / extract ISO & disk images, copy a CD/DVD to ISO, burn an ISO with verification',
+                        'USB drives — check, repair, format, SMART health, surface scan, image backup',
+                        'Boot (GRUB) — safe transactional settings & themes with restore points',
+                        'Smarter System Relief, upgrades from every source, plain-language failures',
                       ] },
-                    { ver: 'v27.01', status: 'future',
+                    { ver: 'v27.01', status: 'planned',
                       title: 'Scheduling & automation',
                       bullets: [
                         'Scheduled snapshots & home backups (systemd timers)',
                         'Rules engine for automatic maintenance',
                         'Health report & notifications',
+                      ] },
+                    { ver: 'v27.02', status: 'future',
+                      title: 'Plugin system',
+                      bullets: [
+                        'Lua/Python plugin API',
+                        'Community plugin registry',
+                        'Sandboxed execution',
                       ] },
                 ],
                 ar: [
@@ -268,19 +276,27 @@
                         'تحديث ذاتيّ من داخل البرنامج — فحص وتنزيل وتحقّق SHA-256 وتثبيت',
                         'الأمن: إصلاح ثغرة حقن أوامر في بحث الحزم',
                       ] },
-                    { ver: 'إصدار 26.12', status: 'planned',
-                      title: 'نظام إضافات',
+                    { ver: 'إصدار 26.12 مستقر', status: 'shipped',
+                      title: 'أدوات الأقراص والذاكرة والإقلاع',
                       bullets: [
-                        'واجهة برمجة إضافات بـ Lua/Python',
-                        'سجلّ إضافات مجتمعي',
-                        'تنفيذ معزول (sandbox)',
+                        'صور الأقراص — ضمّ واستخراج ISO وصور الأقراص، نسخ CD/DVD إلى ISO، وحرق ISO مع المطابقة',
+                        'الذاكرة الخارجية — فحص وإصلاح وتهيئة وصحة SMART وفحص السطح ونسخ إلى صورة',
+                        'الإقلاع (GRUB) — إعدادات وسمات بمعاملة آمنة مع نقاط استعادة',
+                        'إنعاش أذكى للنظام، وترقيات من كل المصادر، وشرح واضح لكل فشل',
                       ] },
-                    { ver: 'إصدار 27.01', status: 'future',
+                    { ver: 'إصدار 27.01', status: 'planned',
                       title: 'الجدولة والأتمتة',
                       bullets: [
                         'جدولة اللقطات والنسخ الاحتياطيّ (مؤقّتات systemd)',
                         'محرّك قواعد للصيانة التلقائيّة',
                         'تقرير صحّة النظام وإشعارات',
+                      ] },
+                    { ver: 'إصدار 27.02', status: 'future',
+                      title: 'نظام إضافات',
+                      bullets: [
+                        'واجهة برمجة إضافات بـ Lua/Python',
+                        'سجلّ إضافات مجتمعي',
+                        'تنفيذ معزول (sandbox)',
                       ] },
                 ],
             };
@@ -288,6 +304,15 @@
             // ── Changelog (most-recent first) ───────────────────────
             const changelogData = {
                 en: [
+                    { ver: '26.12 stable', date: '2026-11-09', headline: 'Disk images · USB drives · Boot (GRUB) · smarter System Relief · upgrades from every source',
+                      items: [
+                        'Disk images: mount and extract ISO / disk images (hybrid ISOs too); save a CD / DVD as an identical ISO; burn an ISO onto a disc with verification',
+                        'USB drives: check, repair and format USB sticks and memory cards, SMART health, read-only surface scan, back up to an image — internal disks never shown',
+                        'Boot (GRUB): timeout, default entry, resolution, kernel parameters and themes changed in one checked transaction, with restore points and a safe reinstall',
+                        'System Relief keeps the heaviest app you work with and pauses the others in stages; apps are never left frozen after GT-STACER is closed',
+                        'Packages: upgrades from every source in one list with a choice of sources; install downloaded package files with their dependencies',
+                        'Every failed command explains why; crashes are recorded; one animated waiting card everywhere; Arabic text with commands no longer scrambled',
+                      ] },
                     { ver: '26.11.3 stable', date: '2026-09-17', headline: 'UX release · checkbox selection in tables · live progress-log window with Stop · completion notifications',
                       items: [
                         'Checkbox selection with a Select-all toggle in every action table (Package Manager tabs and the Processes list) — pick items for install / upgrade / remove / kill without holding Ctrl',
@@ -393,6 +418,15 @@
                       ] },
                 ],
                 ar: [
+                    { ver: '26.12 stable', date: '2026-11-09', headline: 'صور الأقراص · الذاكرة الخارجية · الإقلاع (GRUB) · إنعاش أذكى · ترقيات من كل المصادر',
+                      items: [
+                        'صور الأقراص: ضمّ صور ISO وصور الأقراص (والهجينة) واستخراجها؛ حفظ قرص CD / DVD صورةَ ISO مطابقة؛ وحرق ISO على قرص مع المطابقة',
+                        'الذاكرة الخارجية: فحص أقراص USB وبطاقات الذاكرة وإصلاحها وتهيئتها، وصحة SMART، وفحص السطح للقراءة فقط، والنسخ إلى صورة — دون إظهار الأقراص الداخلية',
+                        'الإقلاع (GRUB): مدة الانتظار والمدخل الافتراضي والدقة ومعاملات النواة والسمات بمعاملة واحدة مفحوصة، مع نقاط استعادة وإعادة تثبيت آمنة',
+                        'إنعاش النظام يُبقي التطبيق الأثقل الذي تعمل عليه ويجمّد البقية على مراحل؛ ولا يبقى أي برنامج مجمّداً بعد إغلاق GT-STACER',
+                        'الحزم: ترقيات من كل المصادر في قائمة واحدة مع اختيار المصادر؛ وتثبيت ملفات الحزم المنزّلة مع اعتمادياتها',
+                        'كل أمر يفشل يشرح السبب؛ تسجيل الانهيارات؛ بطاقة انتظار متحرّكة موحّدة؛ ونص عربي سليم مع الأوامر',
+                      ] },
                     { ver: '26.11.3 stable', date: '2026-09-17', headline: 'إصدار تجربة استخدام · خانات تحديد في الجداول · نافذة سجلّ تقدّم حيّة مع إيقاف · إخطارات إتمام',
                       items: [
                         'خانات تحديد (checkbox) مع زرّ «تحديد الكلّ» في كلّ جدول إجراءات (تبويبات مدير الحزم وقائمة العمليّات) — اختر عناصر للتثبيت / الترقية / الإزالة / القتل دون الحاجة لزرّ Ctrl',
@@ -660,6 +694,24 @@
                 descKey: 'Fixed a command-injection vulnerability in package search; every privileged operation runs through validated, no-shell argv via pkexec.',
                 titleAr: 'تحصين أمنيّ',
                 descAr: 'إصلاح ثغرة حقن أوامر في بحث الحزم؛ وكلّ عمليّة مميّزة تمرّ عبر وسائط مُتحقَّق منها بلا صَدفة عبر pkexec.',
+            }, {
+                icon: '💿',
+                titleKey: 'Disk images & discs',
+                descKey: 'Mount and extract ISO and disk images (hybrid ISOs too), save a CD/DVD as an ISO, and burn an ISO onto a disc with verification.',
+                titleAr: 'صور الأقراص والأقراص المدمجة',
+                descAr: 'ضمّ صور ISO وصور الأقراص (والهجينة) واستخراجها، وحفظ قرص CD/DVD صورةَ ISO، وحرق ISO على قرص مع المطابقة.',
+            }, {
+                icon: '🔌',
+                titleKey: 'USB drives',
+                descKey: 'Check, repair and format USB sticks and memory cards, read their SMART health, scan for bad blocks and back them up to an image.',
+                titleAr: 'الذاكرة الخارجية',
+                descAr: 'افحص أقراص USB وبطاقات الذاكرة وأصلحها وهيّئها، واقرأ صحتها، وافحص سطحها، وانسخها إلى صورة.',
+            }, {
+                icon: '🥾',
+                titleKey: 'Boot (GRUB)',
+                descKey: 'Change GRUB settings and themes in one checked transaction — backed up, verified before it is applied, and restorable.',
+                titleAr: 'الإقلاع (GRUB)',
+                descAr: 'عدّل إعدادات GRUB وسماته في معاملة واحدة مفحوصة — مع نسخة احتياطية، وفحص قبل التطبيق، وإمكانية الاستعادة.',
             }, ];
             const comparisonRows = [
                 { aspect: 'Framework', aspectAr: 'إطار العمل',
@@ -683,7 +735,7 @@
                 { aspect: 'Init Systems', aspectAr: 'أنظمة التهيئة',
                   stacer: 'systemd only', stacerAr: 'systemd فقط', gtstacer: 'systemd · OpenRC · runit · s6 · SysV', gtstacerAr: 'systemd · OpenRC · runit · s6 · SysV', stacerIcon: '⚠️', gtstacerIcon: '✅' },
                 { aspect: 'Loading Indicators', aspectAr: 'مؤشّرات التحميل',
-                  stacer: '✗', stacerAr: '✗', gtstacer: 'Animated spinner overlay', gtstacerAr: 'طبقة دوّار متحرّكة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'One animated waiting card naming the task and its step', gtstacerAr: 'بطاقة انتظار متحرّكة موحّدة باسم المهمة وخطوتها', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'System Tray', aspectAr: 'شريط النظام',
                   stacer: 'Tray icon', stacerAr: 'أيقونة شريط', gtstacer: 'Tray + live CPU% / RAM% / temperature tooltip', gtstacerAr: 'شريط + Tooltip حيّ لـ CPU%/RAM%/الحرارة', stacerIcon: '✅', gtstacerIcon: '✅' },
                 { aspect: 'Welcome Screen', aspectAr: 'شاشة الترحيب',
@@ -720,48 +772,54 @@
                   stacer: '✗', stacerAr: '✗', gtstacer: 'GearLever-compatible menu integration (extract without executing)', gtstacerAr: 'دمج في القائمة بأسلوب GearLever (استخراج بلا تشغيل)', stacerIcon: '❌', gtstacerIcon: '✅' },
                 { aspect: 'In-app self-update', aspectAr: 'التحديث الذاتيّ',
                   stacer: '✗', stacerAr: '✗', gtstacer: 'Check + download + SHA-256 verify + install', gtstacerAr: 'فحص + تنزيل + تحقّق SHA-256 + تثبيت', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Disk images & discs', aspectAr: 'صور الأقراص',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Mount / extract ISO · CD/DVD to ISO · burn with verify', gtstacerAr: 'ضمّ/استخراج ISO · نسخ CD/DVD إلى ISO · حرق مع المطابقة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'USB drives', aspectAr: 'الذاكرة الخارجية',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Check · repair · format · SMART · surface scan · image', gtstacerAr: 'فحص · إصلاح · تهيئة · SMART · فحص السطح · صورة', stacerIcon: '❌', gtstacerIcon: '✅' },
+                { aspect: 'Boot (GRUB)', aspectAr: 'الإقلاع (GRUB)',
+                  stacer: '✗', stacerAr: '✗', gtstacer: 'Transactional settings & themes + restore points', gtstacerAr: 'إعدادات وسمات بمعاملة آمنة + نقاط استعادة', stacerIcon: '❌', gtstacerIcon: '✅' },
             ];
 
             // ── Download data ──
-            // GT-STACER 26.11.3 STABLE — published 2026-09-17 at
-            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.11.3_STABLE
+            // GT-STACER 26.12 STABLE — published 2026-11-09 at
+            // https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.12_STABLE
             // NOTE: size + sha256 for each asset are filled after the packages are built.
             const downloadsData = [{
                 id: 'appimage',
                 icon: `<i class=\"fa-brands fa-linux\" style=\"font-size:3.5rem;color:#d29922;\"></i>`,
                 titleKey: 'pkg_appimage',
                 descKey: 'pkg_appimage_desc',
-                size: '52 MB',
-                sha256: 'f261e5be8041186bc37cd7834cfc80c078efe552d68cd380d0cfe74d79e5eddc',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/GT-STACER-26.11.3-x86_64.AppImage',
-                filename: 'GT-STACER-26.11.3-x86_64.AppImage',
+                size: '53 MB',
+                sha256: '91a3fa26be572bad71b8bb26a4a5060935400f778398021eb1d86d91fc341972',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER-26.12-x86_64.AppImage',
+                filename: 'GT-STACER-26.12-x86_64.AppImage',
             }, {
                 id: 'deb',
                 icon: `<i class=\"fa-brands fa-debian\" style=\"font-size:3.5rem;color:#d70751;\"></i>`,
                 titleKey: 'pkg_deb',
                 descKey: 'pkg_deb_desc',
-                size: '2.1 MB',
-                sha256: 'e23c3e61e245baa1b953ac4e7a23015b6c7395b4393273b6f24376fec87522f0',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/GT-STACER_26.11.3_amd64.deb',
-                filename: 'GT-STACER_26.11.3_amd64.deb',
+                size: '2.4 MB',
+                sha256: '712c71b9f5c446a60ba213c9fead4b76b520af4268b7993d88335ebd5853138b',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER_26.12_amd64.deb',
+                filename: 'GT-STACER_26.12_amd64.deb',
             }, {
                 id: 'rpm',
                 icon: `<i class=\"fa-brands fa-redhat\" style=\"font-size:3.5rem;color:#f85149;\"></i>`,
                 titleKey: 'pkg_rpm',
                 descKey: 'pkg_rpm_desc',
-                size: '2.5 MB',
-                sha256: '9aeba8dcb95c67a375310c876e808fd1e595d1886e5d9845523fb5cb2ce32fd7',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/gt-stacer-26.11.3-2.x86_64.rpm',
-                filename: 'gt-stacer-26.11.3-2.x86_64.rpm',
+                size: '2.8 MB',
+                sha256: 'c6ab4700241bf067c94590a9777bcaabbd43ebc9d5d3eaf2e01b3f2a2501cf74',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/gt-stacer-26.12-1.x86_64.rpm',
+                filename: 'gt-stacer-26.12-1.x86_64.rpm',
             }, {
                 id: 'flatpak',
                 icon: `<i class=\"fa-solid fa-cube\" style=\"font-size:3.5rem;color:#4a90d9;\"></i>`,
                 titleKey: 'pkg_flatpak',
                 descKey: 'pkg_flatpak_desc',
-                size: '2.2 MB',
-                sha256: 'cae91ac04d80fce7b66514ec8164464f0c496c67aa0b32a7ecd3da13c0ba0860',
-                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.11.3_STABLE/GT-STACER-26.11.3-x86_64.flatpak',
-                filename: 'GT-STACER-26.11.3-x86_64.flatpak',
+                size: '2.5 MB',
+                sha256: 'c203b3755f11fee809108160c1f9103cf5d8405a069560753d29782c5a9e44c5',
+                url: 'https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER-26.12-x86_64.flatpak',
+                filename: 'GT-STACER-26.12-x86_64.flatpak',
             }, ];
 
             // ── DOM refs ──

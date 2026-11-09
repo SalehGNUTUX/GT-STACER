@@ -8725,63 +8725,92 @@ All privileged operations are authenticated securely via polkit.</source>
         <translation type="vanished">🧭 «الخدمات» صارت تحت «العمليّات» في الشريط الجانبيّ؛ وإصلاحات متفرّقة.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="19" />
         <source>📦 Package &amp; Software Manager — the Uninstaller grows into a full tabbed manager: browse &amp; remove, search &amp; install, and apply upgrades across your system package manager, Flatpak and Snap.</source>
-        <translation>📦 مدير الحزم والبرامج — يتطوّر «إلغاء التثبيت» إلى مدير كامل بتبويبات: تصفّح وإزالة، وبحث وتثبيت، وتطبيق الترقيات عبر مدير حزم نظامك و Flatpak و Snap.</translation>
+        <translation type="vanished">📦 مدير الحزم والبرامج — يتطوّر «إلغاء التثبيت» إلى مدير كامل بتبويبات: تصفّح وإزالة، وبحث وتثبيت، وتطبيق الترقيات عبر مدير حزم نظامك و Flatpak و Snap.</translation>
+    </message>
+    <message>
+        <source>🧩 Store add-ons &amp; AppImages — manage opendesktop.org / KNewStuff content, and integrate AppImages into your menu, GearLever-compatible (metadata read without executing the file).</source>
+        <translation type="vanished">🧩 إضافات المتجر و AppImage — أدر محتوى opendesktop.org / KNewStuff، وادمج ملفّات AppImage في قائمتك بأسلوب GearLever (تُقرأ البيانات الوصفيّة دون تشغيل الملفّ).</translation>
+    </message>
+    <message>
+        <source>🔄 In-app self-update — GT-STACER can check for a newer version, then download, verify (SHA-256) and install it.</source>
+        <translation type="vanished">🔄 تحديث ذاتيّ من داخل البرنامج — يستطيع GT-STACER فحص إصدار أحدث، ثمّ تنزيله والتحقّق منه (SHA-256) وتثبيته.</translation>
+    </message>
+    <message>
+        <source>🔒 Security — fixed a command-injection hole in package search; every privileged operation uses validated, no-shell arguments.</source>
+        <translation type="vanished">🔒 الأمن — أُصلحت ثغرة حقن أوامر في بحث الحزم؛ وكلّ عمليّة مميّزة تستعمل وسائط مُتحقَّقاً منها بلا صَدفة.</translation>
+    </message>
+    <message>
+        <source>⚡ Processes default to busiest-first (CPU %), the tray tooltip shows temperature, and table columns are freely resizable everywhere.</source>
+        <translation type="vanished">⚡ العمليّات تُرتَّب افتراضيّاً بالأنشط أوّلاً (نسبة المعالج)، وتلميح شريط المهام يعرض درجة الحرارة، وأعمدة الجداول قابلة للتحجيم في كلّ مكان.</translation>
+    </message>
+    <message>
+        <source>🛡️ 26.11.1 fixes — the Firewall page now detects ufw/firewalld reliably (sbin on PATH), and the update check understands patch versions (YY.MM.PATCH).</source>
+        <translation type="vanished">🛡️ إصلاحات 26.11.1 — صفحة جدار الحماية تكتشف الآن ufw/firewalld بموثوقيّة (مجلّدات sbin في PATH)، وفحص التحديث يفهم أرقام التصحيح (YY.MM.PATCH).</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="19" />
+        <source>💿 Disk images — mount ISO and disk images (hybrid ISOs too), extract them, and copy a CD/DVD to an ISO file or burn an ISO onto a disc, with verification.</source>
+        <translation>💿 صور الأقراص — ضمّ صور ISO وصور الأقراص (والهجينة أيضاً) واستخراجها، ونسخ قرص CD/DVD إلى ملف ISO أو حرق ISO على قرص مع المطابقة.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="20" />
-        <source>🧩 Store add-ons &amp; AppImages — manage opendesktop.org / KNewStuff content, and integrate AppImages into your menu, GearLever-compatible (metadata read without executing the file).</source>
-        <translation>🧩 إضافات المتجر و AppImage — أدر محتوى opendesktop.org / KNewStuff، وادمج ملفّات AppImage في قائمتك بأسلوب GearLever (تُقرأ البيانات الوصفيّة دون تشغيل الملفّ).</translation>
+        <source>🔌 USB drives — check, repair and format USB sticks and memory cards, read their health, scan the surface for bad blocks, and back them up to an image.</source>
+        <translation>🔌 الذاكرة الخارجية — فحص أقراص USB وبطاقات الذاكرة وإصلاحها وتهيئتها، وقراءة صحتها، وفحص سطحها بحثاً عن الكتل التالفة، ونسخها إلى صورة.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="21" />
-        <source>🔄 In-app self-update — GT-STACER can check for a newer version, then download, verify (SHA-256) and install it.</source>
-        <translation>🔄 تحديث ذاتيّ من داخل البرنامج — يستطيع GT-STACER فحص إصدار أحدث، ثمّ تنزيله والتحقّق منه (SHA-256) وتثبيته.</translation>
+        <source>🥾 Boot (GRUB) — change the boot menu settings and theme safely: every change is checked before it is applied, backed up, and can be restored.</source>
+        <translation>🥾 الإقلاع (GRUB) — تعديل إعدادات قائمة الإقلاع وسمتها بأمان: كل تغيير يُفحص قبل تطبيقه، ويُحفظ احتياطياً، ويمكن استعادته.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="22" />
-        <source>🔒 Security — fixed a command-injection hole in package search; every privileged operation uses validated, no-shell arguments.</source>
-        <translation>🔒 الأمن — أُصلحت ثغرة حقن أوامر في بحث الحزم؛ وكلّ عمليّة مميّزة تستعمل وسائط مُتحقَّقاً منها بلا صَدفة.</translation>
+        <source>⚡ Smarter System Relief — the heaviest app you are working with keeps the machine; the others are paused in stages and resumed when the pressure drops.</source>
+        <translation>⚡ إنعاش أذكى للنظام — التطبيق الأثقل الذي تعمل عليه يحتفظ بموارد الجهاز، وتُجمَّد البقية على مراحل وتُستأنف عندما يخفّ الضغط.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="23" />
-        <source>⚡ Processes default to busiest-first (CPU %), the tray tooltip shows temperature, and table columns are freely resizable everywhere.</source>
-        <translation>⚡ العمليّات تُرتَّب افتراضيّاً بالأنشط أوّلاً (نسبة المعالج)، وتلميح شريط المهام يعرض درجة الحرارة، وأعمدة الجداول قابلة للتحجيم في كلّ مكان.</translation>
+        <source>📦 Upgrades from every source — APT, Flatpak, Snap and more in one list; untick whole sources or single packages before upgrading. Install package files you downloaded, with their dependencies.</source>
+        <translation>📦 الترقيات من كل المصادر — APT وFlatpak وSnap وغيرها في قائمة واحدة؛ ألغِ تحديد مصادر كاملة أو حزم مفردة قبل الترقية. وثبّت ملفات الحزم التي نزّلتها مع اعتمادياتها.</translation>
     </message>
     <message>
         <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="24" />
-        <source>🛡️ 26.11.1 fixes — the Firewall page now detects ufw/firewalld reliably (sbin on PATH), and the update check understands patch versions (YY.MM.PATCH).</source>
-        <translation>🛡️ إصلاحات 26.11.1 — صفحة جدار الحماية تكتشف الآن ufw/firewalld بموثوقيّة (مجلّدات sbin في PATH)، وفحص التحديث يفهم أرقام التصحيح (YY.MM.PATCH).</translation>
+        <source>🩺 Clear explanations — a failed command now says why (password dismissed, missing tool, busy lock …), and a crash is recorded and reported at the next start.</source>
+        <translation>🩺 شرح واضح — كل أمر يفشل يقول السبب الآن (إلغاء كلمة المرور، أداة غير مثبّتة، قفل مشغول…)، ويُسجَّل الانهيار ويُبلَّغ عنه في التشغيل التالي.</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="76" />
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="97" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="25" />
+        <source>✨ One animated waiting card everywhere, naming the task and its current step; Arabic text mixed with commands and paths is no longer scrambled.</source>
+        <translation>✨ بطاقة انتظار متحرّكة واحدة في كل مكان، تذكر المهمة وخطوتها الحالية؛ ولم يعد النص العربي الممزوج بالأوامر والمسارات يتبعثر.</translation>
+    </message>
+    <message>
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="77" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="98" />
         <source>Auto (system language)</source>
         <translation>تلقائيّ (لغة النظام)</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="89" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="90" />
         <source>What's new</source>
         <translation>ما الجديد</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="91" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="92" />
         <source>What's new in GT-STACER %1</source>
         <translation>ما الجديد في GT-STACER %1</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="92" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="93" />
         <source>Thanks for updating. Here's what changed in this release:</source>
         <translation>شكراً للتحديث. إليك ما تغيّر في هذا الإصدار:</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="93" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="94" />
         <source>&lt;a href="https://github.com/SalehGNUTUX/GT-STACER/blob/main/CHANGELOG.md"&gt;View full changelog&lt;/a&gt;</source>
         <translation>&lt;a href="https://github.com/SalehGNUTUX/GT-STACER/blob/main/CHANGELOG.md"&gt;عرض السجلّ الكامل&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="95" />
+        <location filename="../gt-stacer/Dialogs/whats_new_dialog.cpp" line="96" />
         <source>Got it</source>
         <translation>فهمت</translation>
     </message>

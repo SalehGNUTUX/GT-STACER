@@ -16,12 +16,13 @@ namespace {
 QStringList highlights()
 {
     return {
-        WhatsNewDialog::tr("📦 Package & Software Manager — the Uninstaller grows into a full tabbed manager: browse & remove, search & install, and apply upgrades across your system package manager, Flatpak and Snap."),
-        WhatsNewDialog::tr("🧩 Store add-ons & AppImages — manage opendesktop.org / KNewStuff content, and integrate AppImages into your menu, GearLever-compatible (metadata read without executing the file)."),
-        WhatsNewDialog::tr("🔄 In-app self-update — GT-STACER can check for a newer version, then download, verify (SHA-256) and install it."),
-        WhatsNewDialog::tr("🔒 Security — fixed a command-injection hole in package search; every privileged operation uses validated, no-shell arguments."),
-        WhatsNewDialog::tr("⚡ Processes default to busiest-first (CPU %), the tray tooltip shows temperature, and table columns are freely resizable everywhere."),
-        WhatsNewDialog::tr("🛡️ 26.11.1 fixes — the Firewall page now detects ufw/firewalld reliably (sbin on PATH), and the update check understands patch versions (YY.MM.PATCH)."),
+        WhatsNewDialog::tr("💿 Disk images — mount ISO and disk images (hybrid ISOs too), extract them, and copy a CD/DVD to an ISO file or burn an ISO onto a disc, with verification."),
+        WhatsNewDialog::tr("🔌 USB drives — check, repair and format USB sticks and memory cards, read their health, scan the surface for bad blocks, and back them up to an image."),
+        WhatsNewDialog::tr("🥾 Boot (GRUB) — change the boot menu settings and theme safely: every change is checked before it is applied, backed up, and can be restored."),
+        WhatsNewDialog::tr("⚡ Smarter System Relief — the heaviest app you are working with keeps the machine; the others are paused in stages and resumed when the pressure drops."),
+        WhatsNewDialog::tr("📦 Upgrades from every source — APT, Flatpak, Snap and more in one list; untick whole sources or single packages before upgrading. Install package files you downloaded, with their dependencies."),
+        WhatsNewDialog::tr("🩺 Clear explanations — a failed command now says why (password dismissed, missing tool, busy lock …), and a crash is recorded and reported at the next start."),
+        WhatsNewDialog::tr("✨ One animated waiting card everywhere, naming the task and its current step; Arabic text mixed with commands and paths is no longer scrambled."),
     };
 }
 }

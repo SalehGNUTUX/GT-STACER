@@ -7,7 +7,7 @@
 ### Linux System Optimizer and Monitor
 **محسّن ومراقب نظام لينكس**
 
-[![Version](https://img.shields.io/badge/version-26.11.3--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
+[![Version](https://img.shields.io/badge/version-26.12--stable-green?style=flat-square)](https://github.com/SalehGNUTUX/GT-STACER/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v3-green?style=flat-square)](LICENSE)
 [![Qt](https://img.shields.io/badge/Qt-6.2+-41CD52?style=flat-square&logo=qt&logoColor=white)](https://www.qt.io)
 [![C++](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B&logoColor=white)](https://isocpp.org)
@@ -18,15 +18,15 @@
 
 </div>
 
-> ## 🎉 ما الجديد في 26.11 stable
+> ## 🎉 ما الجديد في 26.12 stable
 >
-> - 📦 **مدير الحزم و البرامج (تطوير لقسم «إلغاء التثبيت»)** — صفحة بتبويبات احترافيّة: **المثبَّتة** (تصفّح وإزالة عبر كلّ مدير مكتشَف)، و**البحث والتثبيت** (ابحث في مدير نظامك / Flatpak / Snap وثبِّت)، و**الترقيات** (سرد التحديثات المتاحة وتطبيقها)، و**إضافات المتجر** (إدارة محتوى opendesktop.org / KNewStuff — سمات وأيقونات وودجات… — والتثبيت عبر روابط `ocs-url`)، و**AppImage**.
-> - 🧩 **تكامل AppImage بأسلوب GearLever** — ادمج ملفّ AppImage في قائمة تطبيقاتك بنقرة؛ يستعمل GT-STACER **نفس مجلّد وصيغة مُشغِّلات GearLever** (`it.mijorus.gearlever`) ويحترم إعداداته (مجلّدك المخصَّص، النقل مقابل النسخ)، فتظهر البرامج المدموجة من أيّ الأداتين في كلتيهما بلا تكرار. تُستخرَج الأيقونة والاسم **دون تشغيل ملفّ AppImage** (قراءة `unsquashfs` آمنة عند إزاحة squashfs).
-> - 🔄 **تحديث ذاتيّ من داخل البرنامج** — يفحص GT-STACER إصداراً أحدث عند الإقلاع (مفعَّل افتراضيّاً) ويستطيع **التنزيل والتحقّق (SHA-256) والتثبيت** بنفسه — يستبدل ملفّ AppImage، أو يُسلِّم `.deb`/`.rpm` لمدير حزمك عبر `pkexec`. أمّا فحص تحديثات **الحزم** فيبقى يدويّاً. لا شيء يُنزَّل أو يُثبَّت دون نقرتك.
-> - 🔒 **تحصين أمنيّ** — أُصلحت ثغرة **حقن أوامر** حقيقيّة: كان البحث عن الحزم يمرّر كلمتك لصَدفة (`sh -c`)، فقد يُنفِّذ حدٌّ مُصاغ بخبث أوامر عشوائيّة. صار الآن يُمرَّر كوسائط (بلا صَدفة) ويُتحقَّق منه. وكلّ مسار تثبيت/ترقية/إزالة جديد يمرّ عبر `execProgram` بأسماء مُتحقَّق منها.
-> - ⚡ **العمليّات: الأنشط أوّلاً** — تُرتَّب قائمة العمليّات افتراضيّاً بـ**نسبة المعالج تنازليّاً** (وترتيب رقميّ حيّ)، فترى مَن يُرهق الجهاز لحظةَ فتحك القسم بلا نقر على أيّ عمود.
-> - 🌡️ **درجة الحرارة في تلميح شريط المهام** — يعرض التلميح الآن درجة حرارة المعالج/الجهاز إلى جانب نسبتَي المعالج والذاكرة.
-> - 🖱️ **أعمدة جداول قابلة للتحجيم في كلّ الأقسام** — صارت حدود الأعمدة واضحةً وسهلة السحب في كلّ جدول (والعمود الأساسيّ يبقى يملأ العرض).
+> - 💿 **صور الأقراص** — ضمّ صور ISO وIMG وصور الأقراص (والهجينة كصور التوزيعات أيضاً) بالسحب والإفلات واستخراج محتواها؛ وكشف **الأقراص المدمجة CD/DVD/Blu-ray** في القارئ وحفظها **صورةَ ISO** مطابقة، وفتحها وإخراجها، و**حرق ISO على قرص** مع المطابقة بعد الحرق.
+> - 🔌 **الذاكرة الخارجية** — أقراص USB وبطاقات الذاكرة: ضمّ وفصل، فحص نظام الملفات وإصلاحه، **التهيئة** (FAT32 / exFAT / NTFS / ext4…)، **تقرير الصحة** (SMART)، **فحص السطح** بحثاً عن الكتل التالفة، والنسخ إلى صورة — دون أن تظهر الأقراص الداخلية أبداً.
+> - 🥾 **الإقلاع (GRUB)** — مدة الانتظار، المدخل الافتراضي، الدقة، معاملات النواة، السمة: كل تغيير **يُفحص قبل تطبيقه** ويُحفظ احتياطياً في معاملة واحدة، مع **نقاط استعادة** وإعادة تثبيت GRUB على القرص الصحيح.
+> - ⚡ **إنعاش أذكى للنظام** — التطبيق الأثقل الذي تعمل عليه (وعملياته في الخلفية) يحتفظ بالجهاز، وتُجمَّد البقية على مراحل وتُستأنف عندما يخفّ الضغط؛ ولا يبقى أي برنامج مجمّداً بعد إغلاق GT-STACER ولو قسرياً.
+> - 📦 **الترقيات من كل المصادر** — APT وFlatpak وSnap وغيرها في قائمة واحدة مع عمود المصدر؛ ألغِ مصادر كاملة أو حزماً مفردة قبل التنفيذ — أمر واحد لكل مصدر. و**الحزم المحلية**: ثبّت ملف ‎.deb/.rpm/… نزّلته مع فحص اعتمادياته.
+> - 🩺 **شرح واضح لكل فشل** — كل أمر يفشل يقول السبب (إلغاء كلمة المرور، أداة غير مثبّتة، قفل مشغول…)، ويُسجَّل الانهيار ويُبلَّغ عنه في التشغيل التالي.
+> - ✨ **بطاقة انتظار متحرّكة موحّدة** في كل البرنامج تذكر المهمة وخطوتها، ونص عربي سليم حين يمتزج بالأوامر والمسارات.
 
 ---
 
@@ -45,7 +45,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 ### ✨ ما الجديد في GT-STACER مقارنةً بالأصل
 
-| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.11 (2026) |
+| الجانب | Stacer 1.1.0 (2019) | GT-STACER 26.12 (2026) |
 |---|---|---|
 | إطار العمل | Qt5 (EOL) | **Qt6 ≥ 6.2** |
 | معيار C++ | C++11 | **C++17** |
@@ -58,7 +58,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | Flatpak | ✗ | ✅ |
 | مدراء الحزم | APT · Snap | **28+ مدير** |
 | أنظمة init | systemd فقط | systemd · OpenRC · runit · s6 · SysV |
-| مؤشرات التحميل | ✗ | ✅ Loading overlay متحرك على كل عملية |
+| مؤشرات التحميل | ✗ | ✅ بطاقة انتظار متحرّكة موحّدة باسم المهمة وخطوتها |
 | شريط المهام | ✗ | ✅ CPU% وRAM% **ودرجة الحرارة** في الـ Tooltip لحظياً |
 | شاشة الترحيب | ✗ | ✅ 6 شرائح تعريفية عند أول تشغيل |
 | Wayland | جزئي | ✅ كامل |
@@ -83,6 +83,9 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 | جدار الحماية | ✗ | ✅ **ufw / firewalld** — تفعيل + قواعد منافذ (استيثاق مرّة/إجراء) |
 | النسخ واللقطات | ✗ | ✅ **Timeshift / Snapper / ZFS** باختيار المحرّك المثاليّ + **نسخ rsync للمنزل** |
 | استعادة الملفّات | ✗ | ✅ **واجهة PhotoRec** — نحت الملفّات المحذوفة بتحديد الأنواع وفرزها |
+| صور الأقراص | ✗ | ✅ **ضمّ ISO/IMG (والهجينة) + استخراج + نسخ CD/DVD إلى ISO + حرق مع المطابقة** |
+| الذاكرة الخارجية | ✗ | ✅ **USB وبطاقات الذاكرة**: فحص · إصلاح · تهيئة · صحة SMART · فحص السطح · نسخ إلى صورة |
+| الإقلاع (GRUB) | ✗ | ✅ **إعدادات GRUB وسمته بمعاملة آمنة** + نقاط استعادة + إعادة التثبيت |
 | إنعاش القرص | ✗ | ✅ **ضغط PSI + عمود دخل/خرج + ionice + مبدّل BFQ** |
 | تحديثات ومشاركة | ✗ | ✅ **فحص تحديثات + نشرة «ما الجديد» + جولة بمُنتقي لغة + مشاركة** |
 | استهلاك الذاكرة | 80 MB | **~22 MB PSS** — أقل من Stacer 1.x |
@@ -137,6 +140,15 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 - **تحصين أمنيّ:** إصلاح ثغرة **حقن أوامر** في بحث الحزم (كانت الكلمة تمرّ لصَدفة) — صارت وسائط بلا صَدفة مع تحقّق؛ وكلّ عمليّات الحزم الجديدة عبر `execProgram` بأسماء مُتحقَّق منها
 - **تحسينات الجداول والعمليّات:** العمليّات تُرتَّب افتراضيّاً بنسبة المعالج تنازليّاً؛ درجة الحرارة في تلميح شريط المهام؛ أعمدة كلّ الجداول قابلة للتحجيم بحدود واضحة
 
+#### 🧰 أدوات المساعدات والترقيات وإنعاش أذكى (26.12)
+- **أدوات مساعدة بتبويبات قصيرة:** النظام · صور الأقراص · ذاكرة خارجية · الإقلاع — بديل أصيل داخل البرنامج لأدوات GNUTUX المنفصلة (gt-imt · gt-usdr · GT-GMT) بعد مراجعة أخطائها
+- **صور الأقراص:** ضمّ للقراءة فقط أو للكتابة عبر UDisks2 (بلا كلمة مرور)، صور ISO الهجينة، الاستخراج مع زرّ إيقاف؛ الأقراص المدمجة: حفظ ISO مطابق (يُكتب إلى ‎.part ثم يُعاد تسميته عند الاكتمال)، وحرق بـ xorriso مع المطابقة بـ cmp
+- **الذاكرة الخارجية:** لا تظهر إلا الأقراص القابلة للإزالة؛ يُتحقّق من هوية الجهاز (الرقم التسلسلي والحجم) قبل أي عملية مدمّرة؛ يُعاد ضمّ الأقسام بعد الفحص أو النسخ
+- **الإقلاع:** يُعدَّل `/etc/default/grub` في معاملة واحدة (نسخة احتياطية ← فحص `sh -n` ← توليد القائمة في ملف مؤقت ← `grub-script-check` ← الاستبدال)، ويُرفض الكتابة إن تغيّر الملف من خارج البرنامج؛ ويحمي UEFI وSecure Boot
+- **إنعاش النظام:** «العمل الرئيسي» = التطبيق الأعلى حِملاً (معالج + قرص) يُستثنى من التجميد، والتجميد على مرحلتين (الخاملة ثم المشغولة) والاستئناف بهامش أمان؛ سجلّ للبرامج المجمّدة يُستعاد عند التشغيل التالي
+- **الحزم:** تبويب «الترقيات» بكل المصادر واختيارها قبل التنفيذ، APT غير تفاعلي يحافظ على ملفات إعداداتك، ورفض الترقية الجزئية في Arch؛ تبويب «الحزم المحلية» مع فحص الاعتماديات
+- **الموثوقية:** شرح بلغة واضحة لكل أمر فاشل، سجلّ انهيار، إغلاق نظيف بإشارات النظام، وإيقاف فعلي لـ PhotoRec وrsync حتى بعد الإغلاق القسري
+
 #### 📦 دعم مدراء الحزم (28+ مدير)
 
 | الفئة | المدراء |
@@ -160,7 +172,7 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 #### 🌐 دعم اللغات (19 لغة، كل ملفات .qm تُولَّد 100%)
 
-في v26.11، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
+في v26.12، كل ملفات الترجمة الـ 19 تُولَّد كاملة. السلاسل التي ليس لها ترجمة أصلية في لغة معيّنة تظهر بالإنجليزية كـ fallback، فلا توجد فراغات في الواجهة. التغطية الأصلية لكل لغة:
 
 | اللغة | تغطية أصلية | الباقي (إنجليزي fallback) | العلم |
 |---|---|---|---|
@@ -190,15 +202,25 @@ GT-STACER هو انشقاق (fork) حديث ومطوَّر من مشروع [Stac
 
 ### التثبيت
 
+**تنزيل مباشر — إصدار [26.12 STABLE](https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.12_STABLE):**
+
+| الصيغة | الملف |
+|---|---|
+| AppImage (كل التوزيعات) | [GT-STACER-26.12-x86_64.AppImage](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER-26.12-x86_64.AppImage) |
+| Debian / Ubuntu | [GT-STACER_26.12_amd64.deb](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER_26.12_amd64.deb) |
+| Fedora / openSUSE | [gt-stacer-26.12-1.x86_64.rpm](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/gt-stacer-26.12-1.x86_64.rpm) |
+| Flatpak | [GT-STACER-26.12-x86_64.flatpak](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER-26.12-x86_64.flatpak) |
+| بصمات التحقق | [SHA256SUMS.txt](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/SHA256SUMS.txt) |
+
 #### ⚡ AppImage — لا تثبيت مطلوب
 ```bash
-chmod +x GT-STACER-26.11.3-x86_64.AppImage
-./GT-STACER-26.11.3-x86_64.AppImage
+chmod +x GT-STACER-26.12-x86_64.AppImage
+./GT-STACER-26.12-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.11.3_amd64.deb
+sudo dpkg -i GT-STACER_26.12_amd64.deb
 sudo apt-get install -f          # إصلاح الاعتماديات إن وُجد نقص
 ```
 
@@ -206,7 +228,7 @@ sudo apt-get install -f          # إصلاح الاعتماديات إن وُج
 
 #### Fedora / RHEL / AlmaLinux / Rocky
 ```bash
-sudo dnf install gt-stacer-26.11.3-2.x86_64.rpm
+sudo dnf install gt-stacer-26.12-1.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -217,7 +239,7 @@ yay -S gt-stacer
 
 #### Flatpak (معزول داخل sandbox)
 ```bash
-flatpak install --user GT-STACER-26.11.3-x86_64.flatpak
+flatpak install --user GT-STACER-26.12-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 
@@ -397,15 +419,15 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 > 🙏 **Attribution:** Inspired by [Stacer](https://github.com/oguzhaninan/Stacer) — thank you Oguzhan INAN.  
 > 🌐 [salehgnutux.github.io/GT-STACER](https://salehgnutux.github.io/GT-STACER)
 
-### 🎉 What's new in 26.11 stable
+### 🎉 What's new in 26.12 stable
 
-- 📦 **Package & Software Manager (evolves the Uninstaller)** — a professional, tabbed page: **Installed** (browse & remove across every detected manager), **Search & Install** (search your system manager / Flatpak / Snap and install), **Upgrades** (list and apply available updates), **Store add-ons** (opendesktop.org / KNewStuff), and **AppImages**.
-- 🧩 **AppImage integration, GearLever-compatible** — integrate an AppImage into your app menu in one click, using the **same folder and launcher format as GearLever** (`it.mijorus.gearlever`) and honouring its settings (custom folder, move-vs-clone), so apps integrated by either tool appear in both with no duplication. Metadata is extracted **without executing the AppImage** (a safe `unsquashfs` read at the ELF-computed squashfs offset).
-- 🔄 **In-app self-update** — GT-STACER checks for a newer version on startup (on by default) and can **download, verify (SHA-256) and install** it — replacing the AppImage, or handing the `.deb`/`.rpm` to your package manager via `pkexec`. Checking for *package* updates stays manual. Nothing is downloaded or installed without your click.
-- 🔒 **Security hardening** — fixed a genuine **command-injection** hole: package search passed your query to a shell (`sh -c`). It is now passed as argv (no shell) and validated; every new install/upgrade/remove path goes through `execProgram` with validated names. See [SECURITY.md](SECURITY.md).
-- ⚡ **Processes: busiest first** — the Processes list now defaults to **CPU %, descending** (numeric, live), so you see what's using the machine the moment you open it — no clicking a header.
-- 🌡️ **Tray tooltip temperature** — the tray tooltip now shows the CPU/system temperature alongside CPU % and RAM %.
-- 🖱️ **Resizable table columns everywhere** — every table's columns are freely resizable with clearly visible, grabbable drag handles (the primary column still fills the width).
+- 💿 **Disk images** — mount ISO / IMG / disk images (hybrid distro ISOs too) by drag & drop and extract them; detect **CD / DVD / Blu-ray** discs in the drive and save them as an identical **ISO image**, open and eject them, and **burn an ISO onto a disc** with verification afterwards.
+- 🔌 **USB drives** — USB sticks and memory cards: mount / unmount, check and repair the filesystem, **format** (FAT32 / exFAT / NTFS / ext4 …), read the **health report** (SMART), run a **surface scan** for bad blocks and back them up to an image — internal disks never appear.
+- 🥾 **Boot (GRUB)** — timeout, default entry, resolution, kernel parameters, theme: every change is **checked before it is applied** and backed up in one transaction, with **restore points** and a GRUB reinstall that targets the right disk.
+- ⚡ **Smarter System Relief** — the heaviest app you are working with (and its background helpers) keeps the machine; the others are paused in stages and resumed when the pressure drops. No app stays frozen after GT-STACER is closed, even when killed.
+- 📦 **Upgrades from every source** — APT, Flatpak, Snap and more in one list with a Source column; untick whole sources or single packages before upgrading — one command per source. Plus **Local packages**: install a .deb / .rpm / … you downloaded, with its dependencies checked.
+- 🩺 **Plain-language failures** — a failed command now says why (password dismissed, missing tool, busy lock …), and a crash is recorded and reported at the next start.
+- ✨ **One animated waiting card everywhere**, naming the task and its step; Arabic text mixed with commands and paths is no longer scrambled.
 
 ### Key Features
 
@@ -424,7 +446,10 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 - **System Cleaner** — icon-card UI, per-category selection, drill-down for app caches, root-aware cleaning via `pkexec`
 - **Startup Apps** — icons + toggle + add-from-system dialog + per-entry delay (Flatpak/Snap aware)
 - **APT Source Manager** — double-click to edit, full-URL tooltips
-- **Helpers** — `/etc/hosts` editor, DNS cache flush, vm.swappiness, `/proc/cmdline` viewer
+- **Helpers** — `/etc/hosts` editor, DNS cache flush, vm.swappiness, `/proc/cmdline` viewer, plus three native tools:
+  - **Disk images** — mount / extract ISO & disk images (hybrid ISOs too), copy a CD/DVD to ISO, burn an ISO with verification
+  - **USB drives** — check, repair, format, SMART health, surface scan and image backup for USB sticks and memory cards
+  - **Boot (GRUB)** — safe, transactional GRUB settings & themes with restore points and reinstall
 - **System Relief** — freeze/thaw idle apps (SIGSTOP/SIGCONT) to relieve RAM/CPU pressure; **disk-aware** too (PSI pressure + per-process I/O, `ionice` easing, one-click BFQ scheduler), manual or automatic, fully reversible
 - **Connections** — live TCP/UDP sockets (`ss`) with the owning process, a filter, sortable columns, page-scoped auto-refresh
 - **Power** — switch the power profile (`power-profiles-daemon` / cpufreq), a laptop battery charge-limit, and a cross-desktop keep-awake (block sleep/screen-lock via D-Bus)
@@ -442,17 +467,24 @@ GT-STACER is a modernized fork of [Stacer](https://github.com/oguzhaninan/Stacer
 
 ### Install
 
-Pick the format that fits your distro. All 26.11 artifacts are signed-by-hash in [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt).
+Pick the format that fits your distro. All 26.12 artifacts are signed-by-hash in [`SHA256SUMS.txt`](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/SHA256SUMS.txt) — release page: [GT-STACER 26.12 STABLE](https://github.com/SalehGNUTUX/GT-STACER/releases/tag/GT-STACER_26.12_STABLE).
+
+| Format | Download |
+|---|---|
+| AppImage (any distro) | [GT-STACER-26.12-x86_64.AppImage](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER-26.12-x86_64.AppImage) |
+| Debian / Ubuntu | [GT-STACER_26.12_amd64.deb](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER_26.12_amd64.deb) |
+| Fedora / openSUSE | [gt-stacer-26.12-1.x86_64.rpm](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/gt-stacer-26.12-1.x86_64.rpm) |
+| Flatpak | [GT-STACER-26.12-x86_64.flatpak](https://github.com/SalehGNUTUX/GT-STACER/releases/download/GT-STACER_26.12_STABLE/GT-STACER-26.12-x86_64.flatpak) |
 
 #### ⚡ AppImage — no install, run anywhere
 ```bash
-chmod +x GT-STACER-26.11.3-x86_64.AppImage
-./GT-STACER-26.11.3-x86_64.AppImage
+chmod +x GT-STACER-26.12-x86_64.AppImage
+./GT-STACER-26.12-x86_64.AppImage
 ```
 
 #### Debian / Ubuntu / Linux Mint / Pop!_OS / Kali / Trixie+
 ```bash
-sudo dpkg -i GT-STACER_26.11.3_amd64.deb
+sudo dpkg -i GT-STACER_26.12_amd64.deb
 sudo apt-get install -f          # fix any missing deps
 ```
 
@@ -460,9 +492,9 @@ sudo apt-get install -f          # fix any missing deps
 
 #### Fedora / RHEL / AlmaLinux / Rocky / openSUSE
 ```bash
-sudo dnf install ./gt-stacer-26.11.3-2.x86_64.rpm
+sudo dnf install ./gt-stacer-26.12-1.x86_64.rpm
 # or
-sudo rpm -i ./gt-stacer-26.11.3-2.x86_64.rpm
+sudo rpm -i ./gt-stacer-26.12-1.x86_64.rpm
 ```
 
 #### Arch Linux / Manjaro
@@ -473,7 +505,7 @@ yay -S gt-stacer
 
 #### Flatpak (sandboxed)
 ```bash
-flatpak install --user GT-STACER-26.11.3-x86_64.flatpak
+flatpak install --user GT-STACER-26.12-x86_64.flatpak
 flatpak run org.gnutux.gt-stacer
 ```
 

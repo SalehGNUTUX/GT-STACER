@@ -1,4 +1,10 @@
-# Pre-publish checklist — GT-STACER 26.11 stable
+# Pre-publish checklist — GT-STACER
+
+> **26.12 (2026-11-09)** — released with `build-all.sh` + `build-flatpak.sh`
+> and `gh release create GT-STACER_26.12_STABLE`. The RPM is now native
+> (`-1`). The 26.11 checklist below is kept as the template.
+
+## 26.11 stable
 
 > **26.11 (2026-09-16)** — released via `scripts/release.sh`
 > (tag `GT-STACER_26.11_STABLE`). See **[`PUBLISHING.md`](PUBLISHING.md)** for the

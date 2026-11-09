@@ -86,6 +86,19 @@
   </provides>
 
   <releases>
+    <release version="26.12" date="2026-11-09">
+      <description>
+        <p>A large feature release:</p>
+        <ul>
+          <li>Disk images: mount ISO and disk images (hybrid ISOs too), extract them, copy a CD/DVD to an ISO file and burn an ISO onto a disc with verification</li>
+          <li>USB drives: check, repair and format USB sticks and memory cards, read their health, scan for bad blocks and back them up to an image</li>
+          <li>Boot (GRUB): edit the boot menu settings and theme safely, with backups and restore points</li>
+          <li>System Relief keeps the heaviest app running and pauses the others in stages</li>
+          <li>Packages: upgrades from every source in one list, with a choice of sources; install downloaded package files with their dependencies</li>
+          <li>Plain-language explanations for every failed command, a crash record, and one animated waiting card everywhere</li>
+        </ul>
+      </description>
+    </release>
     <release version="26.11.3" date="2026-09-17">
       <description>
         <p>UX-focused point release:</p>
